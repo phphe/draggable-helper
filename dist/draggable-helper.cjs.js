@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.3
+ * draggable-helper v1.0.4
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -107,7 +107,13 @@ function index (dragHandlerEl) {
 
 
     helperJs.backupAttr(el, 'class');
-    helperJs.addClass(el, opt.draggingClass);
+    helperJs.addClass(el, opt.draggingClass); //
+
+    var _document = document,
+        body = _document.body;
+    var bodyOldStyle = body.getAttribute('style') || '';
+    helperJs.backupAttr(body, 'style');
+    body.style = bodyOldStyle + 'cursor: move;';
   }
 
   function moving(e) {
@@ -173,6 +179,7 @@ function index (dragHandlerEl) {
         helperJs.restoreAttr(el, 'class');
       }
 
+      helperJs.restoreAttr(document.body, 'style');
       helperJs.offDOM(document.body, 'selectstart', preventSelect);
       opt.drop && opt.drop(e, opt, store);
     }
