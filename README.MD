@@ -16,7 +16,7 @@ npm install draggable-helper
 # usage & api
 ```js
 import draggableHelper from 'draggable-helper'
-draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
+const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 // opt
 // opt will pass to hook, so you can attach custom data into opt, such the data of the element
 opt = {

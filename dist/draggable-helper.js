@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.6
+ * draggable-helper v1.0.7
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -459,6 +459,7 @@
   }(EventProcessor);
 
   /***
+  const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
   opt.drag(e, opt, store)
   [Object] opt.style || opt.getStyle(opt) set style of moving el style
   [Boolean] opt.clone
@@ -502,12 +503,18 @@
 
     var store$$1 = getPureStore();
 
-    if (dragHandlerEl._draggbleEventHandler) {
+    var destroy = function destroy() {
       offDOM(dragHandlerEl, 'mousedown', dragHandlerEl._draggbleEventHandler);
+      delete dragHandlerEl._draggbleEventHandler;
+    };
+
+    if (dragHandlerEl._draggbleEventHandler) {
+      destroy();
     }
 
     dragHandlerEl._draggbleEventHandler = start;
     onDOM(dragHandlerEl, 'mousedown', start);
+    return destroy;
 
     function start(e) {
       if (e.which !== 1) {
