@@ -1,6 +1,6 @@
 /*!
- * draggable-helper v1.0.0
- * (c) 2017-present phphe <phphe@outlook.com> (https://github.com/phphe)
+ * draggable-helper v1.0.1
+ * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -10,7 +10,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.0.45
+   * helper-js v1.0.46
    * (c) 2017-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -113,6 +113,15 @@
   function _nonIterableSpread() {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
+
+  // resolve global
+  var glb;
+
+  try {
+    glb = global;
+  } catch (e) {
+    glb = window;
+  } // local store
   function getOffsetWithoutScroll(el) {
     var elOffset = {
       x: el.offsetLeft,
@@ -282,8 +291,8 @@
       }
     };
   }
-  var localStorage2 = makeStorageHelper(global.localStorage);
-  var sessionStorage2 = makeStorageHelper(global.sessionStorage); // 事件处理
+  var localStorage2 = makeStorageHelper(glb.localStorage);
+  var sessionStorage2 = makeStorageHelper(glb.sessionStorage); // 事件处理
 
   var EventProcessor =
   /*#__PURE__*/
@@ -436,7 +445,7 @@
 
         (_get3 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
 
-        global.localStorage.setItem(this.storageName, JSON.stringify({
+        glb.localStorage.setItem(this.storageName, JSON.stringify({
           name: name,
           args: args,
           // use random make storage event triggered every time
