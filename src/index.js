@@ -48,6 +48,7 @@ export default function (dragHandlerEl, opt = {}) {
       // not left button
       return
     }
+    e.stopPropagation()
     onDOM(document.body, 'selectstart', preventSelect)
     store.mouse = {
       x: e.pageX,

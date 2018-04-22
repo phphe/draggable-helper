@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.5
+ * draggable-helper v1.0.6
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -62,6 +62,7 @@ function index (dragHandlerEl) {
       return;
     }
 
+    e.stopPropagation();
     onDOM(document.body, 'selectstart', preventSelect);
     store.mouse = {
       x: e.pageX,
