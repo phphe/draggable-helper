@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.1
+ * draggable-helper v1.0.2
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -9,6 +9,7 @@ import { onDOM, offDOM, getElSize, backupAttr, restoreAttr, getOffset, addClass 
 opt.drag(e, opt, store)
 [Object] opt.style || opt.getStyle(opt) set style of moving el style
 [Boolean] opt.clone
+opt.draggingClass, default dragging
 opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
@@ -61,6 +62,7 @@ function index (dragHandlerEl) {
       return;
     }
 
+    onDOM(document.body, 'selectstart', preventSelect);
     store.mouse = {
       x: e.pageX,
       y: e.pageY
@@ -80,6 +82,7 @@ function index (dragHandlerEl) {
     var r = opt.drag && opt.drag(e, opt, store);
 
     if (r === false) {
+      offDOM(document.body, 'selectstart', preventSelect);
       return false;
     } // dom actions
 
@@ -102,18 +105,7 @@ function index (dragHandlerEl) {
 
 
     backupAttr(el, 'class');
-    addClass(el, 'dragging'); //
-
-    var _document = document,
-        body = _document.body;
-    backupAttr(body, 'style');
-    var bodyStyle = body.getAttribute('style') || '';
-
-    if (bodyStyle && bodyStyle.substr(-1) !== ';') {
-      bodyStyle += ';';
-    }
-
-    body.setAttribute('style', bodyStyle + '-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;');
+    addClass(el, opt.draggingClass);
   }
 
   function moving(e) {
@@ -179,7 +171,7 @@ function index (dragHandlerEl) {
         restoreAttr(el, 'class');
       }
 
-      restoreAttr(document.body, 'style');
+      offDOM(document.body, 'selectstart', preventSelect);
       opt.drop && opt.drop(e, opt, store);
     }
 
@@ -206,6 +198,10 @@ function index (dragHandlerEl) {
     return {
       movedCount: 0
     };
+  }
+
+  function preventSelect(e) {
+    e.preventDefault();
   }
 }
 

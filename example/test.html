@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="../dist/draggable-helper.js"></script>
+</head>
+<body>
+  <h1>not clone</h1>
+  <div id="not_clone">
+    <div>not clone</div>
+    <div>not clone</div>
+    <div>not clone</div>
+    <div>not clone</div>
+    <div>not clone</div>
+    <div>not clone</div>
+  </div>
+  <h1>clone</h1>
+  <div id="clone">
+    <div>clone</div>
+    <div>clone</div>
+    <div>clone</div>
+    <div>clone</div>
+    <div>clone</div>
+  </div>
+  <script>
+  a = document.getElementById('not_clone');
+  [...a.children].forEach(el => {
+  	draggableHelper(el, {})
+  })
+  b = document.getElementById('clone');
+  [...b.children].forEach(el => {
+  	draggableHelper(el, {
+    	clone: true,
+    })
+  })
+  </script>
+</body>
+</html>

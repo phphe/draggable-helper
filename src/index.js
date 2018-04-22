@@ -3,6 +3,7 @@ import { onDOM, offDOM, getElSize, backupAttr, restoreAttr, getOffset, addClass 
 opt.drag(e, opt, store)
 [Object] opt.style || opt.getStyle(opt) set style of moving el style
 [Boolean] opt.clone
+opt.draggingClass, default dragging
 opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
@@ -47,6 +48,7 @@ export default function (dragHandlerEl, opt = {}) {
       // not left button
       return
     }
+    onDOM(document.body, 'selectstart', preventSelect)
     store.mouse = {
       x: e.pageX,
       y: e.pageY,
@@ -61,6 +63,7 @@ export default function (dragHandlerEl, opt = {}) {
     store.initialOffset = {...offset}
     const r = opt.drag && opt.drag(e, opt, store)
     if (r === false) {
+      offDOM(document.body, 'selectstart', preventSelect)
       return false
     }
     // dom actions
@@ -81,15 +84,7 @@ export default function (dragHandlerEl, opt = {}) {
     }
     // add class
     backupAttr(el, 'class')
-    addClass(el, 'dragging')
-    //
-    const {body} = document
-    backupAttr(body, 'style')
-    let bodyStyle = body.getAttribute('style') || ''
-    if (bodyStyle && bodyStyle.substr(-1) !== ';') {
-      bodyStyle += ';'
-    }
-    body.setAttribute('style', bodyStyle + '-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;')
+    addClass(el, opt.draggingClass)
   }
   function moving(e) {
     store.mouse = {
@@ -143,7 +138,7 @@ export default function (dragHandlerEl, opt = {}) {
         restoreAttr(el, 'style')
         restoreAttr(el, 'class')
       }
-      restoreAttr(document.body, 'style')
+      offDOM(document.body, 'selectstart', preventSelect)
       opt.drop && opt.drop(e, opt, store)
     }
     store = getPureStore()
@@ -163,5 +158,8 @@ export default function (dragHandlerEl, opt = {}) {
   }
   function getPureStore() {
     return {movedCount: 0}
+  }
+  function preventSelect(e) {
+    e.preventDefault()
   }
 }

@@ -5,6 +5,7 @@ A js library to simplify your drag and drop functions. Start with a element, it 
 * prevent drag and moving by return false in hook
 * set min translate to trigger drag
 * set the style of dragging element
+* set the class of dragging element
 * move the element or move a cloned one
 * check if event is triggered by mouse left button
 * to prevent text be selected when dragging, to set body style, and restore after drop
@@ -21,6 +22,7 @@ draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 opt = {
     // [Object] style, set the style of dragging element
     // getStyle(opt), set the style of dragging element
+    // [String] draggingClass, default dragging, set the class of dragging element
     // [Boolean] clone, move the element or move a cloned one
     // minTranslate default 10, unit px
     // getEl(dragHandlerEl, opt), optional, get the el that will be moved. default is dragHandlerEl
@@ -46,3 +48,5 @@ store = {
   movedCount // start from 0
 }
 ```
+# demo
+[jsfiddle](https://jsfiddle.net/phphe/t694kpua/19/)
