@@ -1,0 +1,27 @@
+{
+  "name": "draggable-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "scripts": {
+    "build": "bili --format cjs,umd,umd-min,es --banner",
+    "dev": "bili --format cjs,umd --watch"
+  },
+  "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
+  "unpkg": "dist/draggable-helper.js",
+  "bugs": {
+    "url": "https://github.com/phphe/draggable-helper/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phphe/draggable-helper.git"
+  },
+  "devDependencies": {
+    "bili": "^3.0.14"
+  },
+  "dependencies": {
+    "helper-js": "^1.0.45"
+  },
+  "license": "MIT"
+}
