@@ -87,7 +87,10 @@ export default function (dragHandlerEl, opt = {}) {
     addClass(el, opt.draggingClass)
     //
     const {body} = document
-    const bodyOldStyle = body.getAttribute('style') || ''
+    let bodyOldStyle = (body.getAttribute('style') || '').trim()
+    if (bodyOldStyle.length && !bodyOldStyle.endsWith(';')) {
+      bodyOldStyle += ';'
+    }
     backupAttr(body, 'style')
     body.style = bodyOldStyle + 'cursor: move;'
   }

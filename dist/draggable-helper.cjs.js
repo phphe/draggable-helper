@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.4
+ * draggable-helper v1.0.5
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -111,7 +111,12 @@ function index (dragHandlerEl) {
 
     var _document = document,
         body = _document.body;
-    var bodyOldStyle = body.getAttribute('style') || '';
+    var bodyOldStyle = (body.getAttribute('style') || '').trim();
+
+    if (bodyOldStyle.length && !bodyOldStyle.endsWith(';')) {
+      bodyOldStyle += ';';
+    }
+
     helperJs.backupAttr(body, 'style');
     body.style = bodyOldStyle + 'cursor: move;';
   }
