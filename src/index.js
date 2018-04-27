@@ -80,7 +80,7 @@ export default function (dragHandlerEl, opt = {}) {
       height: `${size.height}px`,
       zIndex: 9999,
       opacity: 0.6,
-      position: 'fixed',
+      position: 'absolute',
       left: position.x + 'px',
       top: position.y + 'px',
       ...(opt.style || opt.getStyle && opt.getStyle(opt) || {}),

@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.9
+ * draggable-helper v1.0.10
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -103,7 +103,7 @@ function index (dragHandlerEl) {
       height: "".concat(size.height, "px"),
       zIndex: 9999,
       opacity: 0.6,
-      position: 'fixed',
+      position: 'absolute',
       left: position.x + 'px',
       top: position.y + 'px'
     }, opt.style || opt.getStyle && opt.getStyle(opt) || {});
