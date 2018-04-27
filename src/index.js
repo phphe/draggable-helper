@@ -1,4 +1,4 @@
-import { onDOM, offDOM, getElSize, backupAttr, restoreAttr, getOffset, addClass } from 'helper-js'
+import { onDOM, offDOM, getElSize, backupAttr, restoreAttr, getOffset, offsetToPosition, addClass } from 'helper-js'
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 opt.drag(e, opt, store)
@@ -13,7 +13,7 @@ add other prop into opt, you get opt in callback
 store{
   el
   initialMouse
-  initialOffset
+  initialPosition
   mouse
   move
   movedCount // start from 0
@@ -65,9 +65,9 @@ export default function (dragHandlerEl, opt = {}) {
     onDOM(window, 'mouseup', drop)
   }
   function drag(e) {
-    const {el, offset} = resolveDragedElAndInitialOffset()
+    const {el, position} = resolveDragedElAndInitialPosition()
     store.el = el
-    store.initialOffset = {...offset}
+    store.initialPosition = {...position}
     const r = opt.drag && opt.drag(e, opt, store)
     if (r === false) {
       offDOM(document.body, 'selectstart', preventSelect)
@@ -81,8 +81,8 @@ export default function (dragHandlerEl, opt = {}) {
       zIndex: 9999,
       opacity: 0.6,
       position: 'fixed',
-      left: offset.x + 'px',
-      top: offset.y + 'px',
+      left: position.x + 'px',
+      top: position.y + 'px',
       ...(opt.style || opt.getStyle && opt.getStyle(opt) || {}),
     }
     backupAttr(el, 'style')
@@ -134,8 +134,8 @@ export default function (dragHandlerEl, opt = {}) {
         return
       }
       Object.assign(store.el.style, {
-        left: store.initialOffset.x + move.x + 'px',
-        top:  store.initialOffset.y + move.y + 'px',
+        left: store.initialPosition.x + move.x + 'px',
+        top:  store.initialPosition.y + move.y + 'px',
       })
       store.movedCount++
     }
@@ -159,7 +159,7 @@ export default function (dragHandlerEl, opt = {}) {
     }
     store = getPureStore()
   }
-  function resolveDragedElAndInitialOffset() {
+  function resolveDragedElAndInitialPosition() {
     const el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt) : dragHandlerEl
     let el = el0
     if (opt.clone) {
@@ -168,7 +168,7 @@ export default function (dragHandlerEl, opt = {}) {
       el0.parentElement.appendChild(el)
     }
     return {
-      offset: getOffset(el0),
+      position: offsetToPosition(el, getOffset(el0)),
       el,
     }
   }

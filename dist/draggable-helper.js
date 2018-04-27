@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.7
+ * draggable-helper v1.0.8
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -10,7 +10,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.0.46
+   * helper-js v1.0.52
    * (c) 2017-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -122,33 +122,47 @@
   } catch (e) {
     glb = window;
   } // local store
-  function getOffsetWithoutScroll(el) {
-    var elOffset = {
-      x: el.offsetLeft,
-      y: el.offsetTop
-    };
-    var parentOffset = {
-      x: 0,
-      y: 0
-    };
-    if (el.offsetParent != null) parentOffset = getOffsetWithoutScroll(el.offsetParent);
+
+  function getScroll() {
+    if (typeof pageYOffset != 'undefined') {
+      //most browsers except IE before #9
+      return {
+        top: pageYOffset,
+        left: pageXOffset
+      };
+    } else {
+      var B = document.body; //IE 'quirks'
+
+      var D = document.documentElement; //IE with doctype
+
+      D = D.clientHeight ? D : B;
+      return {
+        top: D.scrollTop,
+        left: D.scrollLeft
+      };
+    }
+  } // refer: https://gist.github.com/aderaaij/89547e34617b95ac29d1
+
+  function getOffset(el) {
+    var rect = el.getBoundingClientRect();
+    var scroll = getScroll();
     return {
-      x: elOffset.x + parentOffset.x,
-      y: elOffset.y + parentOffset.y
+      x: rect.left + scroll.left,
+      y: rect.top + scroll.top
     };
   }
-  function getOffset(el) {
-    var offfset = getOffsetWithoutScroll(el);
-    var el2 = el;
-    var body = document.body;
+  function offsetToPosition(el, of) {
+    var parent = el.offsetParent;
 
-    while (el2 && el2 !== body) {
-      offfset.x -= el2.scrollLeft;
-      offfset.y -= el2.scrollTop;
-      el2 = el2.parentElement;
+    if (!parent) {
+      return Object.assign({}, of);
     }
 
-    return offfset;
+    var pof = getOffset(parent);
+    return {
+      x: of.x - pof.x,
+      y: of.y - pof.y
+    };
   }
   function backupAttr(el, name) {
     var key = "original_".concat(name);
@@ -348,8 +362,8 @@
           }
         }
 
-        for (var _i2 = 0; _i2 < indexes.length; _i2++) {
-          var index = indexes[_i2];
+        for (var _i4 = 0; _i4 < indexes.length; _i4++) {
+          var index = indexes[_i4];
           this.eventStore.splice(index, 1);
         }
       }
@@ -358,29 +372,29 @@
       value: function emit(name) {
         // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
         var items = [];
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator2 = this.eventStore[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var item = _step2.value;
+          for (var _iterator3 = this.eventStore[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var item = _step3.value;
 
             if (item.name === name) {
               items.push(item);
             }
           }
         } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+              _iterator3.return();
             }
           } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -389,8 +403,8 @@
           args[_key3 - 1] = arguments[_key3];
         }
 
-        for (var _i3 = 0; _i3 < items.length; _i3++) {
-          var _item = items[_i3];
+        for (var _i5 = 0; _i5 < items.length; _i5++) {
+          var _item = items[_i5];
 
           _item.handler.apply(_item, args);
         }
@@ -472,7 +486,7 @@
   store{
     el
     initialMouse
-    initialOffset
+    initialPosition
     mouse
     move
     movedCount // start from 0
@@ -534,12 +548,12 @@
     }
 
     function drag(e) {
-      var _resolveDragedElAndIn = resolveDragedElAndInitialOffset(),
+      var _resolveDragedElAndIn = resolveDragedElAndInitialPosition(),
           el = _resolveDragedElAndIn.el,
-          offset = _resolveDragedElAndIn.offset;
+          position = _resolveDragedElAndIn.position;
 
       store$$1.el = el;
-      store$$1.initialOffset = Object.assign({}, offset);
+      store$$1.initialPosition = Object.assign({}, position);
       var r = opt.drag && opt.drag(e, opt, store$$1);
 
       if (r === false) {
@@ -555,8 +569,8 @@
         zIndex: 9999,
         opacity: 0.6,
         position: 'fixed',
-        left: offset.x + 'px',
-        top: offset.y + 'px'
+        left: position.x + 'px',
+        top: position.y + 'px'
       }, opt.style || opt.getStyle && opt.getStyle(opt) || {});
       backupAttr(el, 'style');
 
@@ -620,8 +634,8 @@
         }
 
         Object.assign(store$$1.el.style, {
-          left: store$$1.initialOffset.x + move.x + 'px',
-          top: store$$1.initialOffset.y + move.y + 'px'
+          left: store$$1.initialPosition.x + move.x + 'px',
+          top: store$$1.initialPosition.y + move.y + 'px'
         });
         store$$1.movedCount++;
       }
@@ -651,7 +665,7 @@
       store$$1 = getPureStore();
     }
 
-    function resolveDragedElAndInitialOffset() {
+    function resolveDragedElAndInitialPosition() {
       var el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt) : dragHandlerEl;
       var el = el0;
 
@@ -662,7 +676,7 @@
       }
 
       return {
-        offset: getOffset(el0),
+        position: offsetToPosition(el, getOffset(el0)),
         el: el
       };
     }

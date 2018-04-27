@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.7
+ * draggable-helper v1.0.8
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -21,7 +21,7 @@ add other prop into opt, you get opt in callback
 store{
   el
   initialMouse
-  initialOffset
+  initialPosition
   mouse
   move
   movedCount // start from 0
@@ -83,12 +83,12 @@ function index (dragHandlerEl) {
   }
 
   function drag(e) {
-    var _resolveDragedElAndIn = resolveDragedElAndInitialOffset(),
+    var _resolveDragedElAndIn = resolveDragedElAndInitialPosition(),
         el = _resolveDragedElAndIn.el,
-        offset = _resolveDragedElAndIn.offset;
+        position = _resolveDragedElAndIn.position;
 
     store.el = el;
-    store.initialOffset = Object.assign({}, offset);
+    store.initialPosition = Object.assign({}, position);
     var r = opt.drag && opt.drag(e, opt, store);
 
     if (r === false) {
@@ -104,8 +104,8 @@ function index (dragHandlerEl) {
       zIndex: 9999,
       opacity: 0.6,
       position: 'fixed',
-      left: offset.x + 'px',
-      top: offset.y + 'px'
+      left: position.x + 'px',
+      top: position.y + 'px'
     }, opt.style || opt.getStyle && opt.getStyle(opt) || {});
     helperJs.backupAttr(el, 'style');
 
@@ -169,8 +169,8 @@ function index (dragHandlerEl) {
       }
 
       Object.assign(store.el.style, {
-        left: store.initialOffset.x + move.x + 'px',
-        top: store.initialOffset.y + move.y + 'px'
+        left: store.initialPosition.x + move.x + 'px',
+        top: store.initialPosition.y + move.y + 'px'
       });
       store.movedCount++;
     }
@@ -200,7 +200,7 @@ function index (dragHandlerEl) {
     store = getPureStore();
   }
 
-  function resolveDragedElAndInitialOffset() {
+  function resolveDragedElAndInitialPosition() {
     var el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt) : dragHandlerEl;
     var el = el0;
 
@@ -211,7 +211,7 @@ function index (dragHandlerEl) {
     }
 
     return {
-      offset: helperJs.getOffset(el0),
+      position: helperJs.offsetToPosition(el, helperJs.getOffset(el0)),
       el: el
     };
   }
