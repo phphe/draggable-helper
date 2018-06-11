@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.10
+ * draggable-helper v1.0.11
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -471,6 +471,82 @@
     return CrossWindow;
   }(EventProcessor);
 
+  /*!
+   * drag-event-service v0.0.2
+   * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
+
+  // support desktop and mobile
+  var events = {
+    start: ['mousedown', 'touchstart'],
+    move: ['mousemove', 'touchmove'],
+    end: ['mouseup', 'touchend']
+  };
+  var index = {
+    canTouch: function canTouch() {
+      return 'ontouchstart' in document.documentElement;
+    },
+    _getStore: function _getStore(el) {
+      if (!el._wrapperStore) {
+        el._wrapperStore = [];
+      }
+
+      return el._wrapperStore;
+    },
+    on: function on(el, name, handler) {
+      var store$$1 = this._getStore(el);
+
+      var canTouch = this.canTouch();
+
+      var wrapper = function wrapper(e) {
+        var mouse;
+
+        if (!canTouch) {
+          if (name === 'start' && e.which !== 1) {
+            // not left button
+            return;
+          }
+
+          mouse = {
+            x: e.pageX,
+            y: e.pageY
+          };
+        } else {
+          mouse = {
+            x: e.changedTouches[0].pageX,
+            y: e.changedTouches[0].pageY
+          };
+        }
+
+        return handler.call(this, e, mouse);
+      };
+
+      store$$1.push({
+        handler: handler,
+        wrapper: wrapper
+      });
+      onDOM(el, events[name][canTouch ? 1 : 0], wrapper);
+    },
+    off: function off(el, name, handler) {
+      var store$$1 = this._getStore(el);
+
+      var canTouch = this.canTouch();
+      var eventName = events[name][canTouch ? 1 : 0];
+
+      for (var i = store$$1.length - 1; i >= 0; i--) {
+        var _store$i = store$$1[i],
+            _handler = _store$i.handler,
+            wrapper = _store$i.wrapper;
+
+        if (_handler === _handler) {
+          offDOM(el, eventName, wrapper);
+          store$$1.splice(i, 1);
+        }
+      }
+    }
+  };
+
   /***
   const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
   opt.drag(e, opt, store)
@@ -507,7 +583,7 @@
   })
   ***/
 
-  function index (dragHandlerEl) {
+  function index$1 (dragHandlerEl) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (opt.minTranslate == null) {
@@ -517,7 +593,7 @@
     var store$$1 = getPureStore();
 
     var destroy = function destroy() {
-      offDOM(dragHandlerEl, 'mousedown', dragHandlerEl._draggbleEventHandler);
+      index.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
       delete dragHandlerEl._draggbleEventHandler;
     };
 
@@ -526,24 +602,19 @@
     }
 
     dragHandlerEl._draggbleEventHandler = start;
-    onDOM(dragHandlerEl, 'mousedown', start);
+    index.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
     return destroy;
 
-    function start(e) {
-      if (e.which !== 1) {
-        // not left button
-        return;
-      }
-
+    function start(e, mouse) {
       e.stopPropagation();
       onDOM(document.body, 'selectstart', preventSelect);
       store$$1.mouse = {
-        x: e.pageX,
-        y: e.pageY
+        x: mouse.x,
+        y: mouse.y
       };
       store$$1.initialMouse = Object.assign({}, store$$1.mouse);
-      onDOM(document, 'mousemove', moving);
-      onDOM(window, 'mouseup', drop);
+      index.on(document, 'move', moving);
+      index.on(window, 'end', drop);
     }
 
     function drag(e) {
@@ -593,10 +664,10 @@
       body.style = bodyOldStyle + 'cursor: move;';
     }
 
-    function moving(e) {
+    function moving(e, mouse) {
       store$$1.mouse = {
-        x: e.pageX,
-        y: e.pageY
+        x: mouse.x,
+        y: mouse.y
       };
       var move = store$$1.move = {
         x: store$$1.mouse.x - store$$1.initialMouse.x,
@@ -641,8 +712,8 @@
     }
 
     function drop(e) {
-      offDOM(document, 'mousemove', moving);
-      offDOM(window, 'mouseup', drop); // drag executed if movedCount > 0
+      index.off(document, 'move', moving);
+      index.off(window, 'end', drop); // drag executed if movedCount > 0
 
       if (store$$1.movedCount > 0) {
         store$$1.movedCount = 0;
@@ -691,6 +762,6 @@
     }
   }
 
-  return index;
+  return index$1;
 
 })));

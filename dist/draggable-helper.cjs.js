@@ -1,11 +1,14 @@
 /*!
- * draggable-helper v1.0.10
+ * draggable-helper v1.0.11
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
 'use strict';
 
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
 var helperJs = require('helper-js');
+var DragEventService = _interopDefault(require('drag-event-service'));
 
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
@@ -53,7 +56,7 @@ function index (dragHandlerEl) {
   var store = getPureStore();
 
   var destroy = function destroy() {
-    helperJs.offDOM(dragHandlerEl, 'mousedown', dragHandlerEl._draggbleEventHandler);
+    DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
     delete dragHandlerEl._draggbleEventHandler;
   };
 
@@ -62,24 +65,19 @@ function index (dragHandlerEl) {
   }
 
   dragHandlerEl._draggbleEventHandler = start;
-  helperJs.onDOM(dragHandlerEl, 'mousedown', start);
+  DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
   return destroy;
 
-  function start(e) {
-    if (e.which !== 1) {
-      // not left button
-      return;
-    }
-
+  function start(e, mouse) {
     e.stopPropagation();
     helperJs.onDOM(document.body, 'selectstart', preventSelect);
     store.mouse = {
-      x: e.pageX,
-      y: e.pageY
+      x: mouse.x,
+      y: mouse.y
     };
     store.initialMouse = Object.assign({}, store.mouse);
-    helperJs.onDOM(document, 'mousemove', moving);
-    helperJs.onDOM(window, 'mouseup', drop);
+    DragEventService.on(document, 'move', moving);
+    DragEventService.on(window, 'end', drop);
   }
 
   function drag(e) {
@@ -129,10 +127,10 @@ function index (dragHandlerEl) {
     body.style = bodyOldStyle + 'cursor: move;';
   }
 
-  function moving(e) {
+  function moving(e, mouse) {
     store.mouse = {
-      x: e.pageX,
-      y: e.pageY
+      x: mouse.x,
+      y: mouse.y
     };
     var move = store.move = {
       x: store.mouse.x - store.initialMouse.x,
@@ -177,8 +175,8 @@ function index (dragHandlerEl) {
   }
 
   function drop(e) {
-    helperJs.offDOM(document, 'mousemove', moving);
-    helperJs.offDOM(window, 'mouseup', drop); // drag executed if movedCount > 0
+    DragEventService.off(document, 'move', moving);
+    DragEventService.off(window, 'end', drop); // drag executed if movedCount > 0
 
     if (store.movedCount > 0) {
       store.movedCount = 0;
