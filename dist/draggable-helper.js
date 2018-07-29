@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.11
+ * draggable-helper v1.0.12
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -10,7 +10,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.0.53
+   * helper-js v1.1.1
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -361,8 +361,8 @@
           }
         }
 
-        for (var _i4 = 0; _i4 < indexes.length; _i4++) {
-          var index = indexes[_i4];
+        for (var _i8 = 0; _i8 < indexes.length; _i8++) {
+          var index = indexes[_i8];
           this.eventStore.splice(index, 1);
         }
       }
@@ -371,39 +371,39 @@
       value: function emit(name) {
         // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
         var items = [];
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
         try {
-          for (var _iterator3 = this.eventStore[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var item = _step3.value;
+          for (var _iterator4 = this.eventStore[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var item = _step4.value;
 
             if (item.name === name) {
               items.push(item);
             }
           }
         } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+              _iterator4.return();
             }
           } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
 
-        for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-          args[_key3 - 1] = arguments[_key3];
+        for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key4 = 1; _key4 < _len3; _key4++) {
+          args[_key4 - 1] = arguments[_key4];
         }
 
-        for (var _i5 = 0; _i5 < items.length; _i5++) {
-          var _item = items[_i5];
+        for (var _i9 = 0; _i9 < items.length; _i9++) {
+          var _item = items[_i9];
 
           _item.handler.apply(_item, args);
         }
@@ -452,8 +452,8 @@
       value: function emit(name) {
         var _get3;
 
-        for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-          args[_key4 - 1] = arguments[_key4];
+        for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key5 = 1; _key5 < _len4; _key5++) {
+          args[_key5 - 1] = arguments[_key5];
         }
 
         (_get3 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
@@ -472,7 +472,7 @@
   }(EventProcessor);
 
   /*!
-   * drag-event-service v0.0.2
+   * drag-event-service v0.0.3
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -536,10 +536,10 @@
 
       for (var i = store$$1.length - 1; i >= 0; i--) {
         var _store$i = store$$1[i],
-            _handler = _store$i.handler,
+            handler2 = _store$i.handler,
             wrapper = _store$i.wrapper;
 
-        if (_handler === _handler) {
+        if (handler === handler2) {
           offDOM(el, eventName, wrapper);
           store$$1.splice(i, 1);
         }
