@@ -52,7 +52,7 @@ export default function (dragHandlerEl, opt = {}) {
   DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler)
   return destroy
   function start(e, mouse) {
-    e.stopPropagation()
+    // e.stopPropagation()
     onDOM(document.body, 'selectstart', preventSelect)
     store.mouse = {
       x: mouse.x,
