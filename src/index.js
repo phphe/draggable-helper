@@ -90,14 +90,6 @@ export default function (dragHandlerEl, opt = {}) {
     // add class
     backupAttr(el, 'class')
     addClass(el, opt.draggingClass)
-    //
-    const {body} = document
-    let bodyOldStyle = (body.getAttribute('style') || '').trim()
-    if (bodyOldStyle.length && !bodyOldStyle.endsWith(';')) {
-      bodyOldStyle += ';'
-    }
-    backupAttr(body, 'style')
-    body.style = bodyOldStyle + 'cursor: move;'
   }
   function moving(e, mouse) {
     store.mouse = {
@@ -151,7 +143,6 @@ export default function (dragHandlerEl, opt = {}) {
         restoreAttr(el, 'style')
         restoreAttr(el, 'class')
       }
-      restoreAttr(document.body, 'style')
       opt.drop && opt.drop(e, opt, store)
     }
     store = getPureStore()

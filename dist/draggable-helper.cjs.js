@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.14
+ * draggable-helper v1.0.15
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -57,6 +57,7 @@ function index (dragHandlerEl) {
 
   var destroy = function destroy() {
     DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
+    helperJs.offDOM(dragHandlerEl, 'selectstart', preventSelect);
     delete dragHandlerEl._draggbleEventHandler;
   };
 
@@ -66,11 +67,11 @@ function index (dragHandlerEl) {
 
   dragHandlerEl._draggbleEventHandler = start;
   DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
+  helperJs.onDOM(dragHandlerEl, 'selectstart', preventSelect);
   return destroy;
 
   function start(e, mouse) {
-    e.stopPropagation();
-    helperJs.onDOM(document.body, 'selectstart', preventSelect);
+    // e.stopPropagation()
     store.mouse = {
       x: mouse.x,
       y: mouse.y
@@ -90,7 +91,6 @@ function index (dragHandlerEl) {
     var r = opt.drag && opt.drag(e, opt, store);
 
     if (r === false) {
-      helperJs.offDOM(document.body, 'selectstart', preventSelect);
       return false;
     } // dom actions
 
@@ -113,18 +113,7 @@ function index (dragHandlerEl) {
 
 
     helperJs.backupAttr(el, 'class');
-    helperJs.addClass(el, opt.draggingClass); //
-
-    var _document = document,
-        body = _document.body;
-    var bodyOldStyle = (body.getAttribute('style') || '').trim();
-
-    if (bodyOldStyle.length && !bodyOldStyle.endsWith(';')) {
-      bodyOldStyle += ';';
-    }
-
-    helperJs.backupAttr(body, 'style');
-    body.style = bodyOldStyle + 'cursor: move;';
+    helperJs.addClass(el, opt.draggingClass);
   }
 
   function moving(e, mouse) {
@@ -190,8 +179,6 @@ function index (dragHandlerEl) {
         helperJs.restoreAttr(el, 'class');
       }
 
-      helperJs.restoreAttr(document.body, 'style');
-      helperJs.offDOM(document.body, 'selectstart', preventSelect);
       opt.drop && opt.drop(e, opt, store);
     }
 

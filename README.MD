@@ -8,7 +8,7 @@ A js library to simplify your drag and drop functions. Start with a element, it 
 * set the class of dragging element
 * move the element or move a cloned one
 * check if event is triggered by mouse left button
-* to prevent text be selected when dragging, to set body style, and restore after drop
+* to prevent text be selected when dragging
 # install
 ```sh
 npm install draggable-helper
