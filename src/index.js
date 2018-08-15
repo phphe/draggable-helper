@@ -43,6 +43,7 @@ export default function (dragHandlerEl, opt = {}) {
   let store = getPureStore()
   const destroy = () => {
     DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler)
+    offDOM(dragHandlerEl, 'selectstart', preventSelect)
     delete dragHandlerEl._draggbleEventHandler
   }
   if (dragHandlerEl._draggbleEventHandler) {
@@ -50,10 +51,10 @@ export default function (dragHandlerEl, opt = {}) {
   }
   dragHandlerEl._draggbleEventHandler = start
   DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler)
+  onDOM(dragHandlerEl, 'selectstart', preventSelect)
   return destroy
   function start(e, mouse) {
     // e.stopPropagation()
-    onDOM(document.body, 'selectstart', preventSelect)
     store.mouse = {
       x: mouse.x,
       y: mouse.y,
@@ -68,7 +69,6 @@ export default function (dragHandlerEl, opt = {}) {
     store.initialPosition = {...position}
     const r = opt.drag && opt.drag(e, opt, store)
     if (r === false) {
-      offDOM(document.body, 'selectstart', preventSelect)
       return false
     }
     // dom actions
@@ -152,7 +152,6 @@ export default function (dragHandlerEl, opt = {}) {
         restoreAttr(el, 'class')
       }
       restoreAttr(document.body, 'style')
-      offDOM(document.body, 'selectstart', preventSelect)
       opt.drop && opt.drop(e, opt, store)
     }
     store = getPureStore()
