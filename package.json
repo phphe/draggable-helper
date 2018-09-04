@@ -1,6 +1,6 @@
 {
   "name": "draggable-helper",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.es.js",
@@ -21,7 +21,7 @@
     "bili": "^3.0.14"
   },
   "dependencies": {
-    "drag-event-service": "0.0.5",
+    "drag-event-service": "0.0.6",
     "helper-js": "^1.2.0"
   },
   "license": "MIT"
