@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.15
+ * draggable-helper v1.0.16
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -77,7 +77,10 @@ function index (dragHandlerEl) {
       y: mouse.y
     };
     store.initialMouse = Object.assign({}, store.mouse);
-    DragEventService.on(document, 'move', moving);
+    DragEventService.on(document, 'move', moving, {
+      passive: false
+    }); // passive: false is for touchmove event
+
     DragEventService.on(window, 'end', drop);
   }
 
@@ -142,7 +145,11 @@ function index (dragHandlerEl) {
       if (drag(e) === false) {
         canMove = false;
       }
-    }
+    } // move started
+    // e.preventDefault() to prevent text selection and page scrolling when touch
+
+
+    e.preventDefault();
 
     if (canMove && opt.moving) {
       if (opt.moving(e, opt, store) === false) {

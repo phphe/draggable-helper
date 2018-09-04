@@ -1,6 +1,8 @@
 # draggable-helper
 A js library to simplify your drag and drop functions. Start with a element, it will expose hooks(drag, moving, drop). You can stop drag, moving and drop by conditions. You can set minTranslate. Its code is easy, you can check source code.
 # features
+* support touch simplify(single touch)
+* to prevent page scrolling when touch
 * expose hooks(drag, moving, drop)
 * prevent drag and moving by return false in hook
 * set min translate to trigger drag

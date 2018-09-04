@@ -60,7 +60,7 @@ export default function (dragHandlerEl, opt = {}) {
       y: mouse.y,
     }
     store.initialMouse = {...store.mouse}
-    DragEventService.on(document, 'move', moving)
+    DragEventService.on(document, 'move', moving, {passive: false}) // passive: false is for touchmove event
     DragEventService.on(window, 'end', drop)
   }
   function drag(e) {
@@ -114,6 +114,10 @@ export default function (dragHandlerEl, opt = {}) {
         canMove = false
       }
     }
+    // move started
+    // e.preventDefault() to prevent text selection and page scrolling when touch
+    e.preventDefault()
+
     if (canMove && opt.moving) {
       if (opt.moving(e, opt, store) === false) {
         canMove = false
