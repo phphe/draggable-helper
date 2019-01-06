@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.17
+ * draggable-helper v1.0.18
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -7,7 +7,7 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var helperJs = require('helper-js');
+var hp = require('helper-js');
 var DragEventService = _interopDefault(require('drag-event-service'));
 
 /***
@@ -57,7 +57,7 @@ function index (dragHandlerEl) {
 
   var destroy = function destroy() {
     DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
-    helperJs.offDOM(dragHandlerEl, 'selectstart', preventSelect);
+    hp.offDOM(dragHandlerEl, 'selectstart', preventSelect);
     delete dragHandlerEl._draggbleEventHandler;
   };
 
@@ -67,7 +67,7 @@ function index (dragHandlerEl) {
 
   dragHandlerEl._draggbleEventHandler = start;
   DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
-  helperJs.onDOM(dragHandlerEl, 'selectstart', preventSelect);
+  hp.onDOM(dragHandlerEl, 'selectstart', preventSelect);
   return destroy;
 
   function start(e, mouse) {
@@ -98,7 +98,7 @@ function index (dragHandlerEl) {
     } // dom actions
 
 
-    var size = helperJs.getElSize(el);
+    var size = hp.getElSize(el);
     var style = Object.assign({
       width: "".concat(size.width, "px"),
       height: "".concat(size.height, "px"),
@@ -108,15 +108,15 @@ function index (dragHandlerEl) {
       left: position.x + 'px',
       top: position.y + 'px'
     }, opt.style || opt.getStyle && opt.getStyle(opt) || {});
-    helperJs.backupAttr(el, 'style');
+    hp.backupAttr(el, 'style');
 
     for (var key in style) {
       el.style[key] = style[key];
     } // add class
 
 
-    helperJs.backupAttr(el, 'class');
-    helperJs.addClass(el, opt.draggingClass);
+    hp.backupAttr(el, 'class');
+    hp.addClass(el, opt.draggingClass);
   }
 
   function moving(e, mouse) {
@@ -182,8 +182,8 @@ function index (dragHandlerEl) {
       if (opt.clone) {
         el.parentElement.removeChild(el);
       } else {
-        helperJs.restoreAttr(el, 'style');
-        helperJs.restoreAttr(el, 'class');
+        hp.restoreAttr(el, 'style');
+        hp.restoreAttr(el, 'class');
       }
 
       opt.drop && opt.drop(e, opt, store);
@@ -203,7 +203,7 @@ function index (dragHandlerEl) {
     }
 
     return {
-      position: helperJs.offsetToPosition(el, helperJs.getOffset(el0)),
+      position: hp.getPosition(el),
       el: el
     };
   }

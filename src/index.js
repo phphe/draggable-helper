@@ -1,4 +1,4 @@
-import { onDOM, offDOM, getElSize, backupAttr, restoreAttr, getOffset, offsetToPosition, addClass } from 'helper-js'
+import * as hp from 'helper-js'
 import DragEventService from 'drag-event-service'
 
 /***
@@ -43,7 +43,7 @@ export default function (dragHandlerEl, opt = {}) {
   let store = getPureStore()
   const destroy = () => {
     DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler)
-    offDOM(dragHandlerEl, 'selectstart', preventSelect)
+    hp.offDOM(dragHandlerEl, 'selectstart', preventSelect)
     delete dragHandlerEl._draggbleEventHandler
   }
   if (dragHandlerEl._draggbleEventHandler) {
@@ -51,7 +51,7 @@ export default function (dragHandlerEl, opt = {}) {
   }
   dragHandlerEl._draggbleEventHandler = start
   DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler)
-  onDOM(dragHandlerEl, 'selectstart', preventSelect)
+  hp.onDOM(dragHandlerEl, 'selectstart', preventSelect)
   return destroy
   function start(e, mouse) {
     // e.stopPropagation()
@@ -72,7 +72,7 @@ export default function (dragHandlerEl, opt = {}) {
       return false
     }
     // dom actions
-    const size = getElSize(el)
+    const size = hp.getElSize(el)
     const style = {
       width: `${size.width}px`,
       height: `${size.height}px`,
@@ -83,13 +83,13 @@ export default function (dragHandlerEl, opt = {}) {
       top: position.y + 'px',
       ...(opt.style || opt.getStyle && opt.getStyle(opt) || {}),
     }
-    backupAttr(el, 'style')
+    hp.backupAttr(el, 'style')
     for (const key in style) {
       el.style[key] = style[key]
     }
     // add class
-    backupAttr(el, 'class')
-    addClass(el, opt.draggingClass)
+    hp.backupAttr(el, 'class')
+    hp.addClass(el, opt.draggingClass)
   }
   function moving(e, mouse) {
     store.mouse = {
@@ -144,8 +144,8 @@ export default function (dragHandlerEl, opt = {}) {
       if (opt.clone) {
         el.parentElement.removeChild(el)
       } else {
-        restoreAttr(el, 'style')
-        restoreAttr(el, 'class')
+        hp.restoreAttr(el, 'style')
+        hp.restoreAttr(el, 'class')
       }
       opt.drop && opt.drop(e, opt, store)
     }
@@ -160,7 +160,7 @@ export default function (dragHandlerEl, opt = {}) {
       el0.parentElement.appendChild(el)
     }
     return {
-      position: offsetToPosition(el, getOffset(el0)),
+      position: hp.getPosition(el),
       el,
     }
   }

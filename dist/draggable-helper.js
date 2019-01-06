@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.17
+ * draggable-helper v1.0.18
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -10,7 +10,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.1.7
+   * helper-js v1.3.0
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -135,41 +135,20 @@
     }
   } // is 各种判断
 
-  function getScroll() {
-    if (typeof pageYOffset != 'undefined') {
-      //most browsers except IE before #9
-      return {
-        top: pageYOffset,
-        left: pageXOffset
-      };
-    } else {
-      var B = document.body; //IE 'quirks'
-
-      var D = document.documentElement; //IE with doctype
-
-      D = D.clientHeight ? D : B;
-      return {
-        top: D.scrollTop,
-        left: D.scrollLeft
-      };
-    }
-  } // refer: https://gist.github.com/aderaaij/89547e34617b95ac29d1
-
-  function getOffset(el) {
-    var rect = el.getBoundingClientRect();
-    var scroll = getScroll();
-    return {
-      x: rect.left + scroll.left,
-      y: rect.top + scroll.top
-    };
-  }
-  function offsetToPosition(el, of) {
+  function getOffsetParent(el) {
     var offsetParent = el.offsetParent;
 
     if (!offsetParent || offsetParent === document.body && getComputedStyle(document.body).position === 'static') {
       offsetParent = document.body.parentElement;
     }
 
+    return offsetParent;
+  } // get el current position. like jQuery.position
+  // the position is relative to offsetParent viewport left top. it is for set absolute position, absolute position is relative to offsetParent viewport left top.
+  // 相对于offsetParent可视区域左上角(el.offsetLeft或top包含父元素的滚动距离, 所以要减去). position一般用于设置绝对定位的情况, 而绝对定位就是以可视区域左上角为原点.
+
+  function getPosition(el) {
+    var offsetParent = getOffsetParent(el);
     var ps = {
       x: el.offsetLeft,
       y: el.offsetTop
@@ -188,7 +167,7 @@
     }
 
     return ps;
-  }
+  } // get position of a el if its offset is given. like jQuery.offset.
   function backupAttr(el, name) {
     var key = "original_".concat(name);
     el[key] = el.getAttribute(name);
@@ -758,7 +737,7 @@
       }
 
       return {
-        position: offsetToPosition(el, getOffset(el0)),
+        position: getPosition(el),
         el: el
       };
     }

@@ -1,9 +1,9 @@
 /*!
- * draggable-helper v1.0.17
+ * draggable-helper v1.0.18
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
-import { onDOM, offDOM, getElSize, backupAttr, restoreAttr, getOffset, offsetToPosition, addClass } from 'helper-js';
+import { offDOM, onDOM, getElSize, backupAttr, addClass, restoreAttr, getPosition } from 'helper-js';
 import DragEventService from 'drag-event-service';
 
 /***
@@ -199,7 +199,7 @@ function index (dragHandlerEl) {
     }
 
     return {
-      position: offsetToPosition(el, getOffset(el0)),
+      position: getPosition(el),
       el: el
     };
   }
