@@ -135,7 +135,7 @@ export default function (dragHandlerEl, opt = {}) {
     }
   }
   function drop(e) {
-    DragEventService.off(document, 'move', moving)
+    DragEventService.off(document, 'move', moving, {passive: false})
     DragEventService.off(window, 'end', drop)
     // drag executed if movedCount > 0
     if (store.movedCount > 0) {
