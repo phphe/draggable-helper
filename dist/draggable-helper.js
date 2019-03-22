@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.18
+ * draggable-helper v1.0.19
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -10,7 +10,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.3.0
+   * helper-js v1.3.7
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -230,13 +230,13 @@
       // IE 8 及更早 IE 版本
       el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
-  } // advance
+  }
   var URLHelper =
   /*#__PURE__*/
   function () {
     // protocol, hostname, port, pastname
     function URLHelper(baseUrl) {
-      var _this2 = this;
+      var _this3 = this;
 
       _classCallCheck(this, URLHelper);
 
@@ -258,7 +258,7 @@
       if (t[1]) {
         t[1].split('&').forEach(function (v) {
           var t2 = v.split('=');
-          _this2.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
+          _this3.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
         });
       }
     }
@@ -266,11 +266,11 @@
     _createClass(URLHelper, [{
       key: "getHref",
       value: function getHref() {
-        var _this3 = this;
+        var _this4 = this;
 
         var t = [this.baseUrl];
         var searchStr = Object.keys(this.search).map(function (k) {
-          return "".concat(k, "=").concat(encodeURIComponent(_this3.search[k]));
+          return "".concat(k, "=").concat(encodeURIComponent(_this4.search[k]));
         }).join('&');
 
         if (searchStr) {
@@ -309,10 +309,10 @@
     }, {
       key: "once",
       value: function once(name, handler) {
-        var _this4 = this;
+        var _this5 = this;
 
         var off = function off() {
-          _this4.off(name, wrappedHandler);
+          _this5.off(name, wrappedHandler);
         };
 
         var wrappedHandler = function wrappedHandler() {
@@ -348,35 +348,35 @@
       value: function emit(name) {
         // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
         var items = [];
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
 
         try {
-          for (var _iterator5 = this.eventStore[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var item = _step5.value;
+          for (var _iterator9 = this.eventStore[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+            var item = _step9.value;
 
             if (item.name === name) {
               items.push(item);
             }
           }
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _didIteratorError9 = true;
+          _iteratorError9 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+              _iterator9.return();
             }
           } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
+            if (_didIteratorError9) {
+              throw _iteratorError9;
             }
           }
         }
 
-        for (var _len7 = arguments.length, args = new Array(_len7 > 1 ? _len7 - 1 : 0), _key8 = 1; _key8 < _len7; _key8++) {
-          args[_key8 - 1] = arguments[_key8];
+        for (var _len8 = arguments.length, args = new Array(_len8 > 1 ? _len8 - 1 : 0), _key9 = 1; _key9 < _len8; _key9++) {
+          args[_key9 - 1] = arguments[_key9];
         }
 
         for (var _i9 = 0; _i9 < items.length; _i9++) {
@@ -395,12 +395,12 @@
     _inherits(CrossWindow, _EventProcessor);
 
     function CrossWindow() {
-      var _this5;
+      var _this6;
 
       _classCallCheck(this, CrossWindow);
 
-      _this5 = _possibleConstructorReturn(this, (CrossWindow.__proto__ || Object.getPrototypeOf(CrossWindow)).call(this));
-      Object.defineProperty(_assertThisInitialized(_this5), "storageName", {
+      _this6 = _possibleConstructorReturn(this, (CrossWindow.__proto__ || Object.getPrototypeOf(CrossWindow)).call(this));
+      Object.defineProperty(_assertThisInitialized(_this6), "storageName", {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -411,17 +411,17 @@
       if (!cls._listen) {
         cls._listen = true;
         onDOM(window, 'storage', function (ev) {
-          if (ev.key === _this5.storageName) {
+          if (ev.key === _this6.storageName) {
             var _get2;
 
             var event = JSON.parse(ev.newValue);
 
-            (_get2 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this5))).call.apply(_get2, [_this5, event.name].concat(_toConsumableArray(event.args)));
+            (_get2 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this6))).call.apply(_get2, [_this6, event.name].concat(_toConsumableArray(event.args)));
           }
         });
       }
 
-      return _this5;
+      return _this6;
     }
 
     _createClass(CrossWindow, [{
@@ -429,8 +429,8 @@
       value: function emit(name) {
         var _get3;
 
-        for (var _len8 = arguments.length, args = new Array(_len8 > 1 ? _len8 - 1 : 0), _key9 = 1; _key9 < _len8; _key9++) {
-          args[_key9 - 1] = arguments[_key9];
+        for (var _len9 = arguments.length, args = new Array(_len9 > 1 ? _len9 - 1 : 0), _key10 = 1; _key10 < _len9; _key10++) {
+          args[_key10 - 1] = arguments[_key10];
         }
 
         (_get3 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
@@ -705,7 +705,9 @@
     }
 
     function drop(e) {
-      index.off(document, 'move', moving);
+      index.off(document, 'move', moving, {
+        passive: false
+      });
       index.off(window, 'end', drop); // drag executed if movedCount > 0
 
       if (store$$1.movedCount > 0) {

@@ -1,6 +1,6 @@
 {
   "name": "draggable-helper",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.es.js",

@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.18
+ * draggable-helper v1.0.19
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -167,7 +167,9 @@ function index (dragHandlerEl) {
   }
 
   function drop(e) {
-    DragEventService.off(document, 'move', moving);
+    DragEventService.off(document, 'move', moving, {
+      passive: false
+    });
     DragEventService.off(window, 'end', drop); // drag executed if movedCount > 0
 
     if (store.movedCount > 0) {
