@@ -3,7 +3,7 @@ import DragEventService from 'drag-event-service'
 
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
-opt.drag(e, opt, store)
+opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
 [Object] opt.style || opt.getStyle(opt) set style of moving el style
 [Boolean] opt.clone
 opt.draggingClass, default dragging
@@ -11,6 +11,8 @@ opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
+[Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
+
 add other prop into opt, you can get opt in callback
 store{
   el
@@ -36,6 +38,9 @@ draggable(this.$el, {
   },
 })
 ***/
+const IGNORE_TRIGGERS = ['INPUT','TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION']
+const UNDRAGGABLE_CLASS = 'undraggable'
+
 export default function (dragHandlerEl, opt = {}) {
   if (opt.minTranslate == null) {
     opt.minTranslate = 10
@@ -52,10 +57,33 @@ export default function (dragHandlerEl, opt = {}) {
   DragEventService.on(dragHandlerEl, 'start', start)
   return destroy
   function start(e, mouse) {
+    // detect draggable =================================
+    if (opt.triggerBySelf && e.target !== dragHandlerEl) {
+      return
+    }
+    if (IGNORE_TRIGGERS.includes(e.target.tagName)) {
+      return
+    }
+    if (hp.hasClass(e.target, UNDRAGGABLE_CLASS)) {
+      return
+    }
+    const isParentUndraggable = hp.findParent(e.target, (el) => {
+      if (hp.hasClass(el, UNDRAGGABLE_CLASS)) {
+        return true
+      }
+      if (el === dragHandlerEl) {
+        return 'break'
+      }
+    })
+    if (isParentUndraggable) {
+      return
+    }
+    // detect draggable end =================================
     e.preventDefault()
     store.mouse = {
       x: mouse.x,
       y: mouse.y,
+      startEvent: e,
     }
     store.initialMouse = {...store.mouse}
     /*
@@ -69,7 +97,7 @@ export default function (dragHandlerEl, opt = {}) {
     const {el, position} = resolveDragedElAndInitialPosition()
     store.el = el
     store.initialPosition = {...position}
-    const r = opt.drag && opt.drag(e, opt, store)
+    const r = opt.drag && opt.drag(startEvent, e, opt, store)
     if (r === false) {
       return false
     }

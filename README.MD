@@ -1,6 +1,6 @@
 # draggable-helper
 A js library to simplify your drag and drop functions. Start with a element, it will expose hooks(drag, moving, drop). You can stop drag, moving and drop by conditions. You can set minTranslate. Its code is easy, you can check source code.
-# features
+## features
 * support touch simplify(single touch)
 * to prevent page scrolling when touch
 * expose hooks(drag, moving, drop)
@@ -11,11 +11,12 @@ A js library to simplify your drag and drop functions. Start with a element, it 
 * move the element or move a cloned one
 * check if event is triggered by mouse left button
 * to prevent text be selected when dragging
-# install
+
+## install
 ```sh
 npm install draggable-helper
 ```
-# usage & api
+## usage & api
 ```js
 import draggableHelper from 'draggable-helper'
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
@@ -28,6 +29,7 @@ opt = {
     // [Boolean] clone, move the element or move a cloned one
     // minTranslate default 10, unit px
     // getEl(dragHandlerEl, opt), optional, get the el that will be moved. default is dragHandlerEl
+    // [Boolean] triggerBySelf if trigger only by self, can not be triggered by children
     // hook, when drag start
     drag(event, opt, store){
       // return false to prevent drag
@@ -50,5 +52,14 @@ store = {
   movedCount // start from 0
 }
 ```
-# demo
+## prevent drag
+In follow case, drag event will be prevented.
+* Event target element is follow
+```js
+const IGNORE_TRIGGERS = ['INPUT','TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION']
+```
+* Event target has class `undraggable` or its ancestor till dragHandlerEl has.
+* opt.drag return false
+
+## demo
 [jsfiddle](https://jsfiddle.net/phphe/t694kpua/19/)

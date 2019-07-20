@@ -1,8 +1,3 @@
-/*!
- * draggable-helper v1.0.21
- * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
- * Released under the MIT License.
- */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -10,7 +5,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.3.9
+   * helper-js v1.3.12
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -203,6 +198,23 @@
 
     return ps;
   } // get position of a el if its offset is given. like jQuery.offset.
+  function findParent(el, callback) {
+    return doFindParent(el, callback);
+
+    function doFindParent(el, callback) {
+      if (el.parentElement) {
+        var r = callback(el.parentElement);
+
+        if (r === 'break') {
+          return;
+        } else if (r) {
+          return el.parentElement;
+        } else {
+          return doFindParent(el.parentElement, callback);
+        }
+      }
+    }
+  }
   function backupAttr(el, name) {
     var key = "original_".concat(name);
     el[key] = el.getAttribute(name);
@@ -975,7 +987,7 @@
 
   /***
   const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
-  opt.drag(e, opt, store)
+  opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
   [Object] opt.style || opt.getStyle(opt) set style of moving el style
   [Boolean] opt.clone
   opt.draggingClass, default dragging
@@ -983,6 +995,8 @@
   opt.drop(e, opt, store)
   opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
   opt.minTranslate default 10, unit px
+  [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
+
   add other prop into opt, you can get opt in callback
   store{
     el
@@ -1009,6 +1023,8 @@
   })
   ***/
 
+  var IGNORE_TRIGGERS = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION'];
+  var UNDRAGGABLE_CLASS = 'undraggable';
   function index$1 (dragHandlerEl) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -1032,10 +1048,39 @@
     return destroy;
 
     function start(e, mouse) {
+      // detect draggable =================================
+      if (opt.triggerBySelf && e.target !== dragHandlerEl) {
+        return;
+      }
+
+      if (IGNORE_TRIGGERS.includes(e.target.tagName)) {
+        return;
+      }
+
+      if (hasClass(e.target, UNDRAGGABLE_CLASS)) {
+        return;
+      }
+
+      var isParentUndraggable = findParent(e.target, function (el) {
+        if (hasClass(el, UNDRAGGABLE_CLASS)) {
+          return true;
+        }
+
+        if (el === dragHandlerEl) {
+          return 'break';
+        }
+      });
+
+      if (isParentUndraggable) {
+        return;
+      } // detect draggable end =================================
+
+
       e.preventDefault();
       store$$1.mouse = {
         x: mouse.x,
-        y: mouse.y
+        y: mouse.y,
+        startEvent: e
       };
       store$$1.initialMouse = Object.assign({}, store$$1.mouse);
       /*
@@ -1058,7 +1103,7 @@
 
       store$$1.el = el;
       store$$1.initialPosition = Object.assign({}, position);
-      var r = opt.drag && opt.drag(e, opt, store$$1);
+      var r = opt.drag && opt.drag(startEvent, e, opt, store$$1);
 
       if (r === false) {
         return false;

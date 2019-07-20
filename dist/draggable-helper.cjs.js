@@ -1,8 +1,3 @@
-/*!
- * draggable-helper v1.0.21
- * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
- * Released under the MIT License.
- */
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -12,7 +7,7 @@ var DragEventService = _interopDefault(require('drag-event-service'));
 
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
-opt.drag(e, opt, store)
+opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
 [Object] opt.style || opt.getStyle(opt) set style of moving el style
 [Boolean] opt.clone
 opt.draggingClass, default dragging
@@ -20,6 +15,8 @@ opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
+[Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
+
 add other prop into opt, you can get opt in callback
 store{
   el
@@ -46,6 +43,8 @@ draggable(this.$el, {
 })
 ***/
 
+var IGNORE_TRIGGERS = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION'];
+var UNDRAGGABLE_CLASS = 'undraggable';
 function index (dragHandlerEl) {
   var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -69,10 +68,39 @@ function index (dragHandlerEl) {
   return destroy;
 
   function start(e, mouse) {
+    // detect draggable =================================
+    if (opt.triggerBySelf && e.target !== dragHandlerEl) {
+      return;
+    }
+
+    if (IGNORE_TRIGGERS.includes(e.target.tagName)) {
+      return;
+    }
+
+    if (hp.hasClass(e.target, UNDRAGGABLE_CLASS)) {
+      return;
+    }
+
+    var isParentUndraggable = hp.findParent(e.target, function (el) {
+      if (hp.hasClass(el, UNDRAGGABLE_CLASS)) {
+        return true;
+      }
+
+      if (el === dragHandlerEl) {
+        return 'break';
+      }
+    });
+
+    if (isParentUndraggable) {
+      return;
+    } // detect draggable end =================================
+
+
     e.preventDefault();
     store.mouse = {
       x: mouse.x,
-      y: mouse.y
+      y: mouse.y,
+      startEvent: e
     };
     store.initialMouse = Object.assign({}, store.mouse);
     /*
@@ -95,7 +123,7 @@ function index (dragHandlerEl) {
 
     store.el = el;
     store.initialPosition = Object.assign({}, position);
-    var r = opt.drag && opt.drag(e, opt, store);
+    var r = opt.drag && opt.drag(startEvent, e, opt, store);
 
     if (r === false) {
       return false;
