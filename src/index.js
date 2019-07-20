@@ -11,7 +11,7 @@ opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
-add other prop into opt, you get opt in callback
+add other prop into opt, you can get opt in callback
 store{
   el
   initialMouse
@@ -43,24 +43,26 @@ export default function (dragHandlerEl, opt = {}) {
   let store = getPureStore()
   const destroy = () => {
     DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler)
-    hp.offDOM(dragHandlerEl, 'selectstart', preventSelect)
     delete dragHandlerEl._draggbleEventHandler
   }
   if (dragHandlerEl._draggbleEventHandler) {
     destroy()
   }
   dragHandlerEl._draggbleEventHandler = start
-  DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler)
-  hp.onDOM(dragHandlerEl, 'selectstart', preventSelect)
+  DragEventService.on(dragHandlerEl, 'start', start)
   return destroy
   function start(e, mouse) {
-    // e.stopPropagation()
+    e.preventDefault()
     store.mouse = {
       x: mouse.x,
       y: mouse.y,
     }
     store.initialMouse = {...store.mouse}
-    DragEventService.on(document, 'move', moving, {passive: false}) // passive: false is for touchmove event
+    /*
+    must set passive false for touch, else the follow error occurs in Chrome:
+    Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
+     */
+    DragEventService.on(document, 'move', moving, {touchArgs: [{passive: false}]})
     DragEventService.on(window, 'end', drop)
   }
   function drag(e) {
@@ -92,6 +94,7 @@ export default function (dragHandlerEl, opt = {}) {
     hp.addClass(el, opt.draggingClass)
   }
   function moving(e, mouse) {
+    e.preventDefault()
     store.mouse = {
       x: mouse.x,
       y: mouse.y,
@@ -115,9 +118,6 @@ export default function (dragHandlerEl, opt = {}) {
       }
     }
     // move started
-    // e.preventDefault() to prevent text selection and page scrolling when touch
-    e.preventDefault()
-
     if (canMove && opt.moving) {
       if (opt.moving(e, opt, store) === false) {
         canMove = false
@@ -135,7 +135,7 @@ export default function (dragHandlerEl, opt = {}) {
     }
   }
   function drop(e) {
-    DragEventService.off(document, 'move', moving, {passive: false})
+    DragEventService.off(document, 'move', moving, {touchArgs: [{passive: false}]})
     DragEventService.off(window, 'end', drop)
     // drag executed if movedCount > 0
     if (store.movedCount > 0) {
@@ -160,14 +160,11 @@ export default function (dragHandlerEl, opt = {}) {
       el0.parentElement.appendChild(el)
     }
     return {
-      position: hp.getPosition(el),
+      position: hp.getPosition(el0),
       el,
     }
   }
   function getPureStore() {
     return {movedCount: 0}
-  }
-  function preventSelect(e) {
-    e.preventDefault()
   }
 }
