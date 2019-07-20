@@ -1,3 +1,8 @@
+/*!
+ * draggable-helper v1.0.22
+ * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
+ * Released under the MIT License.
+ */
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
