@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.0.20
+ * draggable-helper v1.0.21
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -10,7 +10,7 @@
 }(this, (function () { 'use strict';
 
   /*!
-   * helper-js v1.3.7
+   * helper-js v1.3.9
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -37,29 +37,19 @@
     return Constructor;
   }
 
-  function _get(object, property, receiver) {
-    if (object === null) object = Function.prototype;
-    var desc = Object.getOwnPropertyDescriptor(object, property);
-
-    if (desc === undefined) {
-      var parent = Object.getPrototypeOf(object);
-
-      if (parent === null) {
-        return undefined;
-      } else {
-        return _get(parent, property, receiver);
-      }
-    } else if ("value" in desc) {
-      return desc.value;
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
     } else {
-      var getter = desc.get;
-
-      if (getter === undefined) {
-        return undefined;
-      }
-
-      return getter.call(receiver);
+      obj[key] = value;
     }
+
+    return obj;
   }
 
   function _inherits(subClass, superClass) {
@@ -70,12 +60,27 @@
     subClass.prototype = Object.create(superClass && superClass.prototype, {
       constructor: {
         value: subClass,
-        enumerable: false,
         writable: true,
         configurable: true
       }
     });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    if (superClass) _setPrototypeOf(subClass, superClass);
+  }
+
+  function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf(o);
+  }
+
+  function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf(o, p);
   }
 
   function _assertThisInitialized(self) {
@@ -92,6 +97,36 @@
     }
 
     return _assertThisInitialized(self);
+  }
+
+  function _superPropBase(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get = Reflect.get;
+    } else {
+      _get = function _get(target, property, receiver) {
+        var base = _superPropBase(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get(target, property, receiver || target);
   }
 
   function _toConsumableArray(arr) {
@@ -218,19 +253,6 @@
       el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   }
-  function offDOM(el, name, handler) {
-    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
-      args[_key7 - 3] = arguments[_key7];
-    }
-
-    if (el.removeEventListener) {
-      // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.removeEventListener.apply(el, [name, handler].concat(args));
-    } else if (el.detachEvent) {
-      // IE 8 及更早 IE 版本
-      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
-    }
-  }
   var URLHelper =
   /*#__PURE__*/
   function () {
@@ -240,18 +262,10 @@
 
       _classCallCheck(this, URLHelper);
 
-      Object.defineProperty(this, "baseUrl", {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: ''
-      });
-      Object.defineProperty(this, "search", {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: {}
-      });
+      _defineProperty(this, "baseUrl", '');
+
+      _defineProperty(this, "search", {});
+
       var t = decodeURI(baseUrl).split('?');
       this.baseUrl = t[0];
 
@@ -290,12 +304,7 @@
     function EventProcessor() {
       _classCallCheck(this, EventProcessor);
 
-      Object.defineProperty(this, "eventStore", {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: []
-      });
+      _defineProperty(this, "eventStore", []);
     }
 
     _createClass(EventProcessor, [{
@@ -338,8 +347,8 @@
           }
         }
 
-        for (var _i8 = 0; _i8 < indexes.length; _i8++) {
-          var index = indexes[_i8];
+        for (var _i8 = 0, _indexes = indexes; _i8 < _indexes.length; _i8++) {
+          var index = _indexes[_i8];
           this.eventStore.splice(index, 1);
         }
       }
@@ -379,8 +388,8 @@
           args[_key9 - 1] = arguments[_key9];
         }
 
-        for (var _i9 = 0; _i9 < items.length; _i9++) {
-          var _item = items[_i9];
+        for (var _i9 = 0, _items = items; _i9 < _items.length; _i9++) {
+          var _item = _items[_i9];
 
           _item.handler.apply(_item, args);
         }
@@ -399,13 +408,10 @@
 
       _classCallCheck(this, CrossWindow);
 
-      _this6 = _possibleConstructorReturn(this, (CrossWindow.__proto__ || Object.getPrototypeOf(CrossWindow)).call(this));
-      Object.defineProperty(_assertThisInitialized(_this6), "storageName", {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: '_crossWindow'
-      });
+      _this6 = _possibleConstructorReturn(this, _getPrototypeOf(CrossWindow).call(this));
+
+      _defineProperty(_assertThisInitialized(_this6), "storageName", '_crossWindow');
+
       var cls = CrossWindow;
 
       if (!cls._listen) {
@@ -416,7 +422,7 @@
 
             var event = JSON.parse(ev.newValue);
 
-            (_get2 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this6))).call.apply(_get2, [_this6, event.name].concat(_toConsumableArray(event.args)));
+            (_get2 = _get(_getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this6))).call.apply(_get2, [_assertThisInitialized(_this6), event.name].concat(_toConsumableArray(event.args)));
           }
         });
       }
@@ -433,7 +439,7 @@
           args[_key10 - 1] = arguments[_key10];
         }
 
-        (_get3 = _get(CrossWindow.prototype.__proto__ || Object.getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
+        (_get3 = _get(_getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
 
         glb().localStorage.setItem(this.storageName, JSON.stringify({
           name: name,
@@ -449,12 +455,419 @@
   }(EventProcessor);
 
   /*!
-   * drag-event-service v0.0.6
+   * helper-js v1.3.9
    * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
 
-  // support desktop and mobile
+  function _classCallCheck$1(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties$1(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass$1(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties$1(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties$1(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _defineProperty$1(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _inherits$1(subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function");
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) _setPrototypeOf$1(subClass, superClass);
+  }
+
+  function _getPrototypeOf$1(o) {
+    _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+      return o.__proto__ || Object.getPrototypeOf(o);
+    };
+    return _getPrototypeOf$1(o);
+  }
+
+  function _setPrototypeOf$1(o, p) {
+    _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+    return _setPrototypeOf$1(o, p);
+  }
+
+  function _assertThisInitialized$1(self) {
+    if (self === void 0) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return self;
+  }
+
+  function _possibleConstructorReturn$1(self, call) {
+    if (call && (typeof call === "object" || typeof call === "function")) {
+      return call;
+    }
+
+    return _assertThisInitialized$1(self);
+  }
+
+  function _superPropBase$1(object, property) {
+    while (!Object.prototype.hasOwnProperty.call(object, property)) {
+      object = _getPrototypeOf$1(object);
+      if (object === null) break;
+    }
+
+    return object;
+  }
+
+  function _get$1(target, property, receiver) {
+    if (typeof Reflect !== "undefined" && Reflect.get) {
+      _get$1 = Reflect.get;
+    } else {
+      _get$1 = function _get(target, property, receiver) {
+        var base = _superPropBase$1(target, property);
+
+        if (!base) return;
+        var desc = Object.getOwnPropertyDescriptor(base, property);
+
+        if (desc.get) {
+          return desc.get.call(receiver);
+        }
+
+        return desc.value;
+      };
+    }
+
+    return _get$1(target, property, receiver || target);
+  }
+
+  function _toConsumableArray$1(arr) {
+    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _nonIterableSpread$1();
+  }
+
+  function _arrayWithoutHoles$1(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
+  function _iterableToArray$1(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _nonIterableSpread$1() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  // local store
+  var store$1 = {}; // get global
+
+  function glb$1() {
+    if (store$1.glb) {
+      return store$1.glb;
+    } else {
+      // resolve global
+      var t;
+
+      try {
+        t = global;
+      } catch (e) {
+        t = window;
+      }
+
+      store$1.glb = t;
+      return t;
+    }
+  } // is 各种判断
+
+  function onDOM$1(el, name, handler) {
+    for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
+      args[_key6 - 3] = arguments[_key6];
+    }
+
+    if (el.addEventListener) {
+      // 所有主流浏览器，除了 IE 8 及更早 IE版本
+      el.addEventListener.apply(el, [name, handler].concat(args));
+    } else if (el.attachEvent) {
+      // IE 8 及更早 IE 版本
+      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
+    }
+  }
+  function offDOM$1(el, name, handler) {
+    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
+      args[_key7 - 3] = arguments[_key7];
+    }
+
+    if (el.removeEventListener) {
+      // 所有主流浏览器，除了 IE 8 及更早 IE版本
+      el.removeEventListener.apply(el, [name, handler].concat(args));
+    } else if (el.detachEvent) {
+      // IE 8 及更早 IE 版本
+      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
+    }
+  }
+  var URLHelper$1 =
+  /*#__PURE__*/
+  function () {
+    // protocol, hostname, port, pastname
+    function URLHelper(baseUrl) {
+      var _this3 = this;
+
+      _classCallCheck$1(this, URLHelper);
+
+      _defineProperty$1(this, "baseUrl", '');
+
+      _defineProperty$1(this, "search", {});
+
+      var t = decodeURI(baseUrl).split('?');
+      this.baseUrl = t[0];
+
+      if (t[1]) {
+        t[1].split('&').forEach(function (v) {
+          var t2 = v.split('=');
+          _this3.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
+        });
+      }
+    }
+
+    _createClass$1(URLHelper, [{
+      key: "getHref",
+      value: function getHref() {
+        var _this4 = this;
+
+        var t = [this.baseUrl];
+        var searchStr = Object.keys(this.search).map(function (k) {
+          return "".concat(k, "=").concat(encodeURIComponent(_this4.search[k]));
+        }).join('&');
+
+        if (searchStr) {
+          t.push(searchStr);
+        }
+
+        return t.join('?');
+      }
+    }]);
+
+    return URLHelper;
+  }(); // 解析函数参数, 帮助重载
+
+  var EventProcessor$1 =
+  /*#__PURE__*/
+  function () {
+    function EventProcessor() {
+      _classCallCheck$1(this, EventProcessor);
+
+      _defineProperty$1(this, "eventStore", []);
+    }
+
+    _createClass$1(EventProcessor, [{
+      key: "on",
+      value: function on(name, handler) {
+        this.eventStore.push({
+          name: name,
+          handler: handler
+        });
+      }
+    }, {
+      key: "once",
+      value: function once(name, handler) {
+        var _this5 = this;
+
+        var off = function off() {
+          _this5.off(name, wrappedHandler);
+        };
+
+        var wrappedHandler = function wrappedHandler() {
+          handler();
+          off();
+        };
+
+        this.on(name, wrappedHandler);
+        return off;
+      }
+    }, {
+      key: "off",
+      value: function off(name, handler) {
+        var indexes = []; // to remove indexes; reverse; 倒序的
+
+        var len = this.eventStore.length;
+
+        for (var i = 0; i < len; i++) {
+          var item = this.eventStore[i];
+
+          if (item.name === name && item.handler === handler) {
+            indexes.unshift(i);
+          }
+        }
+
+        for (var _i8 = 0, _indexes = indexes; _i8 < _indexes.length; _i8++) {
+          var index = _indexes[_i8];
+          this.eventStore.splice(index, 1);
+        }
+      }
+    }, {
+      key: "emit",
+      value: function emit(name) {
+        // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
+        var items = [];
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
+
+        try {
+          for (var _iterator9 = this.eventStore[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+            var item = _step9.value;
+
+            if (item.name === name) {
+              items.push(item);
+            }
+          }
+        } catch (err) {
+          _didIteratorError9 = true;
+          _iteratorError9 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+              _iterator9.return();
+            }
+          } finally {
+            if (_didIteratorError9) {
+              throw _iteratorError9;
+            }
+          }
+        }
+
+        for (var _len8 = arguments.length, args = new Array(_len8 > 1 ? _len8 - 1 : 0), _key9 = 1; _key9 < _len8; _key9++) {
+          args[_key9 - 1] = arguments[_key9];
+        }
+
+        for (var _i9 = 0, _items = items; _i9 < _items.length; _i9++) {
+          var _item = _items[_i9];
+
+          _item.handler.apply(_item, args);
+        }
+      }
+    }]);
+
+    return EventProcessor;
+  }();
+  var CrossWindow$1 =
+  /*#__PURE__*/
+  function (_EventProcessor) {
+    _inherits$1(CrossWindow, _EventProcessor);
+
+    function CrossWindow() {
+      var _this6;
+
+      _classCallCheck$1(this, CrossWindow);
+
+      _this6 = _possibleConstructorReturn$1(this, _getPrototypeOf$1(CrossWindow).call(this));
+
+      _defineProperty$1(_assertThisInitialized$1(_this6), "storageName", '_crossWindow');
+
+      var cls = CrossWindow;
+
+      if (!cls._listen) {
+        cls._listen = true;
+        onDOM$1(window, 'storage', function (ev) {
+          if (ev.key === _this6.storageName) {
+            var _get2;
+
+            var event = JSON.parse(ev.newValue);
+
+            (_get2 = _get$1(_getPrototypeOf$1(CrossWindow.prototype), "emit", _assertThisInitialized$1(_this6))).call.apply(_get2, [_assertThisInitialized$1(_this6), event.name].concat(_toConsumableArray$1(event.args)));
+          }
+        });
+      }
+
+      return _this6;
+    }
+
+    _createClass$1(CrossWindow, [{
+      key: "emit",
+      value: function emit(name) {
+        var _get3;
+
+        for (var _len9 = arguments.length, args = new Array(_len9 > 1 ? _len9 - 1 : 0), _key10 = 1; _key10 < _len9; _key10++) {
+          args[_key10 - 1] = arguments[_key10];
+        }
+
+        (_get3 = _get$1(_getPrototypeOf$1(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
+
+        glb$1().localStorage.setItem(this.storageName, JSON.stringify({
+          name: name,
+          args: args,
+          // use random make storage event triggered every time
+          // 加入随机保证触发storage事件
+          random: Math.random()
+        }));
+      }
+    }]);
+
+    return CrossWindow;
+  }(EventProcessor$1);
+
+  /*!
+   * drag-event-service v1.0.0
+   * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
+
+  function _toConsumableArray$2(arr) {
+    return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _nonIterableSpread$2();
+  }
+
+  function _arrayWithoutHoles$2(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
+  function _iterableToArray$2(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _nonIterableSpread$2() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
   var events = {
     start: ['mousedown', 'touchstart'],
     move: ['mousemove', 'touchmove'],
@@ -471,10 +884,15 @@
 
       return el._wrapperStore;
     },
-    on: function on(el, name, handler) {
+    on: function on(el, name, handler, options) {
       var _hp$onDOM, _hp$onDOM2;
 
-      var store$$1 = this._getStore(el);
+      var _resolveOptions = resolveOptions(options),
+          args = _resolveOptions.args,
+          mouseArgs = _resolveOptions.mouseArgs,
+          touchArgs = _resolveOptions.touchArgs;
+
+      var store = this._getStore(el);
 
       var ts = this;
 
@@ -504,45 +922,56 @@
         return handler.call(this, e, mouse);
       };
 
-      store$$1.push({
+      store.push({
         handler: handler,
         wrapper: wrapper
       }); // follow format will cause big bundle size
       // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
       // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-      for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-        args[_key - 3] = arguments[_key];
-      }
+      (_hp$onDOM = onDOM$1).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(mouseArgs))));
 
-      (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat(args));
-
-      (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat(args));
+      (_hp$onDOM2 = onDOM$1).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(touchArgs))));
     },
-    off: function off(el, name, handler) {
-      var store$$1 = this._getStore(el);
+    off: function off(el, name, handler, options) {
+      var _resolveOptions2 = resolveOptions(options),
+          args = _resolveOptions2.args,
+          mouseArgs = _resolveOptions2.mouseArgs;
 
-      for (var _len2 = arguments.length, args = new Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
-        args[_key2 - 3] = arguments[_key2];
-      }
+      var store = this._getStore(el);
 
-      for (var i = store$$1.length - 1; i >= 0; i--) {
-        var _store$i = store$$1[i],
+      for (var i = store.length - 1; i >= 0; i--) {
+        var _store$i = store[i],
             handler2 = _store$i.handler,
             wrapper = _store$i.wrapper;
 
         if (handler === handler2) {
           var _hp$offDOM, _hp$offDOM2;
 
-          (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat(args));
+          (_hp$offDOM = offDOM$1).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(mouseArgs))));
 
-          (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat(args));
+          (_hp$offDOM2 = offDOM$1).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(mouseArgs))));
 
-          store$$1.splice(i, 1);
+          store.splice(i, 1);
         }
       }
     }
   };
+
+  function resolveOptions(options) {
+    if (!options) {
+      options = {};
+    }
+
+    var args = options.args || [];
+    var mouseArgs = options.mouseArgs || [];
+    var touchArgs = options.touchArgs || [];
+    return {
+      args: args,
+      mouseArgs: mouseArgs,
+      touchArgs: touchArgs
+    };
+  }
 
   /***
   const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
@@ -554,7 +983,7 @@
   opt.drop(e, opt, store)
   opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
   opt.minTranslate default 10, unit px
-  add other prop into opt, you get opt in callback
+  add other prop into opt, you can get opt in callback
   store{
     el
     initialMouse
@@ -591,7 +1020,6 @@
 
     var destroy = function destroy() {
       index.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
-      offDOM(dragHandlerEl, 'selectstart', preventSelect);
       delete dragHandlerEl._draggbleEventHandler;
     };
 
@@ -600,21 +1028,26 @@
     }
 
     dragHandlerEl._draggbleEventHandler = start;
-    index.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
-    onDOM(dragHandlerEl, 'selectstart', preventSelect);
+    index.on(dragHandlerEl, 'start', start);
     return destroy;
 
     function start(e, mouse) {
-      // e.stopPropagation()
+      e.preventDefault();
       store$$1.mouse = {
         x: mouse.x,
         y: mouse.y
       };
       store$$1.initialMouse = Object.assign({}, store$$1.mouse);
-      index.on(document, 'move', moving, {
-        passive: false
-      }); // passive: false is for touchmove event
+      /*
+      must set passive false for touch, else the follow error occurs in Chrome:
+      Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
+       */
 
+      index.on(document, 'move', moving, {
+        touchArgs: [{
+          passive: false
+        }]
+      });
       index.on(window, 'end', drop);
     }
 
@@ -654,6 +1087,7 @@
     }
 
     function moving(e, mouse) {
+      e.preventDefault();
       store$$1.mouse = {
         x: mouse.x,
         y: mouse.y
@@ -680,10 +1114,7 @@
           canMove = false;
         }
       } // move started
-      // e.preventDefault() to prevent text selection and page scrolling when touch
 
-
-      e.preventDefault();
 
       if (canMove && opt.moving) {
         if (opt.moving(e, opt, store$$1) === false) {
@@ -706,7 +1137,9 @@
 
     function drop(e) {
       index.off(document, 'move', moving, {
-        passive: false
+        touchArgs: [{
+          passive: false
+        }]
       });
       index.off(window, 'end', drop); // drag executed if movedCount > 0
 
@@ -739,7 +1172,7 @@
       }
 
       return {
-        position: getPosition(el),
+        position: getPosition(el0),
         el: el
       };
     }
@@ -748,10 +1181,6 @@
       return {
         movedCount: 0
       };
-    }
-
-    function preventSelect(e) {
-      e.preventDefault();
     }
   }
 

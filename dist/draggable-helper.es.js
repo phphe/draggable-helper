@@ -1,9 +1,9 @@
 /*!
- * draggable-helper v1.0.20
+ * draggable-helper v1.0.21
  * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
-import { offDOM, onDOM, getElSize, backupAttr, addClass, restoreAttr, getPosition } from 'helper-js';
+import { getElSize, backupAttr, addClass, restoreAttr, getPosition } from 'helper-js';
 import DragEventService from 'drag-event-service';
 
 /***
@@ -16,7 +16,7 @@ opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
-add other prop into opt, you get opt in callback
+add other prop into opt, you can get opt in callback
 store{
   el
   initialMouse
@@ -53,7 +53,6 @@ function index (dragHandlerEl) {
 
   var destroy = function destroy() {
     DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
-    offDOM(dragHandlerEl, 'selectstart', preventSelect);
     delete dragHandlerEl._draggbleEventHandler;
   };
 
@@ -62,21 +61,26 @@ function index (dragHandlerEl) {
   }
 
   dragHandlerEl._draggbleEventHandler = start;
-  DragEventService.on(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
-  onDOM(dragHandlerEl, 'selectstart', preventSelect);
+  DragEventService.on(dragHandlerEl, 'start', start);
   return destroy;
 
   function start(e, mouse) {
-    // e.stopPropagation()
+    e.preventDefault();
     store.mouse = {
       x: mouse.x,
       y: mouse.y
     };
     store.initialMouse = Object.assign({}, store.mouse);
-    DragEventService.on(document, 'move', moving, {
-      passive: false
-    }); // passive: false is for touchmove event
+    /*
+    must set passive false for touch, else the follow error occurs in Chrome:
+    Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
+     */
 
+    DragEventService.on(document, 'move', moving, {
+      touchArgs: [{
+        passive: false
+      }]
+    });
     DragEventService.on(window, 'end', drop);
   }
 
@@ -116,6 +120,7 @@ function index (dragHandlerEl) {
   }
 
   function moving(e, mouse) {
+    e.preventDefault();
     store.mouse = {
       x: mouse.x,
       y: mouse.y
@@ -142,10 +147,7 @@ function index (dragHandlerEl) {
         canMove = false;
       }
     } // move started
-    // e.preventDefault() to prevent text selection and page scrolling when touch
 
-
-    e.preventDefault();
 
     if (canMove && opt.moving) {
       if (opt.moving(e, opt, store) === false) {
@@ -168,7 +170,9 @@ function index (dragHandlerEl) {
 
   function drop(e) {
     DragEventService.off(document, 'move', moving, {
-      passive: false
+      touchArgs: [{
+        passive: false
+      }]
     });
     DragEventService.off(window, 'end', drop); // drag executed if movedCount > 0
 
@@ -201,7 +205,7 @@ function index (dragHandlerEl) {
     }
 
     return {
-      position: getPosition(el),
+      position: getPosition(el0),
       el: el
     };
   }
@@ -210,10 +214,6 @@ function index (dragHandlerEl) {
     return {
       movedCount: 0
     };
-  }
-
-  function preventSelect(e) {
-    e.preventDefault();
   }
 }
 
