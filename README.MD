@@ -45,7 +45,7 @@ opt = {
   drop: (moveEvent, opt, store) => {
   },
 }
-// store
+// store. life cycle: drag-end
 store = {
   el // the moving el
   initialMouse
