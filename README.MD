@@ -47,7 +47,7 @@ opt = {
 }
 // store
 store = {
-  el
+  el // the moving el
   initialMouse
   initialOffset
   mouse
