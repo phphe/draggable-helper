@@ -49,7 +49,7 @@ opt = {
 store = {
   el // the moving el
   initialMouse
-  initialOffset
+  initialPosition // relative to offsetParent
   mouse
   move
   movedCount // start from 0
