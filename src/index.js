@@ -4,12 +4,12 @@ import DragEventService from 'drag-event-service'
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
-[Object] opt.style || opt.getStyle(opt) set style of moving el style
+[Object] opt.style || opt.getStyle(opt, store) set style of moving el style
 [Boolean] opt.clone
 opt.draggingClass, default dragging
 opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
-opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
+opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
 [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
@@ -97,7 +97,7 @@ export default function (dragHandlerEl, opt = {}) {
     const {el, position} = resolveDragedElAndInitialPosition()
     store.el = el
     store.initialPosition = {...position}
-    const r = opt.drag && opt.drag(startEvent, e, opt, store)
+    const r = opt.drag && opt.drag(store.mouse.startEvent, e, opt, store)
     if (r === false) {
       return false
     }
@@ -111,7 +111,7 @@ export default function (dragHandlerEl, opt = {}) {
       position: 'absolute',
       left: position.x + 'px',
       top: position.y + 'px',
-      ...(opt.style || opt.getStyle && opt.getStyle(opt) || {}),
+      ...(opt.style || opt.getStyle && opt.getStyle(opt, store) || {}),
     }
     hp.backupAttr(el, 'style')
     for (const key in style) {
@@ -180,7 +180,7 @@ export default function (dragHandlerEl, opt = {}) {
     store = getPureStore()
   }
   function resolveDragedElAndInitialPosition() {
-    const el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt) : dragHandlerEl
+    const el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt, store) : dragHandlerEl
     let el = el0
     if (opt.clone) {
       store.triggerEl = el0
