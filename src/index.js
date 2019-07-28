@@ -42,8 +42,10 @@ const IGNORE_TRIGGERS = ['INPUT','TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION']
 const UNDRAGGABLE_CLASS = 'undraggable'
 
 export default function (dragHandlerEl, opt = {}) {
-  if (opt.minTranslate == null) {
-    opt.minTranslate = 10
+  opt = {
+    minTranslate: 10,
+    draggingClass: 'dragging',
+    ...opt,
   }
   let store = getPureStore()
   const destroy = () => {
