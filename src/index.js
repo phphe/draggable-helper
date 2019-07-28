@@ -47,7 +47,7 @@ export default function (dragHandlerEl, opt = {}) {
   }
   let store = getPureStore()
   const destroy = () => {
-    DragEventService.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler)
+    DragEventService.off(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler)
     delete dragHandlerEl._draggbleEventHandler
   }
   if (dragHandlerEl._draggbleEventHandler) {
