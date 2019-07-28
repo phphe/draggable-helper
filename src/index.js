@@ -83,8 +83,8 @@ export default function (dragHandlerEl, opt = {}) {
     store.mouse = {
       x: mouse.x,
       y: mouse.y,
-      startEvent: e,
     }
+    store.startEvent = e
     store.initialMouse = {...store.mouse}
     /*
     must set passive false for touch, else the follow error occurs in Chrome:
@@ -94,13 +94,13 @@ export default function (dragHandlerEl, opt = {}) {
     DragEventService.on(window, 'end', drop)
   }
   function drag(e) {
-    const {el, position} = resolveDragedElAndInitialPosition()
-    store.el = el
-    store.initialPosition = {...position}
-    const r = opt.drag && opt.drag(store.mouse.startEvent, e, opt, store)
+    const r = opt.drag && opt.drag(store.startEvent, e, opt, store)
     if (r === false) {
       return false
     }
+    const {el, position} = resolveDragedElAndInitialPosition()
+    store.el = el
+    store.initialPosition = {...position}
     // dom actions
     const size = hp.getElSize(el)
     const style = {
