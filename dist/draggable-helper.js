@@ -1,174 +1,19 @@
 /*!
- * draggable-helper v1.0.22
- * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
+ * draggable-helper v1.1.0
+ * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global.draggableHelper = factory());
-}(this, (function () { 'use strict';
+  (global = global || self, global['helper-js'] = factory());
+}(this, function () { 'use strict';
 
   /*!
-   * helper-js v1.3.12
-   * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
+   * helper-js v1.4.0
+   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) _setPrototypeOf(subClass, superClass);
-  }
-
-  function _getPrototypeOf(o) {
-    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf(o);
-  }
-
-  function _setPrototypeOf(o, p) {
-    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf(o, p);
-  }
-
-  function _assertThisInitialized(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return self;
-  }
-
-  function _possibleConstructorReturn(self, call) {
-    if (call && (typeof call === "object" || typeof call === "function")) {
-      return call;
-    }
-
-    return _assertThisInitialized(self);
-  }
-
-  function _superPropBase(object, property) {
-    while (!Object.prototype.hasOwnProperty.call(object, property)) {
-      object = _getPrototypeOf(object);
-      if (object === null) break;
-    }
-
-    return object;
-  }
-
-  function _get(target, property, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.get) {
-      _get = Reflect.get;
-    } else {
-      _get = function _get(target, property, receiver) {
-        var base = _superPropBase(target, property);
-
-        if (!base) return;
-        var desc = Object.getOwnPropertyDescriptor(base, property);
-
-        if (desc.get) {
-          return desc.get.call(receiver);
-        }
-
-        return desc.value;
-      };
-    }
-
-    return _get(target, property, receiver || target);
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
-  }
-
-  function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
-  }
-
-  // local store
-  var store = {}; // get global
-
-  function glb() {
-    if (store.glb) {
-      return store.glb;
-    } else {
-      // resolve global
-      var t;
-
-      try {
-        t = global;
-      } catch (e) {
-        t = window;
-      }
-
-      store.glb = t;
-      return t;
-    }
-  } // is 各种判断
 
   function getOffsetParent(el) {
     var offsetParent = el.offsetParent;
@@ -203,20 +48,18 @@
 
     return ps;
   } // get position of a el if its offset is given. like jQuery.offset.
-  function findParent(el, callback) {
-    return doFindParent(el, callback);
+  function findParent(el, callback, opt) {
+    var cur = opt && opt.withSelf ? el : el.parentElement;
 
-    function doFindParent(el, callback) {
-      if (el.parentElement) {
-        var r = callback(el.parentElement);
+    while (cur) {
+      var r = callback(cur);
 
-        if (r === 'break') {
-          return;
-        } else if (r) {
-          return el.parentElement;
-        } else {
-          return doFindParent(el.parentElement, callback);
-        }
+      if (r === 'break') {
+        return;
+      } else if (r) {
+        return cur;
+      } else {
+        cur = cur.parentElement;
       }
     }
   }
@@ -257,6 +100,12 @@
     return size;
   }
 
+  /*!
+   * helper-js v1.3.9
+   * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
+
   function onDOM(el, name, handler) {
     for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
       args[_key6 - 3] = arguments[_key6];
@@ -270,382 +119,7 @@
       el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   }
-  var URLHelper =
-  /*#__PURE__*/
-  function () {
-    // protocol, hostname, port, pastname
-    function URLHelper(baseUrl) {
-      var _this3 = this;
-
-      _classCallCheck(this, URLHelper);
-
-      _defineProperty(this, "baseUrl", '');
-
-      _defineProperty(this, "search", {});
-
-      var t = decodeURI(baseUrl).split('?');
-      this.baseUrl = t[0];
-
-      if (t[1]) {
-        t[1].split('&').forEach(function (v) {
-          var t2 = v.split('=');
-          _this3.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
-        });
-      }
-    }
-
-    _createClass(URLHelper, [{
-      key: "getHref",
-      value: function getHref() {
-        var _this4 = this;
-
-        var t = [this.baseUrl];
-        var searchStr = Object.keys(this.search).map(function (k) {
-          return "".concat(k, "=").concat(encodeURIComponent(_this4.search[k]));
-        }).join('&');
-
-        if (searchStr) {
-          t.push(searchStr);
-        }
-
-        return t.join('?');
-      }
-    }]);
-
-    return URLHelper;
-  }(); // 解析函数参数, 帮助重载
-
-  var EventProcessor =
-  /*#__PURE__*/
-  function () {
-    function EventProcessor() {
-      _classCallCheck(this, EventProcessor);
-
-      _defineProperty(this, "eventStore", []);
-    }
-
-    _createClass(EventProcessor, [{
-      key: "on",
-      value: function on(name, handler) {
-        this.eventStore.push({
-          name: name,
-          handler: handler
-        });
-      }
-    }, {
-      key: "once",
-      value: function once(name, handler) {
-        var _this5 = this;
-
-        var off = function off() {
-          _this5.off(name, wrappedHandler);
-        };
-
-        var wrappedHandler = function wrappedHandler() {
-          handler();
-          off();
-        };
-
-        this.on(name, wrappedHandler);
-        return off;
-      }
-    }, {
-      key: "off",
-      value: function off(name, handler) {
-        var indexes = []; // to remove indexes; reverse; 倒序的
-
-        var len = this.eventStore.length;
-
-        for (var i = 0; i < len; i++) {
-          var item = this.eventStore[i];
-
-          if (item.name === name && item.handler === handler) {
-            indexes.unshift(i);
-          }
-        }
-
-        for (var _i8 = 0, _indexes = indexes; _i8 < _indexes.length; _i8++) {
-          var index = _indexes[_i8];
-          this.eventStore.splice(index, 1);
-        }
-      }
-    }, {
-      key: "emit",
-      value: function emit(name) {
-        // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
-        var items = [];
-        var _iteratorNormalCompletion9 = true;
-        var _didIteratorError9 = false;
-        var _iteratorError9 = undefined;
-
-        try {
-          for (var _iterator9 = this.eventStore[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-            var item = _step9.value;
-
-            if (item.name === name) {
-              items.push(item);
-            }
-          }
-        } catch (err) {
-          _didIteratorError9 = true;
-          _iteratorError9 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-              _iterator9.return();
-            }
-          } finally {
-            if (_didIteratorError9) {
-              throw _iteratorError9;
-            }
-          }
-        }
-
-        for (var _len8 = arguments.length, args = new Array(_len8 > 1 ? _len8 - 1 : 0), _key9 = 1; _key9 < _len8; _key9++) {
-          args[_key9 - 1] = arguments[_key9];
-        }
-
-        for (var _i9 = 0, _items = items; _i9 < _items.length; _i9++) {
-          var _item = _items[_i9];
-
-          _item.handler.apply(_item, args);
-        }
-      }
-    }]);
-
-    return EventProcessor;
-  }();
-  var CrossWindow =
-  /*#__PURE__*/
-  function (_EventProcessor) {
-    _inherits(CrossWindow, _EventProcessor);
-
-    function CrossWindow() {
-      var _this6;
-
-      _classCallCheck(this, CrossWindow);
-
-      _this6 = _possibleConstructorReturn(this, _getPrototypeOf(CrossWindow).call(this));
-
-      _defineProperty(_assertThisInitialized(_this6), "storageName", '_crossWindow');
-
-      var cls = CrossWindow;
-
-      if (!cls._listen) {
-        cls._listen = true;
-        onDOM(window, 'storage', function (ev) {
-          if (ev.key === _this6.storageName) {
-            var _get2;
-
-            var event = JSON.parse(ev.newValue);
-
-            (_get2 = _get(_getPrototypeOf(CrossWindow.prototype), "emit", _assertThisInitialized(_this6))).call.apply(_get2, [_assertThisInitialized(_this6), event.name].concat(_toConsumableArray(event.args)));
-          }
-        });
-      }
-
-      return _this6;
-    }
-
-    _createClass(CrossWindow, [{
-      key: "emit",
-      value: function emit(name) {
-        var _get3;
-
-        for (var _len9 = arguments.length, args = new Array(_len9 > 1 ? _len9 - 1 : 0), _key10 = 1; _key10 < _len9; _key10++) {
-          args[_key10 - 1] = arguments[_key10];
-        }
-
-        (_get3 = _get(_getPrototypeOf(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
-
-        glb().localStorage.setItem(this.storageName, JSON.stringify({
-          name: name,
-          args: args,
-          // use random make storage event triggered every time
-          // 加入随机保证触发storage事件
-          random: Math.random()
-        }));
-      }
-    }]);
-
-    return CrossWindow;
-  }(EventProcessor);
-
-  /*!
-   * helper-js v1.3.9
-   * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
-   * Released under the MIT License.
-   */
-
-  function _classCallCheck$1(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  function _defineProperties$1(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass$1(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties$1(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties$1(Constructor, staticProps);
-    return Constructor;
-  }
-
-  function _defineProperty$1(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function _inherits$1(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) _setPrototypeOf$1(subClass, superClass);
-  }
-
-  function _getPrototypeOf$1(o) {
-    _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf$1(o);
-  }
-
-  function _setPrototypeOf$1(o, p) {
-    _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-
-    return _setPrototypeOf$1(o, p);
-  }
-
-  function _assertThisInitialized$1(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return self;
-  }
-
-  function _possibleConstructorReturn$1(self, call) {
-    if (call && (typeof call === "object" || typeof call === "function")) {
-      return call;
-    }
-
-    return _assertThisInitialized$1(self);
-  }
-
-  function _superPropBase$1(object, property) {
-    while (!Object.prototype.hasOwnProperty.call(object, property)) {
-      object = _getPrototypeOf$1(object);
-      if (object === null) break;
-    }
-
-    return object;
-  }
-
-  function _get$1(target, property, receiver) {
-    if (typeof Reflect !== "undefined" && Reflect.get) {
-      _get$1 = Reflect.get;
-    } else {
-      _get$1 = function _get(target, property, receiver) {
-        var base = _superPropBase$1(target, property);
-
-        if (!base) return;
-        var desc = Object.getOwnPropertyDescriptor(base, property);
-
-        if (desc.get) {
-          return desc.get.call(receiver);
-        }
-
-        return desc.value;
-      };
-    }
-
-    return _get$1(target, property, receiver || target);
-  }
-
-  function _toConsumableArray$1(arr) {
-    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _nonIterableSpread$1();
-  }
-
-  function _arrayWithoutHoles$1(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
-  }
-
-  function _iterableToArray$1(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-  }
-
-  function _nonIterableSpread$1() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
-  }
-
-  // local store
-  var store$1 = {}; // get global
-
-  function glb$1() {
-    if (store$1.glb) {
-      return store$1.glb;
-    } else {
-      // resolve global
-      var t;
-
-      try {
-        t = global;
-      } catch (e) {
-        t = window;
-      }
-
-      store$1.glb = t;
-      return t;
-    }
-  } // is 各种判断
-
-  function onDOM$1(el, name, handler) {
-    for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
-      args[_key6 - 3] = arguments[_key6];
-    }
-
-    if (el.addEventListener) {
-      // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.addEventListener.apply(el, [name, handler].concat(args));
-    } else if (el.attachEvent) {
-      // IE 8 及更早 IE 版本
-      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
-    }
-  }
-  function offDOM$1(el, name, handler) {
+  function offDOM(el, name, handler) {
     for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
       args[_key7 - 3] = arguments[_key7];
     }
@@ -658,206 +132,6 @@
       el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
     }
   }
-  var URLHelper$1 =
-  /*#__PURE__*/
-  function () {
-    // protocol, hostname, port, pastname
-    function URLHelper(baseUrl) {
-      var _this3 = this;
-
-      _classCallCheck$1(this, URLHelper);
-
-      _defineProperty$1(this, "baseUrl", '');
-
-      _defineProperty$1(this, "search", {});
-
-      var t = decodeURI(baseUrl).split('?');
-      this.baseUrl = t[0];
-
-      if (t[1]) {
-        t[1].split('&').forEach(function (v) {
-          var t2 = v.split('=');
-          _this3.search[t2[0]] = t2[1] == null ? '' : decodeURIComponent(t2[1]);
-        });
-      }
-    }
-
-    _createClass$1(URLHelper, [{
-      key: "getHref",
-      value: function getHref() {
-        var _this4 = this;
-
-        var t = [this.baseUrl];
-        var searchStr = Object.keys(this.search).map(function (k) {
-          return "".concat(k, "=").concat(encodeURIComponent(_this4.search[k]));
-        }).join('&');
-
-        if (searchStr) {
-          t.push(searchStr);
-        }
-
-        return t.join('?');
-      }
-    }]);
-
-    return URLHelper;
-  }(); // 解析函数参数, 帮助重载
-
-  var EventProcessor$1 =
-  /*#__PURE__*/
-  function () {
-    function EventProcessor() {
-      _classCallCheck$1(this, EventProcessor);
-
-      _defineProperty$1(this, "eventStore", []);
-    }
-
-    _createClass$1(EventProcessor, [{
-      key: "on",
-      value: function on(name, handler) {
-        this.eventStore.push({
-          name: name,
-          handler: handler
-        });
-      }
-    }, {
-      key: "once",
-      value: function once(name, handler) {
-        var _this5 = this;
-
-        var off = function off() {
-          _this5.off(name, wrappedHandler);
-        };
-
-        var wrappedHandler = function wrappedHandler() {
-          handler();
-          off();
-        };
-
-        this.on(name, wrappedHandler);
-        return off;
-      }
-    }, {
-      key: "off",
-      value: function off(name, handler) {
-        var indexes = []; // to remove indexes; reverse; 倒序的
-
-        var len = this.eventStore.length;
-
-        for (var i = 0; i < len; i++) {
-          var item = this.eventStore[i];
-
-          if (item.name === name && item.handler === handler) {
-            indexes.unshift(i);
-          }
-        }
-
-        for (var _i8 = 0, _indexes = indexes; _i8 < _indexes.length; _i8++) {
-          var index = _indexes[_i8];
-          this.eventStore.splice(index, 1);
-        }
-      }
-    }, {
-      key: "emit",
-      value: function emit(name) {
-        // 重要: 先找到要执行的项放在新数组里, 因为执行项会改变事件项存储数组
-        var items = [];
-        var _iteratorNormalCompletion9 = true;
-        var _didIteratorError9 = false;
-        var _iteratorError9 = undefined;
-
-        try {
-          for (var _iterator9 = this.eventStore[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-            var item = _step9.value;
-
-            if (item.name === name) {
-              items.push(item);
-            }
-          }
-        } catch (err) {
-          _didIteratorError9 = true;
-          _iteratorError9 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-              _iterator9.return();
-            }
-          } finally {
-            if (_didIteratorError9) {
-              throw _iteratorError9;
-            }
-          }
-        }
-
-        for (var _len8 = arguments.length, args = new Array(_len8 > 1 ? _len8 - 1 : 0), _key9 = 1; _key9 < _len8; _key9++) {
-          args[_key9 - 1] = arguments[_key9];
-        }
-
-        for (var _i9 = 0, _items = items; _i9 < _items.length; _i9++) {
-          var _item = _items[_i9];
-
-          _item.handler.apply(_item, args);
-        }
-      }
-    }]);
-
-    return EventProcessor;
-  }();
-  var CrossWindow$1 =
-  /*#__PURE__*/
-  function (_EventProcessor) {
-    _inherits$1(CrossWindow, _EventProcessor);
-
-    function CrossWindow() {
-      var _this6;
-
-      _classCallCheck$1(this, CrossWindow);
-
-      _this6 = _possibleConstructorReturn$1(this, _getPrototypeOf$1(CrossWindow).call(this));
-
-      _defineProperty$1(_assertThisInitialized$1(_this6), "storageName", '_crossWindow');
-
-      var cls = CrossWindow;
-
-      if (!cls._listen) {
-        cls._listen = true;
-        onDOM$1(window, 'storage', function (ev) {
-          if (ev.key === _this6.storageName) {
-            var _get2;
-
-            var event = JSON.parse(ev.newValue);
-
-            (_get2 = _get$1(_getPrototypeOf$1(CrossWindow.prototype), "emit", _assertThisInitialized$1(_this6))).call.apply(_get2, [_assertThisInitialized$1(_this6), event.name].concat(_toConsumableArray$1(event.args)));
-          }
-        });
-      }
-
-      return _this6;
-    }
-
-    _createClass$1(CrossWindow, [{
-      key: "emit",
-      value: function emit(name) {
-        var _get3;
-
-        for (var _len9 = arguments.length, args = new Array(_len9 > 1 ? _len9 - 1 : 0), _key10 = 1; _key10 < _len9; _key10++) {
-          args[_key10 - 1] = arguments[_key10];
-        }
-
-        (_get3 = _get$1(_getPrototypeOf$1(CrossWindow.prototype), "emit", this)).call.apply(_get3, [this, name].concat(args));
-
-        glb$1().localStorage.setItem(this.storageName, JSON.stringify({
-          name: name,
-          args: args,
-          // use random make storage event triggered every time
-          // 加入随机保证触发storage事件
-          random: Math.random()
-        }));
-      }
-    }]);
-
-    return CrossWindow;
-  }(EventProcessor$1);
 
   /*!
    * drag-event-service v1.0.0
@@ -865,11 +139,11 @@
    * Released under the MIT License.
    */
 
-  function _toConsumableArray$2(arr) {
-    return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _nonIterableSpread$2();
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
   }
 
-  function _arrayWithoutHoles$2(arr) {
+  function _arrayWithoutHoles(arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
@@ -877,11 +151,11 @@
     }
   }
 
-  function _iterableToArray$2(iter) {
+  function _iterableToArray(iter) {
     if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
   }
 
-  function _nonIterableSpread$2() {
+  function _nonIterableSpread() {
     throw new TypeError("Invalid attempt to spread non-iterable instance");
   }
 
@@ -946,9 +220,9 @@
       // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
       // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-      (_hp$onDOM = onDOM$1).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(mouseArgs))));
+      (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(mouseArgs))));
 
-      (_hp$onDOM2 = onDOM$1).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(touchArgs))));
+      (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(touchArgs))));
     },
     off: function off(el, name, handler, options) {
       var _resolveOptions2 = resolveOptions(options),
@@ -965,9 +239,9 @@
         if (handler === handler2) {
           var _hp$offDOM, _hp$offDOM2;
 
-          (_hp$offDOM = offDOM$1).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(mouseArgs))));
+          (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(mouseArgs))));
 
-          (_hp$offDOM2 = offDOM$1).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray$2(args).concat(_toConsumableArray$2(mouseArgs))));
+          (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(mouseArgs))));
 
           store.splice(i, 1);
         }
@@ -993,12 +267,12 @@
   /***
   const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
   opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
-  [Object] opt.style || opt.getStyle(opt) set style of moving el style
+  [Object] opt.style || opt.getStyle(opt, store) set style of moving el style
   [Boolean] opt.clone
   opt.draggingClass, default dragging
   opt.moving(e, opt, store) return false can prevent moving
   opt.drop(e, opt, store)
-  opt.getEl(dragHandlerEl, opt) get the el that will be moved. default is dragHandlerEl
+  opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
   opt.minTranslate default 10, unit px
   [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
@@ -1037,10 +311,10 @@
       opt.minTranslate = 10;
     }
 
-    var store$$1 = getPureStore();
+    var store = getPureStore();
 
     var destroy = function destroy() {
-      index.off(dragHandlerEl, 'end', dragHandlerEl._draggbleEventHandler);
+      index.off(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
       delete dragHandlerEl._draggbleEventHandler;
     };
 
@@ -1082,12 +356,12 @@
 
 
       e.preventDefault();
-      store$$1.mouse = {
+      store.mouse = {
         x: mouse.x,
-        y: mouse.y,
-        startEvent: e
+        y: mouse.y
       };
-      store$$1.initialMouse = Object.assign({}, store$$1.mouse);
+      store.startEvent = e;
+      store.initialMouse = Object.assign({}, store.mouse);
       /*
       must set passive false for touch, else the follow error occurs in Chrome:
       Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
@@ -1102,18 +376,18 @@
     }
 
     function drag(e) {
+      var r = opt.drag && opt.drag(store.startEvent, e, opt, store);
+
+      if (r === false) {
+        return false;
+      }
+
       var _resolveDragedElAndIn = resolveDragedElAndInitialPosition(),
           el = _resolveDragedElAndIn.el,
           position = _resolveDragedElAndIn.position;
 
-      store$$1.el = el;
-      store$$1.initialPosition = Object.assign({}, position);
-      var r = opt.drag && opt.drag(startEvent, e, opt, store$$1);
-
-      if (r === false) {
-        return false;
-      } // dom actions
-
+      store.el = el;
+      store.initialPosition = Object.assign({}, position); // dom actions
 
       var size = getElSize(el);
       var style = Object.assign({
@@ -1124,7 +398,7 @@
         position: 'absolute',
         left: position.x + 'px',
         top: position.y + 'px'
-      }, opt.style || opt.getStyle && opt.getStyle(opt) || {});
+      }, opt.style || opt.getStyle && opt.getStyle(opt, store) || {});
       backupAttr(el, 'style');
 
       for (var key in style) {
@@ -1138,18 +412,18 @@
 
     function moving(e, mouse) {
       e.preventDefault();
-      store$$1.mouse = {
+      store.mouse = {
         x: mouse.x,
         y: mouse.y
       };
-      var move = store$$1.move = {
-        x: store$$1.mouse.x - store$$1.initialMouse.x,
-        y: store$$1.mouse.y - store$$1.initialMouse.y
+      var move = store.move = {
+        x: store.mouse.x - store.initialMouse.x,
+        y: store.mouse.y - store.initialMouse.y
       };
 
-      if (store$$1.movedCount === 0 && opt.minTranslate) {
-        var x2 = Math.pow(store$$1.move.x, 2);
-        var y2 = Math.pow(store$$1.move.y, 2);
+      if (store.movedCount === 0 && opt.minTranslate) {
+        var x2 = Math.pow(store.move.x, 2);
+        var y2 = Math.pow(store.move.y, 2);
         var dtc = Math.pow(x2 + y2, 0.5);
 
         if (dtc < opt.minTranslate) {
@@ -1159,7 +433,7 @@
 
       var canMove = true;
 
-      if (store$$1.movedCount === 0) {
+      if (store.movedCount === 0) {
         if (drag(e) === false) {
           canMove = false;
         }
@@ -1167,21 +441,21 @@
 
 
       if (canMove && opt.moving) {
-        if (opt.moving(e, opt, store$$1) === false) {
+        if (opt.moving(e, opt, store) === false) {
           canMove = false;
         }
       }
 
       if (canMove) {
-        if (!store$$1 || !store$$1.el) {
+        if (!store || !store.el) {
           return;
         }
 
-        Object.assign(store$$1.el.style, {
-          left: store$$1.initialPosition.x + move.x + 'px',
-          top: store$$1.initialPosition.y + move.y + 'px'
+        Object.assign(store.el.style, {
+          left: store.initialPosition.x + move.x + 'px',
+          top: store.initialPosition.y + move.y + 'px'
         });
-        store$$1.movedCount++;
+        store.movedCount++;
       }
     }
 
@@ -1193,9 +467,9 @@
       });
       index.off(window, 'end', drop); // drag executed if movedCount > 0
 
-      if (store$$1.movedCount > 0) {
-        store$$1.movedCount = 0;
-        var _store = store$$1,
+      if (store.movedCount > 0) {
+        store.movedCount = 0;
+        var _store = store,
             el = _store.el;
 
         if (opt.clone) {
@@ -1205,18 +479,18 @@
           restoreAttr(el, 'class');
         }
 
-        opt.drop && opt.drop(e, opt, store$$1);
+        opt.drop && opt.drop(e, opt, store);
       }
 
-      store$$1 = getPureStore();
+      store = getPureStore();
     }
 
     function resolveDragedElAndInitialPosition() {
-      var el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt) : dragHandlerEl;
+      var el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt, store) : dragHandlerEl;
       var el = el0;
 
       if (opt.clone) {
-        store$$1.triggerEl = el0;
+        store.triggerEl = el0;
         el = el0.cloneNode(true);
         el0.parentElement.appendChild(el);
       }
@@ -1236,4 +510,4 @@
 
   return index$1;
 
-})));
+}));
