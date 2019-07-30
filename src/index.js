@@ -16,6 +16,7 @@ opt.minTranslate default 10, unit px
 add other prop into opt, you can get opt in callback
 store{
   el
+  originalEl
   initialMouse
   initialPosition
   mouse
@@ -184,8 +185,8 @@ export default function (dragHandlerEl, opt = {}) {
   function resolveDragedElAndInitialPosition() {
     const el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt, store) : dragHandlerEl
     let el = el0
+    store.originalEl = el0
     if (opt.clone) {
-      store.triggerEl = el0
       el = el0.cloneNode(true)
       el0.parentElement.appendChild(el)
     }

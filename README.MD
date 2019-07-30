@@ -48,6 +48,7 @@ opt = {
 // store. life cycle: drag-end
 store = {
   el // the moving el
+  originalEl // the original moving el, used when clone
   initialMouse
   initialPosition // relative to offsetParent
   mouse
