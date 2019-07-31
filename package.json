@@ -1,11 +1,13 @@
 {
   "name": "draggable-helper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.esm.js",
   "unpkg": "dist/draggable-helper.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "bili --format cjs --format umd  --format umd-min --format esm --banner",
     "dev": "bili --watch"
@@ -29,7 +31,7 @@
   },
   "dependencies": {
     "drag-event-service": "^1.0.0",
-    "helper-js": "^1.4.0"
+    "helper-js": "^1.4.2"
   },
   "license": "MIT"
 }
