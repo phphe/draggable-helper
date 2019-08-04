@@ -24,6 +24,7 @@ import draggableHelper from 'draggable-helper'
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 // opt
 // opt will pass to hook, so you can attach custom data into opt, such the data of the element
+// startEvent is mousedown or touchstart
 opt = {
   // [Object] style, set the style of dragging element
   // getStyle(opt, store), set the style of dragging element
@@ -31,6 +32,7 @@ opt = {
   // [Boolean] clone, move the element or move a cloned one
   // minTranslate default 10, unit px
   // getEl(dragHandlerEl, opt, store), optional, get the el that will be moved. default is dragHandlerEl
+  // afterGetEl(startEvent, opt, store)
   // [Boolean] triggerBySelf if trigger only by dragHandlerEl self, can not be triggered by children
   // hook, when drag start
   drag(startEvent, moveEvent, opt, store){
@@ -42,7 +44,7 @@ opt = {
     // return false to prevent moving
   },
   // hook, when drop
-  drop: (moveEvent, opt, store) => {
+  drop: (endEvent, opt, store) => {
   },
 }
 // store. life cycle: drag-end

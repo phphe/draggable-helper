@@ -10,6 +10,7 @@ opt.draggingClass, default dragging
 opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
+afterGetEl(startEvent, opt, store)
 opt.minTranslate default 10, unit px
 [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
@@ -104,6 +105,7 @@ export default function (dragHandlerEl, opt = {}) {
     const {el, position} = resolveDragedElAndInitialPosition()
     store.el = el
     store.initialPosition = {...position}
+    opt.afterGetEl && opt.afterGetEl(e, opt, store)
     // dom actions
     const size = hp.getElSize(el)
     const style = {
