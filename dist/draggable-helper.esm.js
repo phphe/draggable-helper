@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.1.0
+ * draggable-helper v1.1.1
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -15,12 +15,14 @@ opt.draggingClass, default dragging
 opt.moving(e, opt, store) return false can prevent moving
 opt.drop(e, opt, store)
 opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
+afterGetEl(startEvent, opt, store)
 opt.minTranslate default 10, unit px
 [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
 add other prop into opt, you can get opt in callback
 store{
   el
+  originalEl
   initialMouse
   initialPosition
   mouse
@@ -48,11 +50,10 @@ var IGNORE_TRIGGERS = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION'];
 var UNDRAGGABLE_CLASS = 'undraggable';
 function index (dragHandlerEl) {
   var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  if (opt.minTranslate == null) {
-    opt.minTranslate = 10;
-  }
-
+  opt = Object.assign({
+    minTranslate: 10,
+    draggingClass: 'dragging'
+  }, opt);
   var store = getPureStore();
 
   var destroy = function destroy() {
@@ -129,7 +130,8 @@ function index (dragHandlerEl) {
         position = _resolveDragedElAndIn.position;
 
     store.el = el;
-    store.initialPosition = Object.assign({}, position); // dom actions
+    store.initialPosition = Object.assign({}, position);
+    opt.afterGetEl && opt.afterGetEl(e, opt, store); // dom actions
 
     var size = getElSize(el);
     var style = Object.assign({
@@ -230,9 +232,9 @@ function index (dragHandlerEl) {
   function resolveDragedElAndInitialPosition() {
     var el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt, store) : dragHandlerEl;
     var el = el0;
+    store.originalEl = el0;
 
     if (opt.clone) {
-      store.triggerEl = el0;
       el = el0.cloneNode(true);
       el0.parentElement.appendChild(el);
     }
