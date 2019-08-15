@@ -32,7 +32,7 @@ opt = {
   // [Boolean] clone, move the element or move a cloned one
   // minTranslate default 10, unit px
   // getEl(dragHandlerEl, opt, store), optional, get the el that will be moved. default is dragHandlerEl
-  // afterGetEl(startEvent, opt, store)
+  // afterGetEl(opt, store)
   // [Boolean] triggerBySelf if trigger only by dragHandlerEl self, can not be triggered by children
   // hook, when drag start
   drag(startEvent, moveEvent, opt, store){
