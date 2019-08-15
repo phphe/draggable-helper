@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v1.1.1
+ * draggable-helper v2.0.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -273,7 +273,7 @@
   opt.moving(e, opt, store) return false can prevent moving
   opt.drop(e, opt, store)
   opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
-  afterGetEl(startEvent, opt, store)
+  afterGetEl(opt, store)
   opt.minTranslate default 10, unit px
   [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
@@ -389,7 +389,7 @@
 
       store.el = el;
       store.initialPosition = Object.assign({}, position);
-      opt.afterGetEl && opt.afterGetEl(e, opt, store); // dom actions
+      opt.afterGetEl && opt.afterGetEl(opt, store); // dom actions
 
       var size = getElSize(el);
       var style = Object.assign({
