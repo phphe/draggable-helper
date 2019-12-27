@@ -1,19 +1,68 @@
 /*!
- * draggable-helper v2.0.0
- * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
- * Released under the MIT License.
- */
+* draggable-helper v3.0.0
+* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+* Released under the MIT License.
+*/
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global['helper-js'] = factory());
-}(this, function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.draggableHelper = {}));
+}(this, (function (exports) { 'use strict';
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i] != null ? arguments[i] : {};
+
+      if (i % 2) {
+        ownKeys(Object(source), true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(Object(source)).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
+      }
+    }
+
+    return target;
+  }
 
   /*!
-   * helper-js v1.4.2
-   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-   * Released under the MIT License.
-   */
+  * helper-js v1.4.13
+  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+  * Released under the MIT License.
+  */
 
   function getOffsetParent(el) {
     var offsetParent = el.offsetParent;
@@ -48,6 +97,31 @@
 
     return ps;
   } // get position of a el if its offset is given. like jQuery.offset.
+  function getBoundingClientRect(el) {
+    // refer: http://www.51xuediannao.com/javascript/getBoundingClientRect.html
+    var xy = el.getBoundingClientRect();
+    var top = xy.top - document.documentElement.clientTop,
+        //document.documentElement.clientTop 在IE67中始终为2，其他高级点的浏览器为0
+    bottom = xy.bottom,
+        left = xy.left - document.documentElement.clientLeft,
+        //document.documentElement.clientLeft 在IE67中始终为2，其他高级点的浏览器为0
+    right = xy.right,
+        width = xy.width || right - left,
+        //IE67不存在width 使用right - left获得
+    height = xy.height || bottom - top;
+    var x = left;
+    var y = top;
+    return {
+      top: top,
+      right: right,
+      bottom: bottom,
+      left: left,
+      width: width,
+      height: height,
+      x: x,
+      y: y
+    };
+  }
   function findParent(el, callback, opt) {
     var cur = opt && opt.withSelf ? el : el.parentElement;
 
@@ -89,16 +163,6 @@
       }
     }
   } // source: http://youmightnotneedjquery.com/
-  function getElSize(el) {
-    var originDisplay = el.style.display;
-    el.style.display = 'block';
-    var size = {
-      width: el.offsetWidth,
-      height: el.offsetHeight
-    };
-    el.style.display = originDisplay;
-    return size;
-  }
 
   /*!
    * helper-js v1.3.9
@@ -266,14 +330,14 @@
 
   /***
   const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
-  opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
-  [Object] opt.style || opt.getStyle(opt, store) set style of moving el style
+  opt.beforeDrag(startEvent, moveEvent, store, opt) return false to prevent drag
+  opt.drag(startEvent, moveEvent, store, opt) return false to prevent drag
+  [Object] opt.style || opt.getStyle(store, opt) set style of moving el style
   [Boolean] opt.clone
   opt.draggingClass, default dragging
-  opt.moving(e, opt, store) return false can prevent moving
-  opt.drop(e, opt, store)
-  opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
-  afterGetEl(opt, store)
+  opt.moving(e, store, opt) return false can prevent moving
+  opt.drop(e, store, opt)
+  opt.getEl(dragHandlerEl, store, opt) get the el that will be moved. default is dragHandlerEl
   opt.minTranslate default 10, unit px
   [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
@@ -286,19 +350,21 @@
     mouse
     move
     movedCount // start from 0
+    startEvent
+    endEvent
   }
   e.g.
   draggable(this.$el, {
     vm: this,
     data: this.data,
-    drag: (e, opt, store) => {
+    drag: (e, store, opt) => {
       dplh.style.height = store.el.querySelector('.TreeNodeSelf').offsetHeight + 'px'
       th.insertAfter(dplh, opt.data)
     },
-    moving: (e, opt, store) => {
+    moving: (e, store, opt) => {
       hp.arrayRemove(dplh.parent.children, dplh)
     },
-    drop: (e, opt, store) => {
+    drop: (e, store, opt) => {
       hp.arrayRemove(dplh.parent.children, dplh)
     },
   })
@@ -308,7 +374,7 @@
   var UNDRAGGABLE_CLASS = 'undraggable';
   function index$1 (dragHandlerEl) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    opt = Object.assign({
+    opt = _objectSpread2({
       minTranslate: 10,
       draggingClass: 'dragging'
     }, opt);
@@ -362,7 +428,7 @@
         y: mouse.y
       };
       store.startEvent = e;
-      store.initialMouse = Object.assign({}, store.mouse);
+      store.initialMouse = _objectSpread2({}, store.mouse);
       /*
       must set passive false for touch, else the follow error occurs in Chrome:
       Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
@@ -377,9 +443,9 @@
     }
 
     function drag(e) {
-      var r = opt.drag && opt.drag(store.startEvent, e, opt, store);
+      var canDrag = opt.beforeDrag && opt.beforeDrag(store.startEvent, e, store, opt);
 
-      if (r === false) {
+      if (canDrag === false) {
         return false;
       }
 
@@ -388,19 +454,26 @@
           position = _resolveDragedElAndIn.position;
 
       store.el = el;
-      store.initialPosition = Object.assign({}, position);
-      opt.afterGetEl && opt.afterGetEl(opt, store); // dom actions
+      store.initialPosition = _objectSpread2({}, position);
+      canDrag = opt.drag && opt.drag(store.startEvent, e, store, opt);
 
-      var size = getElSize(el);
-      var style = Object.assign({
-        width: "".concat(size.width, "px"),
-        height: "".concat(size.height, "px"),
+      if (canDrag === false) {
+        return false;
+      } // dom actions
+
+
+      var size = getBoundingClientRect(el);
+
+      var style = _objectSpread2({
+        width: "".concat(Math.ceil(size.width), "px"),
+        height: "".concat(Math.ceil(size.height), "px"),
         zIndex: 9999,
-        opacity: 0.6,
+        opacity: 0.8,
         position: 'absolute',
         left: position.x + 'px',
         top: position.y + 'px'
-      }, opt.style || opt.getStyle && opt.getStyle(opt, store) || {});
+      }, opt.style || opt.getStyle && opt.getStyle(store, opt) || {});
+
       backupAttr(el, 'style');
 
       for (var key in style) {
@@ -443,7 +516,7 @@
 
 
       if (canMove && opt.moving) {
-        if (opt.moving(e, opt, store) === false) {
+        if (opt.moving(e, store, opt) === false) {
           canMove = false;
         }
       }
@@ -471,6 +544,7 @@
 
       if (store.movedCount > 0) {
         store.movedCount = 0;
+        store.endEvent = e;
         var _store = store,
             el = _store.el;
 
@@ -481,14 +555,14 @@
           restoreAttr(el, 'class');
         }
 
-        opt.drop && opt.drop(e, opt, store);
+        opt.drop && opt.drop(e, store, opt);
       }
 
       store = getPureStore();
     }
 
     function resolveDragedElAndInitialPosition() {
-      var el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt, store) : dragHandlerEl;
+      var el0 = opt.getEl ? opt.getEl(dragHandlerEl, store, opt) : dragHandlerEl;
       var el = el0;
       store.originalEl = el0;
 
@@ -510,6 +584,8 @@
     }
   }
 
-  return index$1;
+  exports.default = index$1;
 
-}));
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
