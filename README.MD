@@ -27,24 +27,30 @@ const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 // startEvent is mousedown or touchstart
 opt = {
   // [Object] style, set the style of dragging element
-  // getStyle(opt, store), set the style of dragging element
+  // getStyle(store, opt), set the style of dragging element
   // [String] draggingClass, default dragging, set the class of dragging element
   // [Boolean] clone, move the element or move a cloned one
   // minTranslate default 10, unit px
-  // getEl(dragHandlerEl, opt, store), optional, get the el that will be moved. default is dragHandlerEl
-  // afterGetEl(opt, store)
+  // getEl(dragHandlerEl, store, opt), optional, get the el that will be moved. default is dragHandlerEl
+  // afterGetEl(store, opt)
   // [Boolean] triggerBySelf if trigger only by dragHandlerEl self, can not be triggered by children
+  // hook, before drag start
+  beforeDrag(startEvent, moveEvent, store, opt){
+    // when trigger drag, the position must be moved, so there are two event. startEvent also can be accessed by store.startEvent
+    // The dragged element at this time has not yet been obtained, store.el is null. 此时要移动的元素还没有获得到, 即store.el是空.
+    // return false to prevent drag
+  },
   // hook, when drag start
-  drag(startEvent, moveEvent, opt, store){
+  drag(startEvent, moveEvent, store, opt){
     // when trigger drag, the position must be moved, so there are two event. startEvent also can be accessed by store.startEvent
     // return false to prevent drag
   },
   // hook, when mouse moving
-  moving: (moveEvent, opt, store) => {
+  moving: (moveEvent, store, opt) => {
     // return false to prevent moving
   },
   // hook, when drop
-  drop: (endEvent, opt, store) => {
+  drop: (endEvent, store, opt) => {
   },
 }
 // store. life cycle: drag-end
@@ -57,6 +63,7 @@ store = {
   move
   movedCount // start from 0
   startEvent // mousedown or touchstart event
+  endEvent
 }
 ```
 ## Example
@@ -65,14 +72,14 @@ Advance usage: bind to parent element, make children element as trigger element 
 ```js
 import draggableHelper from 'draggable-helper'
 const destroy = draggableHelper(document.body, {
-  drag(startEvent, moveEvent, opt, store) {
+  drag(startEvent, moveEvent, store, opt) {
     // check trigger el
     if (startEvent.target not has class 'your trigger class') {
       return false
     }
   },
   // get the element which will be moved
-  getEl: (dragHandlerEl, opt, store) => get the el which will be moved by `store.startEvent.target`
+  getEl: (dragHandlerEl, store, opt) => get the el which will be moved by `store.startEvent.target`
 })
 ```
 ## prevent drag
@@ -82,7 +89,7 @@ In follow case, drag event will be prevented.
 const IGNORE_TRIGGERS = ['INPUT','TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION']
 ```
 * Event target has class `undraggable` or its ancestor till dragHandlerEl has.
-* opt.drag return false
+* opt.beforeDrag or opt.drag return false
 
 ## demo
 [jsfiddle](https://jsfiddle.net/phphe/t694kpua/19/)

@@ -3,14 +3,14 @@ import DragEventService from 'drag-event-service'
 
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
-opt.drag(startEvent, moveEvent, opt, store) return false to prevent drag
-[Object] opt.style || opt.getStyle(opt, store) set style of moving el style
+opt.beforeDrag(startEvent, moveEvent, store, opt) return false to prevent drag
+opt.drag(startEvent, moveEvent, store, opt) return false to prevent drag
+[Object] opt.style || opt.getStyle(store, opt) set style of moving el style
 [Boolean] opt.clone
 opt.draggingClass, default dragging
-opt.moving(e, opt, store) return false can prevent moving
-opt.drop(e, opt, store)
-opt.getEl(dragHandlerEl, opt, store) get the el that will be moved. default is dragHandlerEl
-afterGetEl(opt, store)
+opt.moving(e, store, opt) return false can prevent moving
+opt.drop(e, store, opt)
+opt.getEl(dragHandlerEl, store, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
 [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
 
@@ -23,19 +23,21 @@ store{
   mouse
   move
   movedCount // start from 0
+  startEvent
+  endEvent
 }
 e.g.
 draggable(this.$el, {
   vm: this,
   data: this.data,
-  drag: (e, opt, store) => {
+  drag: (e, store, opt) => {
     dplh.style.height = store.el.querySelector('.TreeNodeSelf').offsetHeight + 'px'
     th.insertAfter(dplh, opt.data)
   },
-  moving: (e, opt, store) => {
+  moving: (e, store, opt) => {
     hp.arrayRemove(dplh.parent.children, dplh)
   },
-  drop: (e, opt, store) => {
+  drop: (e, store, opt) => {
     hp.arrayRemove(dplh.parent.children, dplh)
   },
 })
@@ -98,25 +100,28 @@ export default function (dragHandlerEl, opt = {}) {
     DragEventService.on(window, 'end', drop)
   }
   function drag(e) {
-    const r = opt.drag && opt.drag(store.startEvent, e, opt, store)
-    if (r === false) {
+    let canDrag = opt.beforeDrag && opt.beforeDrag(store.startEvent, e, store, opt)
+    if (canDrag === false) {
       return false
     }
     const {el, position} = resolveDragedElAndInitialPosition()
     store.el = el
     store.initialPosition = {...position}
-    opt.afterGetEl && opt.afterGetEl(opt, store)
+    canDrag = opt.drag && opt.drag(store.startEvent, e, store, opt)
+    if (canDrag === false) {
+      return false
+    }
     // dom actions
-    const size = hp.getElSize(el)
+    const size = hp.getBoundingClientRect(el)
     const style = {
-      width: `${size.width}px`,
-      height: `${size.height}px`,
+      width: `${Math.ceil(size.width)}px`,
+      height: `${Math.ceil(size.height)}px`,
       zIndex: 9999,
-      opacity: 0.6,
+      opacity: 0.8,
       position: 'absolute',
       left: position.x + 'px',
       top: position.y + 'px',
-      ...(opt.style || opt.getStyle && opt.getStyle(opt, store) || {}),
+      ...(opt.style || opt.getStyle && opt.getStyle(store, opt) || {}),
     }
     hp.backupAttr(el, 'style')
     for (const key in style) {
@@ -152,7 +157,7 @@ export default function (dragHandlerEl, opt = {}) {
     }
     // move started
     if (canMove && opt.moving) {
-      if (opt.moving(e, opt, store) === false) {
+      if (opt.moving(e, store, opt) === false) {
         canMove = false
       }
     }
@@ -173,6 +178,7 @@ export default function (dragHandlerEl, opt = {}) {
     // drag executed if movedCount > 0
     if (store.movedCount > 0) {
       store.movedCount = 0
+      store.endEvent = e
       const {el} = store
       if (opt.clone) {
         el.parentElement.removeChild(el)
@@ -180,12 +186,12 @@ export default function (dragHandlerEl, opt = {}) {
         hp.restoreAttr(el, 'style')
         hp.restoreAttr(el, 'class')
       }
-      opt.drop && opt.drop(e, opt, store)
+      opt.drop && opt.drop(e, store, opt)
     }
     store = getPureStore()
   }
   function resolveDragedElAndInitialPosition() {
-    const el0 = opt.getEl ? opt.getEl(dragHandlerEl, opt, store) : dragHandlerEl
+    const el0 = opt.getEl ? opt.getEl(dragHandlerEl, store, opt) : dragHandlerEl
     let el = el0
     store.originalEl = el0
     if (opt.clone) {
