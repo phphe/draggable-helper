@@ -1,3 +1,4 @@
+const gzipSize = require('gzip-size');
 const rollup = require('rollup');
 const JsonPlugin = require('@rollup/plugin-json');
 const NodeResolvePlugin = require('@rollup/plugin-node-resolve');
@@ -27,16 +28,17 @@ async function buildDir(inputDir, opt={}, eachOpt={}) {
     const filePath = path.join(inputDir, item)
     return fs.statSync(filePath).isFile() && (!opt.exclude || !opt.exclude(item, filePath))
   })
+  const report = []
   for (const item of files) {
     const filePath = path.join(inputDir, item)
     const [name, suffix] = item.split('.')
     const pathWithoutSuffix = item.slice(0, item.length - 1 - suffix.length)
-    await buildFile({
+    report.push(...await buildFile({
       input: filePath,
       moduleName: camelCase(name),
       outFileName: pathWithoutSuffix,
       ...eachOpt,
-    })
+    }))
   }
 }
 // No subdirectories; 不包含子目录
@@ -73,6 +75,7 @@ async function buildFile(opt={}) {
     ...opt,
   }
   //
+  const report = []
   for (const format of opt.formats) {
     const inputOptions = {
       input: opt.input,
@@ -112,10 +115,20 @@ async function buildFile(opt={}) {
     // generate code
     const { output } = await bundle.generate(outputOptions)
     await bundle.write(outputOptions)
-    // get size
-    const stats = fs.statSync(outputOptions.file)
-    const sizeKIB = stats["size"] / 1024
-    console.log(`Done: ${outputOptions.file} ${sizeKIB.toFixed(2)}KB`);
+    reportOne(outputOptions.file)
+    if (format === 'umd.min') {
+      const sourceMapPath = outputOptions.file + '.map'
+      if (fs.existsSync(sourceMapPath)) {
+        reportOne(sourceMapPath)
+      }
+    }
+  }
+  console.table(report);
+  return report
+  function reportOne(file) {
+    const {sizeKiB, sizeKiBGzipped} = getFileInfo(file)
+    console.log(`Done: ${file}`);
+    report.push({Output: file, Size: `${sizeKiB} KiB`, Gzipped: `${sizeKiBGzipped} KiB`})
   }
 }
 
@@ -221,4 +234,12 @@ function camelCase (str) {
     temp[i] = studlyCase(temp[i])
   }
   return temp.join('')
+}
+function getFileInfo(file) {
+  // get size
+  const stats = fs.statSync(file)
+  const sizeKiB = parseFloat((stats["size"] / 1024).toFixed(2))
+  // get gzipped size
+  const sizeKiBGzipped = parseFloat((gzipSize.fileSync(file) / 1024).toFixed(2))
+  return {file, sizeKiB, sizeKiBGzipped}
 }
