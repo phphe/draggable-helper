@@ -1,5 +1,5 @@
 /*!
-* draggable-helper v3.0.0
+* draggable-helper v3.0.1
 * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
 * Released under the MIT License.
 */
@@ -56,11 +56,25 @@ function _objectSpread2(target) {
   return target;
 }
 
-/*!
-* helper-js v1.4.13
-* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-* Released under the MIT License.
-*/
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+}
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
 
 function getOffsetParent(el) {
   var offsetParent = el.offsetParent;
@@ -73,6 +87,7 @@ function getOffsetParent(el) {
 } // get el current position. like jQuery.position
 // the position is relative to offsetParent viewport left top. it is for set absolute position, absolute position is relative to offsetParent viewport left top.
 // 相对于offsetParent可视区域左上角(el.offsetLeft或top包含父元素的滚动距离, 所以要减去). position一般用于设置绝对定位的情况, 而绝对定位就是以可视区域左上角为原点.
+
 
 function getPosition(el) {
   var offsetParent = getOffsetParent(el);
@@ -95,6 +110,7 @@ function getPosition(el) {
 
   return ps;
 } // get position of a el if its offset is given. like jQuery.offset.
+
 function getBoundingClientRect(el) {
   // refer: http://www.51xuediannao.com/javascript/getBoundingClientRect.html
   var xy = el.getBoundingClientRect();
@@ -120,6 +136,7 @@ function getBoundingClientRect(el) {
     y: y
   };
 }
+
 function findParent(el, callback, opt) {
   var cur = opt && opt.withSelf ? el : el.parentElement;
 
@@ -135,14 +152,17 @@ function findParent(el, callback, opt) {
     }
   }
 }
+
 function backupAttr(el, name) {
   var key = "original_".concat(name);
   el[key] = el.getAttribute(name);
 }
+
 function restoreAttr(el, name) {
   var key = "original_".concat(name);
   el.setAttribute(name, el[key]);
 } // source: http://youmightnotneedjquery.com/
+
 
 function hasClass(el, className) {
   if (el.classList) {
@@ -151,6 +171,7 @@ function hasClass(el, className) {
     return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
   }
 } // source: http://youmightnotneedjquery.com/
+
 
 function addClass(el, className) {
   if (!hasClass(el, className)) {
@@ -163,14 +184,19 @@ function addClass(el, className) {
 } // source: http://youmightnotneedjquery.com/
 
 /*!
- * helper-js v1.3.9
- * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
- * Released under the MIT License.
- */
+* drag-event-service v1.0.1
+* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+* Released under the MIT License.
+*/
 
+/*!
+* helper-js v1.4.14
+* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+* Released under the MIT License.
+*/
 function onDOM(el, name, handler) {
-  for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
-    args[_key6 - 3] = arguments[_key6];
+  for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key8 = 3; _key8 < _len6; _key8++) {
+    args[_key8 - 3] = arguments[_key8];
   }
 
   if (el.addEventListener) {
@@ -181,9 +207,10 @@ function onDOM(el, name, handler) {
     el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
   }
 }
+
 function offDOM(el, name, handler) {
-  for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
-    args[_key7 - 3] = arguments[_key7];
+  for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key9 = 3; _key9 < _len7; _key9++) {
+    args[_key9 - 3] = arguments[_key9];
   }
 
   if (el.removeEventListener) {
@@ -193,33 +220,8 @@ function offDOM(el, name, handler) {
     // IE 8 及更早 IE 版本
     el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
   }
-}
+} // support desktop and mobile
 
-/*!
- * drag-event-service v1.0.0
- * (c) 2018-present phphe <phphe@outlook.com> (https://github.com/phphe)
- * Released under the MIT License.
- */
-
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-}
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-}
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-}
-
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
-}
 
 var events = {
   start: ['mousedown', 'touchstart'],
@@ -238,8 +240,6 @@ var index = {
     return el._wrapperStore;
   },
   on: function on(el, name, handler, options) {
-    var _hp$onDOM, _hp$onDOM2;
-
     var _resolveOptions = resolveOptions(options),
         args = _resolveOptions.args,
         mouseArgs = _resolveOptions.mouseArgs,
@@ -282,9 +282,8 @@ var index = {
     // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
     // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-    (_hp$onDOM = onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(mouseArgs))));
-
-    (_hp$onDOM2 = onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(touchArgs))));
+    onDOM.call.apply(onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+    onDOM.call.apply(onDOM, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
   },
   off: function off(el, name, handler, options) {
     var _resolveOptions2 = resolveOptions(options),
@@ -299,12 +298,8 @@ var index = {
           wrapper = _store$i.wrapper;
 
       if (handler === handler2) {
-        var _hp$offDOM, _hp$offDOM2;
-
-        (_hp$offDOM = offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(mouseArgs))));
-
-        (_hp$offDOM2 = offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat(_toConsumableArray(args).concat(_toConsumableArray(mouseArgs))));
-
+        offDOM.call.apply(offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+        offDOM.call.apply(offDOM, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
         store.splice(i, 1);
       }
     }
