@@ -13,6 +13,7 @@ opt.drop(e, store, opt)
 opt.getEl(dragHandlerEl, store, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
 [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
+[Boolean] opt.restoreDOMManuallyOndrop the changed DOM will be restored automatically on drop. This disable it and pass restoreDOM function into store.
 
 add other prop into opt, you can get opt in callback
 store{
@@ -25,6 +26,7 @@ store{
   movedCount // start from 0
   startEvent
   endEvent
+  restoreDOM // function if opt.restoreDOMManuallyOndrop else null
 }
 e.g.
 draggable(this.$el, {
@@ -180,12 +182,19 @@ export default function (dragHandlerEl, opt = {}) {
       store.movedCount = 0
       store.endEvent = e
       const {el} = store
-      if (opt.clone) {
-        el.parentElement.removeChild(el)
-      } else {
-        hp.restoreAttr(el, 'style')
-        hp.restoreAttr(el, 'class')
+      let restoreDOM = () => {
+        if (opt.clone) {
+          el.parentElement.removeChild(el)
+        } else {
+          hp.restoreAttr(el, 'style')
+          hp.restoreAttr(el, 'class')
+        }
       }
+      if (!opt.restoreDOMManuallyOndrop) {
+        restoreDOM()
+        restoreDOM = null
+      }
+      store.restoreDOM = restoreDOM
       opt.drop && opt.drop(e, store, opt)
     }
     store = getPureStore()

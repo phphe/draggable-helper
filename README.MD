@@ -35,6 +35,7 @@ opt = {
   // afterGetEl(store, opt)
   // [Boolean] triggerBySelf if trigger only by dragHandlerEl self, can not be triggered by children
   // hook, before drag start
+  // [Boolean] opt.restoreDOMManuallyOndrop the changed DOM will be restored automatically on drop. This disable it and pass restoreDOM function into store.
   beforeDrag(startEvent, moveEvent, store, opt){
     // when trigger drag, the position must be moved, so there are two event. startEvent also can be accessed by store.startEvent
     // The dragged element at this time has not yet been obtained, store.el is null. 此时要移动的元素还没有获得到, 即store.el是空.
@@ -63,7 +64,8 @@ store = {
   move
   movedCount // start from 0
   startEvent // mousedown or touchstart event
-  endEvent
+  endEvent,
+  restoreDOM() // function if opt.restoreDOMManuallyOndrop else null
 }
 ```
 ## Example
