@@ -1,5 +1,5 @@
 /*!
-* draggable-helper v3.0.1
+* draggable-helper v3.0.3
 * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
 * Released under the MIT License.
 */
@@ -333,6 +333,7 @@ opt.drop(e, store, opt)
 opt.getEl(dragHandlerEl, store, opt) get the el that will be moved. default is dragHandlerEl
 opt.minTranslate default 10, unit px
 [Boolean] opt.triggerBySelf: false if trigger only by self, can not be triggered by children
+[Boolean] opt.restoreDOMManuallyOndrop the changed DOM will be restored automatically on drop. This disable it and pass restoreDOM function into store.
 
 add other prop into opt, you can get opt in callback
 store{
@@ -345,6 +346,7 @@ store{
   movedCount // start from 0
   startEvent
   endEvent
+  restoreDOM // function if opt.restoreDOMManuallyOndrop else null
 }
 e.g.
 draggable(this.$el, {
@@ -541,13 +543,21 @@ function index$1 (dragHandlerEl) {
       var _store = store,
           el = _store.el;
 
-      if (opt.clone) {
-        el.parentElement.removeChild(el);
-      } else {
-        restoreAttr(el, 'style');
-        restoreAttr(el, 'class');
+      var restoreDOM = function restoreDOM() {
+        if (opt.clone) {
+          el.parentElement.removeChild(el);
+        } else {
+          restoreAttr(el, 'style');
+          restoreAttr(el, 'class');
+        }
+      };
+
+      if (!opt.restoreDOMManuallyOndrop) {
+        restoreDOM();
+        restoreDOM = null;
       }
 
+      store.restoreDOM = restoreDOM;
       opt.drop && opt.drop(e, store, opt);
     }
 
