@@ -1,6 +1,6 @@
 {
   "name": "draggable-helper",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.esm.js",
@@ -22,11 +22,12 @@
     "url": "https://github.com/phphe/draggable-helper.git"
   },
   "devDependencies": {
-    "rollup-helper": "^2.0.1"
+    "rollup-helper": "^2.0.12"
   },
   "dependencies": {
-    "drag-event-service": "^1.0.1",
-    "helper-js": "^1.4.14"
+    "@babel/runtime": "^7.7.7",
+    "drag-event-service": "^1.0.2",
+    "helper-js": "^1.4.21"
   },
   "license": "MIT"
 }

@@ -1,13 +1,13 @@
 /*!
-* draggable-helper v3.0.3
-* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-* Released under the MIT License.
-*/
+ * draggable-helper v3.0.4
+ * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+ * Released under the MIT License.
+ */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global.draggableHelper = {}));
-}(this, (function (exports) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global.draggableHelper = factory());
+}(this, (function () { 'use strict';
 
   function _defineProperty(obj, key, value) {
     if (key in obj) {
@@ -24,59 +24,13 @@
     return obj;
   }
 
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
+  var defineProperty = _defineProperty;
 
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      if (enumerableOnly) symbols = symbols.filter(function (sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      });
-      keys.push.apply(keys, symbols);
-    }
-
-    return keys;
-  }
-
-  function _objectSpread2(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-
-      if (i % 2) {
-        ownKeys(Object(source), true).forEach(function (key) {
-          _defineProperty(target, key, source[key]);
-        });
-      } else if (Object.getOwnPropertyDescriptors) {
-        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-      } else {
-        ownKeys(Object(source)).forEach(function (key) {
-          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-        });
-      }
-    }
-
-    return target;
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    }
-  }
-
-  function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance");
-  }
+  /*!
+   * helper-js v1.4.21
+   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
 
   function getOffsetParent(el) {
     var offsetParent = el.offsetParent;
@@ -89,7 +43,6 @@
   } // get el current position. like jQuery.position
   // the position is relative to offsetParent viewport left top. it is for set absolute position, absolute position is relative to offsetParent viewport left top.
   // 相对于offsetParent可视区域左上角(el.offsetLeft或top包含父元素的滚动距离, 所以要减去). position一般用于设置绝对定位的情况, 而绝对定位就是以可视区域左上角为原点.
-
 
   function getPosition(el) {
     var offsetParent = getOffsetParent(el);
@@ -112,7 +65,6 @@
 
     return ps;
   } // get position of a el if its offset is given. like jQuery.offset.
-
   function getBoundingClientRect(el) {
     // refer: http://www.51xuediannao.com/javascript/getBoundingClientRect.html
     var xy = el.getBoundingClientRect();
@@ -128,17 +80,16 @@
     var x = left;
     var y = top;
     return {
-      top: top,
-      right: right,
-      bottom: bottom,
-      left: left,
-      width: width,
-      height: height,
-      x: x,
-      y: y
+      top,
+      right,
+      bottom,
+      left,
+      width,
+      height,
+      x,
+      y
     };
   }
-
   function findParent(el, callback, opt) {
     var cur = opt && opt.withSelf ? el : el.parentElement;
 
@@ -154,17 +105,14 @@
       }
     }
   }
-
   function backupAttr(el, name) {
     var key = "original_".concat(name);
     el[key] = el.getAttribute(name);
   }
-
   function restoreAttr(el, name) {
     var key = "original_".concat(name);
     el.setAttribute(name, el[key]);
   } // source: http://youmightnotneedjquery.com/
-
 
   function hasClass(el, className) {
     if (el.classList) {
@@ -173,7 +121,6 @@
       return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
     }
   } // source: http://youmightnotneedjquery.com/
-
 
   function addClass(el, className) {
     if (!hasClass(el, className)) {
@@ -185,17 +132,6 @@
     }
   } // source: http://youmightnotneedjquery.com/
 
-  /*!
-  * drag-event-service v1.0.1
-  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-  * Released under the MIT License.
-  */
-
-  /*!
-  * helper-js v1.4.14
-  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-  * Released under the MIT License.
-  */
   function onDOM(el, name, handler) {
     for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key8 = 3; _key8 < _len6; _key8++) {
       args[_key8 - 3] = arguments[_key8];
@@ -203,13 +139,12 @@
 
     if (el.addEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.addEventListener.apply(el, [name, handler].concat(args));
+      el.addEventListener(name, handler, ...args);
     } else if (el.attachEvent) {
       // IE 8 及更早 IE 版本
-      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
+      el.attachEvent("on".concat(name), handler, ...args);
     }
   }
-
   function offDOM(el, name, handler) {
     for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key9 = 3; _key9 < _len7; _key9++) {
       args[_key9 - 3] = arguments[_key9];
@@ -217,35 +152,44 @@
 
     if (el.removeEventListener) {
       // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.removeEventListener.apply(el, [name, handler].concat(args));
+      el.removeEventListener(name, handler, ...args);
     } else if (el.detachEvent) {
       // IE 8 及更早 IE 版本
-      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
+      el.detachEvent("on".concat(name), handler, ...args);
     }
-  } // support desktop and mobile
+  }
 
+  /*!
+   * drag-event-service v1.0.2
+   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
 
+  // support desktop and mobile
   var events = {
     start: ['mousedown', 'touchstart'],
     move: ['mousemove', 'touchmove'],
     end: ['mouseup', 'touchend']
   };
   var index = {
-    isTouch: function isTouch(e) {
+    isTouch(e) {
       return e.type && e.type.startsWith('touch');
     },
-    _getStore: function _getStore(el) {
+
+    _getStore(el) {
       if (!el._wrapperStore) {
         el._wrapperStore = [];
       }
 
       return el._wrapperStore;
     },
-    on: function on(el, name, handler, options) {
-      var _resolveOptions = resolveOptions(options),
-          args = _resolveOptions.args,
-          mouseArgs = _resolveOptions.mouseArgs,
-          touchArgs = _resolveOptions.touchArgs;
+
+    on(el, name, handler, options) {
+      var {
+        args,
+        mouseArgs,
+        touchArgs
+      } = resolveOptions(options);
 
       var store = this._getStore(el);
 
@@ -278,34 +222,39 @@
       };
 
       store.push({
-        handler: handler,
-        wrapper: wrapper
+        handler,
+        wrapper
       }); // follow format will cause big bundle size
       // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
       // hp.onDOM(el, events[name][0], wrapper, ...args)
 
-      onDOM.call.apply(onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-      onDOM.call.apply(onDOM, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
+      onDOM.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
+      onDOM.call(null, el, events[name][1], wrapper, ...[...args, ...touchArgs]);
     },
-    off: function off(el, name, handler, options) {
-      var _resolveOptions2 = resolveOptions(options),
-          args = _resolveOptions2.args,
-          mouseArgs = _resolveOptions2.mouseArgs;
+
+    off(el, name, handler, options) {
+      var {
+        args,
+        mouseArgs,
+        touchArgs
+      } = resolveOptions(options);
 
       var store = this._getStore(el);
 
       for (var i = store.length - 1; i >= 0; i--) {
-        var _store$i = store[i],
-            handler2 = _store$i.handler,
-            wrapper = _store$i.wrapper;
+        var {
+          handler: handler2,
+          wrapper
+        } = store[i];
 
         if (handler === handler2) {
-          offDOM.call.apply(offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-          offDOM.call.apply(offDOM, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
+          offDOM.call(null, el, events[name][0], wrapper, ...[...args, ...mouseArgs]);
+          offDOM.call(null, el, events[name][1], wrapper, ...[...args, ...mouseArgs]);
           store.splice(i, 1);
         }
       }
     }
+
   };
 
   function resolveOptions(options) {
@@ -317,12 +266,15 @@
     var mouseArgs = options.mouseArgs || [];
     var touchArgs = options.touchArgs || [];
     return {
-      args: args,
-      mouseArgs: mouseArgs,
-      touchArgs: touchArgs
+      args,
+      mouseArgs,
+      touchArgs
     };
   }
 
+  function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
   /***
   const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
   opt.beforeDrag(startEvent, moveEvent, store, opt) return false to prevent drag
@@ -371,7 +323,7 @@
   var UNDRAGGABLE_CLASS = 'undraggable';
   function index$1 (dragHandlerEl) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    opt = _objectSpread2({
+    opt = _objectSpread({
       minTranslate: 10,
       draggingClass: 'dragging'
     }, opt);
@@ -425,7 +377,7 @@
         y: mouse.y
       };
       store.startEvent = e;
-      store.initialMouse = _objectSpread2({}, store.mouse);
+      store.initialMouse = _objectSpread({}, store.mouse);
       /*
       must set passive false for touch, else the follow error occurs in Chrome:
       Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
@@ -451,7 +403,7 @@
           position = _resolveDragedElAndIn.position;
 
       store.el = el;
-      store.initialPosition = _objectSpread2({}, position);
+      store.initialPosition = _objectSpread({}, position);
       canDrag = opt.drag && opt.drag(store.startEvent, e, store, opt);
 
       if (canDrag === false) {
@@ -461,7 +413,7 @@
 
       var size = getBoundingClientRect(el);
 
-      var style = _objectSpread2({
+      var style = _objectSpread({
         width: "".concat(Math.ceil(size.width), "px"),
         height: "".concat(Math.ceil(size.height), "px"),
         zIndex: 9999,
@@ -589,8 +541,6 @@
     }
   }
 
-  exports.default = index$1;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return index$1;
 
 })));

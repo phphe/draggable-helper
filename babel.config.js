@@ -1,8 +1,11 @@
 module.exports = {
   presets: [
-    '@babel/preset-env',
+    ['@babel/preset-env', {
+      useBuiltIns: false,
+    }]
   ],
   plugins: [
+    '@babel/plugin-transform-runtime',
     // Stage 2
    '@babel/plugin-proposal-export-namespace-from',
     // Stage 3

@@ -1,326 +1,19 @@
 /*!
-* draggable-helper v3.0.3
-* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-* Released under the MIT License.
-*/
+ * draggable-helper v3.0.4
+ * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+ * Released under the MIT License.
+ */
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
+var _defineProperty = _interopDefault(require('@babel/runtime/helpers/defineProperty'));
+var hp = require('helper-js');
+var DragEventService = _interopDefault(require('drag-event-service'));
 
-  return obj;
-}
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    if (enumerableOnly) symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    });
-    keys.push.apply(keys, symbols);
-  }
-
-  return keys;
-}
-
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-
-    if (i % 2) {
-      ownKeys(Object(source), true).forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(Object(source)).forEach(function (key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-  }
-
-  return target;
-}
-
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-}
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
-}
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-}
-
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
-}
-
-function getOffsetParent(el) {
-  var offsetParent = el.offsetParent;
-
-  if (!offsetParent || offsetParent === document.body && getComputedStyle(document.body).position === 'static') {
-    offsetParent = document.body.parentElement;
-  }
-
-  return offsetParent;
-} // get el current position. like jQuery.position
-// the position is relative to offsetParent viewport left top. it is for set absolute position, absolute position is relative to offsetParent viewport left top.
-// 相对于offsetParent可视区域左上角(el.offsetLeft或top包含父元素的滚动距离, 所以要减去). position一般用于设置绝对定位的情况, 而绝对定位就是以可视区域左上角为原点.
-
-
-function getPosition(el) {
-  var offsetParent = getOffsetParent(el);
-  var ps = {
-    x: el.offsetLeft,
-    y: el.offsetTop
-  };
-  var parent = el;
-
-  while (true) {
-    parent = parent.parentElement;
-
-    if (parent === offsetParent || !parent) {
-      break;
-    }
-
-    ps.x -= parent.scrollLeft;
-    ps.y -= parent.scrollTop;
-  }
-
-  return ps;
-} // get position of a el if its offset is given. like jQuery.offset.
-
-function getBoundingClientRect(el) {
-  // refer: http://www.51xuediannao.com/javascript/getBoundingClientRect.html
-  var xy = el.getBoundingClientRect();
-  var top = xy.top - document.documentElement.clientTop,
-      //document.documentElement.clientTop 在IE67中始终为2，其他高级点的浏览器为0
-  bottom = xy.bottom,
-      left = xy.left - document.documentElement.clientLeft,
-      //document.documentElement.clientLeft 在IE67中始终为2，其他高级点的浏览器为0
-  right = xy.right,
-      width = xy.width || right - left,
-      //IE67不存在width 使用right - left获得
-  height = xy.height || bottom - top;
-  var x = left;
-  var y = top;
-  return {
-    top: top,
-    right: right,
-    bottom: bottom,
-    left: left,
-    width: width,
-    height: height,
-    x: x,
-    y: y
-  };
-}
-
-function findParent(el, callback, opt) {
-  var cur = opt && opt.withSelf ? el : el.parentElement;
-
-  while (cur) {
-    var r = callback(cur);
-
-    if (r === 'break') {
-      return;
-    } else if (r) {
-      return cur;
-    } else {
-      cur = cur.parentElement;
-    }
-  }
-}
-
-function backupAttr(el, name) {
-  var key = "original_".concat(name);
-  el[key] = el.getAttribute(name);
-}
-
-function restoreAttr(el, name) {
-  var key = "original_".concat(name);
-  el.setAttribute(name, el[key]);
-} // source: http://youmightnotneedjquery.com/
-
-
-function hasClass(el, className) {
-  if (el.classList) {
-    return el.classList.contains(className);
-  } else {
-    return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
-  }
-} // source: http://youmightnotneedjquery.com/
-
-
-function addClass(el, className) {
-  if (!hasClass(el, className)) {
-    if (el.classList) {
-      el.classList.add(className);
-    } else {
-      el.className += ' ' + className;
-    }
-  }
-} // source: http://youmightnotneedjquery.com/
-
-/*!
-* drag-event-service v1.0.1
-* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-* Released under the MIT License.
-*/
-
-/*!
-* helper-js v1.4.14
-* (c) phphe <phphe@outlook.com> (https://github.com/phphe)
-* Released under the MIT License.
-*/
-function onDOM(el, name, handler) {
-  for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key8 = 3; _key8 < _len6; _key8++) {
-    args[_key8 - 3] = arguments[_key8];
-  }
-
-  if (el.addEventListener) {
-    // 所有主流浏览器，除了 IE 8 及更早 IE版本
-    el.addEventListener.apply(el, [name, handler].concat(args));
-  } else if (el.attachEvent) {
-    // IE 8 及更早 IE 版本
-    el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
-  }
-}
-
-function offDOM(el, name, handler) {
-  for (var _len7 = arguments.length, args = new Array(_len7 > 3 ? _len7 - 3 : 0), _key9 = 3; _key9 < _len7; _key9++) {
-    args[_key9 - 3] = arguments[_key9];
-  }
-
-  if (el.removeEventListener) {
-    // 所有主流浏览器，除了 IE 8 及更早 IE版本
-    el.removeEventListener.apply(el, [name, handler].concat(args));
-  } else if (el.detachEvent) {
-    // IE 8 及更早 IE 版本
-    el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
-  }
-} // support desktop and mobile
-
-
-var events = {
-  start: ['mousedown', 'touchstart'],
-  move: ['mousemove', 'touchmove'],
-  end: ['mouseup', 'touchend']
-};
-var index = {
-  isTouch: function isTouch(e) {
-    return e.type && e.type.startsWith('touch');
-  },
-  _getStore: function _getStore(el) {
-    if (!el._wrapperStore) {
-      el._wrapperStore = [];
-    }
-
-    return el._wrapperStore;
-  },
-  on: function on(el, name, handler, options) {
-    var _resolveOptions = resolveOptions(options),
-        args = _resolveOptions.args,
-        mouseArgs = _resolveOptions.mouseArgs,
-        touchArgs = _resolveOptions.touchArgs;
-
-    var store = this._getStore(el);
-
-    var ts = this;
-
-    var wrapper = function wrapper(e) {
-      var mouse;
-      var isTouch = ts.isTouch(e);
-
-      if (isTouch) {
-        // touch
-        mouse = {
-          x: e.changedTouches[0].pageX,
-          y: e.changedTouches[0].pageY
-        };
-      } else {
-        // mouse
-        mouse = {
-          x: e.pageX,
-          y: e.pageY
-        };
-
-        if (name === 'start' && e.which !== 1) {
-          // not left button mousedown
-          return;
-        }
-      }
-
-      return handler.call(this, e, mouse);
-    };
-
-    store.push({
-      handler: handler,
-      wrapper: wrapper
-    }); // follow format will cause big bundle size
-    // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
-    // hp.onDOM(el, events[name][0], wrapper, ...args)
-
-    onDOM.call.apply(onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-    onDOM.call.apply(onDOM, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
-  },
-  off: function off(el, name, handler, options) {
-    var _resolveOptions2 = resolveOptions(options),
-        args = _resolveOptions2.args,
-        mouseArgs = _resolveOptions2.mouseArgs;
-
-    var store = this._getStore(el);
-
-    for (var i = store.length - 1; i >= 0; i--) {
-      var _store$i = store[i],
-          handler2 = _store$i.handler,
-          wrapper = _store$i.wrapper;
-
-      if (handler === handler2) {
-        offDOM.call.apply(offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-        offDOM.call.apply(offDOM, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-        store.splice(i, 1);
-      }
-    }
-  }
-};
-
-function resolveOptions(options) {
-  if (!options) {
-    options = {};
-  }
-
-  var args = options.args || [];
-  var mouseArgs = options.mouseArgs || [];
-  var touchArgs = options.touchArgs || [];
-  return {
-    args: args,
-    mouseArgs: mouseArgs,
-    touchArgs: touchArgs
-  };
-}
-
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 /***
 const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 opt.beforeDrag(startEvent, moveEvent, store, opt) return false to prevent drag
@@ -367,16 +60,16 @@ draggable(this.$el, {
 
 var IGNORE_TRIGGERS = ['INPUT', 'TEXTAREA', 'SELECT', 'OPTGROUP', 'OPTION'];
 var UNDRAGGABLE_CLASS = 'undraggable';
-function index$1 (dragHandlerEl) {
+function index (dragHandlerEl) {
   var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  opt = _objectSpread2({
+  opt = _objectSpread({
     minTranslate: 10,
     draggingClass: 'dragging'
   }, opt);
   var store = getPureStore();
 
-  var destroy = function destroy() {
-    index.off(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
+  var destroy = () => {
+    DragEventService.off(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
     delete dragHandlerEl._draggbleEventHandler;
   };
 
@@ -385,7 +78,7 @@ function index$1 (dragHandlerEl) {
   }
 
   dragHandlerEl._draggbleEventHandler = start;
-  index.on(dragHandlerEl, 'start', start);
+  DragEventService.on(dragHandlerEl, 'start', start);
   return destroy;
 
   function start(e, mouse) {
@@ -398,12 +91,12 @@ function index$1 (dragHandlerEl) {
       return;
     }
 
-    if (hasClass(e.target, UNDRAGGABLE_CLASS)) {
+    if (hp.hasClass(e.target, UNDRAGGABLE_CLASS)) {
       return;
     }
 
-    var isParentUndraggable = findParent(e.target, function (el) {
-      if (hasClass(el, UNDRAGGABLE_CLASS)) {
+    var isParentUndraggable = hp.findParent(e.target, el => {
+      if (hp.hasClass(el, UNDRAGGABLE_CLASS)) {
         return true;
       }
 
@@ -423,18 +116,18 @@ function index$1 (dragHandlerEl) {
       y: mouse.y
     };
     store.startEvent = e;
-    store.initialMouse = _objectSpread2({}, store.mouse);
+    store.initialMouse = _objectSpread({}, store.mouse);
     /*
     must set passive false for touch, else the follow error occurs in Chrome:
     Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/features/5093566007214080
      */
 
-    index.on(document, 'move', moving, {
+    DragEventService.on(document, 'move', moving, {
       touchArgs: [{
         passive: false
       }]
     });
-    index.on(window, 'end', drop);
+    DragEventService.on(window, 'end', drop);
   }
 
   function drag(e) {
@@ -444,12 +137,12 @@ function index$1 (dragHandlerEl) {
       return false;
     }
 
-    var _resolveDragedElAndIn = resolveDragedElAndInitialPosition(),
-        el = _resolveDragedElAndIn.el,
-        position = _resolveDragedElAndIn.position;
-
+    var {
+      el,
+      position
+    } = resolveDragedElAndInitialPosition();
     store.el = el;
-    store.initialPosition = _objectSpread2({}, position);
+    store.initialPosition = _objectSpread({}, position);
     canDrag = opt.drag && opt.drag(store.startEvent, e, store, opt);
 
     if (canDrag === false) {
@@ -457,9 +150,9 @@ function index$1 (dragHandlerEl) {
     } // dom actions
 
 
-    var size = getBoundingClientRect(el);
+    var size = hp.getBoundingClientRect(el);
 
-    var style = _objectSpread2({
+    var style = _objectSpread({
       width: "".concat(Math.ceil(size.width), "px"),
       height: "".concat(Math.ceil(size.height), "px"),
       zIndex: 9999,
@@ -469,15 +162,15 @@ function index$1 (dragHandlerEl) {
       top: position.y + 'px'
     }, opt.style || opt.getStyle && opt.getStyle(store, opt) || {});
 
-    backupAttr(el, 'style');
+    hp.backupAttr(el, 'style');
 
     for (var key in style) {
       el.style[key] = style[key];
     } // add class
 
 
-    backupAttr(el, 'class');
-    addClass(el, opt.draggingClass);
+    hp.backupAttr(el, 'class');
+    hp.addClass(el, opt.draggingClass);
   }
 
   function moving(e, mouse) {
@@ -530,25 +223,26 @@ function index$1 (dragHandlerEl) {
   }
 
   function drop(e) {
-    index.off(document, 'move', moving, {
+    DragEventService.off(document, 'move', moving, {
       touchArgs: [{
         passive: false
       }]
     });
-    index.off(window, 'end', drop); // drag executed if movedCount > 0
+    DragEventService.off(window, 'end', drop); // drag executed if movedCount > 0
 
     if (store.movedCount > 0) {
       store.movedCount = 0;
       store.endEvent = e;
-      var _store = store,
-          el = _store.el;
+      var {
+        el
+      } = store;
 
-      var restoreDOM = function restoreDOM() {
+      var restoreDOM = () => {
         if (opt.clone) {
           el.parentElement.removeChild(el);
         } else {
-          restoreAttr(el, 'style');
-          restoreAttr(el, 'class');
+          hp.restoreAttr(el, 'style');
+          hp.restoreAttr(el, 'class');
         }
       };
 
@@ -575,8 +269,8 @@ function index$1 (dragHandlerEl) {
     }
 
     return {
-      position: getPosition(el0),
-      el: el
+      position: hp.getPosition(el0),
+      el
     };
   }
 
@@ -587,4 +281,4 @@ function index$1 (dragHandlerEl) {
   }
 }
 
-exports.default = index$1;
+module.exports = index;
