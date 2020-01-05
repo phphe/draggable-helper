@@ -63,7 +63,7 @@ export default function (dragHandlerEl, opt = {}) {
   }
   dragHandlerEl._draggbleEventHandler = start
   DragEventService.on(dragHandlerEl, 'start', start)
-  return destroy
+  return {destroy, options: opt}
   function start(e, mouse) {
     // detect draggable =================================
     if (opt.triggerBySelf && e.target !== dragHandlerEl) {

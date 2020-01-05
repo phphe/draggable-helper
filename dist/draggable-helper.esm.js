@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v3.0.4
+ * draggable-helper v4.0.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -75,7 +75,10 @@ function index (dragHandlerEl) {
 
   dragHandlerEl._draggbleEventHandler = start;
   DragEventService.on(dragHandlerEl, 'start', start);
-  return destroy;
+  return {
+    destroy,
+    options: opt
+  };
 
   function start(e, mouse) {
     // detect draggable =================================

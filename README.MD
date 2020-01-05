@@ -21,7 +21,7 @@ npm install draggable-helper
 ```js
 import draggableHelper from 'draggable-helper'
 // dragHandlerEl will be added mouse and touch event listener
-const destroy = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
+const {destroy, options} = draggableHelper(HTMLElement dragHandlerEl, Object opt = {})
 // opt
 // opt will pass to hook, so you can attach custom data into opt, such the data of the element
 // startEvent is mousedown or touchstart
@@ -73,7 +73,7 @@ store = {
 Advance usage: bind to parent element, make children element as trigger element or moved element.
 ```js
 import draggableHelper from 'draggable-helper'
-const destroy = draggableHelper(document.body, {
+const {destroy, options} = draggableHelper(document.body, {
   drag(startEvent, moveEvent, store, opt) {
     // check trigger el
     if (startEvent.target not has class 'your trigger class') {

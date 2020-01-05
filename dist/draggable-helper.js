@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v3.0.4
+ * draggable-helper v4.0.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Released under the MIT License.
  */
@@ -27,7 +27,7 @@
   var defineProperty = _defineProperty;
 
   /*!
-   * helper-js v1.4.21
+   * helper-js v1.4.25
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Released under the MIT License.
    */
@@ -131,6 +131,12 @@
       }
     }
   } // source: http://youmightnotneedjquery.com/
+
+  /*!
+   * helper-js v1.4.21
+   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Released under the MIT License.
+   */
 
   function onDOM(el, name, handler) {
     for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key8 = 3; _key8 < _len6; _key8++) {
@@ -340,7 +346,10 @@
 
     dragHandlerEl._draggbleEventHandler = start;
     index.on(dragHandlerEl, 'start', start);
-    return destroy;
+    return {
+      destroy: destroy,
+      options: opt
+    };
 
     function start(e, mouse) {
       // detect draggable =================================
