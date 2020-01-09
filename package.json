@@ -1,6 +1,6 @@
 {
   "name": "draggable-helper",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.esm.js",
@@ -8,10 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "node scripts/build.js",
-    "dev": "rollup -w -c scripts/config.js --environment TARGET:umd",
-    "build:esm": "rollup -c scripts/config.js --environment TARGET:esm",
-    "dev:esm": "rollup -w -c scripts/config.js --environment TARGET:esm"
+    "build": "rogo"
   },
   "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
   "unpkg": "dist/draggable-helper.js",
@@ -23,12 +20,12 @@
     "url": "https://github.com/phphe/draggable-helper.git"
   },
   "devDependencies": {
-    "rollup-helper": "^2.0.12"
+    "rogo": "^1.0.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",
-    "drag-event-service": "^1.0.2",
-    "helper-js": "^1.4.25"
+    "drag-event-service": "^1.0.3",
+    "helper-js": "^1.4.27"
   },
   "license": "MIT"
 }
