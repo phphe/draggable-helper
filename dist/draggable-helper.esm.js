@@ -1,6 +1,7 @@
 /*!
- * draggable-helper v4.0.1
+ * draggable-helper v4.0.2
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+ * Homepage: undefined
  * Released under the MIT License.
  */
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
@@ -64,7 +65,7 @@ function index (dragHandlerEl) {
   }, opt);
   var store = getPureStore();
 
-  var destroy = () => {
+  var destroy = function destroy() {
     DragEventService.off(dragHandlerEl, 'start', dragHandlerEl._draggbleEventHandler);
     delete dragHandlerEl._draggbleEventHandler;
   };
@@ -76,7 +77,7 @@ function index (dragHandlerEl) {
   dragHandlerEl._draggbleEventHandler = start;
   DragEventService.on(dragHandlerEl, 'start', start);
   return {
-    destroy,
+    destroy: destroy,
     options: opt
   };
 
@@ -94,7 +95,7 @@ function index (dragHandlerEl) {
       return;
     }
 
-    var isParentUndraggable = findParent(e.target, el => {
+    var isParentUndraggable = findParent(e.target, function (el) {
       if (hasClass(el, UNDRAGGABLE_CLASS)) {
         return true;
       }
@@ -136,10 +137,10 @@ function index (dragHandlerEl) {
       return false;
     }
 
-    var {
-      el,
-      position
-    } = resolveDragedElAndInitialPosition();
+    var _resolveDragedElAndIn = resolveDragedElAndInitialPosition(),
+        el = _resolveDragedElAndIn.el,
+        position = _resolveDragedElAndIn.position;
+
     store.el = el;
     store.initialPosition = _objectSpread({}, position);
     canDrag = opt.drag && opt.drag(store.startEvent, e, store, opt);
@@ -232,11 +233,10 @@ function index (dragHandlerEl) {
     if (store.movedCount > 0) {
       store.movedCount = 0;
       store.endEvent = e;
-      var {
-        el
-      } = store;
+      var _store = store,
+          el = _store.el;
 
-      var restoreDOM = () => {
+      var restoreDOM = function restoreDOM() {
         if (opt.clone) {
           el.parentElement.removeChild(el);
         } else {
@@ -269,7 +269,7 @@ function index (dragHandlerEl) {
 
     return {
       position: getPosition(el0),
-      el
+      el: el
     };
   }
 
