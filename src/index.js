@@ -87,7 +87,11 @@ export default function (dragHandlerEl, opt = {}) {
       return
     }
     // detect draggable end =================================
-    e.preventDefault()
+    if (!DragEventService.isTouch(e)) {
+      // Do not prevent event now and when the client is mobile. Doing so will result in elements within the node not triggering click event.
+      // 不要在此时, 客户端为移动端时阻止事件. 否则将导致节点内的元素不触发点击事件.
+      e.preventDefault();
+    }
     store.mouse = {
       x: mouse.x,
       y: mouse.y,
