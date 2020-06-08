@@ -1,15 +1,16 @@
 {
   "name": "draggable-helper",
-  "version": "4.0.3",
+  "version": "5.0.0-beta",
   "description": "",
-  "main": "dist/draggable-helper.cjs.js",
-  "module": "dist/draggable-helper.esm.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
     "compile-scripts": "tsc --target ES6 --module CommonJS scripts/build.ts",
-    "build": "rollup -c scripts/build.js & node scripts/build.js --report"
+    "build": "rollup -c scripts/build.js & node scripts/build.js --report",
+    "watch": "rollup -c scripts/build.js --watch"
   },
   "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
   "unpkg": "dist/draggable-helper.js",
@@ -21,11 +22,14 @@
     "url": "https://github.com/phphe/draggable-helper.git"
   },
   "devDependencies": {
-    "rogo": "^2.0.2"
+    "@babel/preset-typescript": "^7.10.1",
+    "rogo": "^2.0.2",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "typescript": "^3.9.5"
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",
-    "drag-event-service": "^1.0.4",
+    "drag-event-service": "^1.1.5",
     "helper-js": "^1.4.36"
   },
   "license": "MIT"

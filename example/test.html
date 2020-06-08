@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Document</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="../dist/draggable-helper.js"></script>
+  <script src="../dist/umd/index.js"></script>
+  <script src="../node_modules/helper-js/dist/helper-js.js"></script>
 </head>
 <body>
   <h1>not clone</h1>
@@ -15,6 +16,10 @@
     <div>not clone</div>
     <div>not clone</div>
     <div>not clone</div>
+    <div class="transition">transition</div>
+    <div class="transition">transition</div>
+    <div class="transition">transition</div>
+    <div class="transition">transition</div>
   </div>
   <h1>clone</h1>
   <div id="clone">
@@ -25,6 +30,10 @@
     <div>clone3</div>
     <div>clone4</div>
     <div>clone5</div>
+  </div>
+  <h1>scroll box</h1>
+  <div id="scroll_box">
+    <hr style="width:600px;" />
   </div>
   <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac imperdiet ipsum, in fermentum turpis. Suspendisse ullamcorper convallis tincidunt. Vivamus varius ante tristique mauris rhoncus vulputate condimentum non tellus. In suscipit placerat facilisis. Praesent consectetur turpis purus, cursus blandit libero vulputate eu. Cras auctor in magna eu bibendum. Nam ante arcu, laoreet eu tortor ac, fermentum pellentesque nulla. Nulla eget ante lorem. Integer enim sapien, fermentum et sapien sit amet, malesuada vulputate odio. Phasellus aliquam, est sit amet venenatis gravida, erat sapien vulputate mi, a porta lectus nunc ut turpis. Quisque at lectus sit amet nibh porttitor sodales sed ac eros. Sed placerat mattis nulla et vestibulum. Ut imperdiet, velit vitae sagittis aliquet, felis nisi aliquam tortor, sit amet ullamcorper mi metus non massa.
@@ -38,16 +47,46 @@ Mauris id faucibus leo, gravida gravida orci. Pellentesque habitant morbi tristi
 Suspendisse potenti. Suspendisse in dolor sed sapien mollis interdum. Vivamus at tempus lectus. Aliquam sagittis luctus enim vitae vestibulum. Vivamus imperdiet quis purus vitae molestie. Donec ac risus condimentum, convallis nisl in, sagittis nisl. In id felis non purus facilisis commodo. Maecenas eu risus eleifend enim pellentesque cursus a sed sem. Morbi nibh odio, consectetur vitae sollicitudin quis, posuere sit amet enim. Aliquam eu dui egestas, lacinia massa in, iaculis ipsum. Nullam placerat nec velit non elementum.
   </p>
   <script>
-  a = document.getElementById('not_clone');
-  [...a.children].forEach(el => {
-  	draggableHelper(el, {})
-  })
-  b = document.getElementById('clone');
-  [...b.children].forEach(el => {
-  	draggableHelper(el, {
-    	clone: true,
+    const hp = helperJs
+    a = document.getElementById('not_clone');
+    [...a.children].forEach(el => {
+      draggableHelper.default(el, {})
     })
-  })
+    b = document.getElementById('clone');
+    [...b.children].forEach(el => {
+      draggableHelper.default(el, {
+        clone: true,
+      })
+    })
+    for (let index = 0; index < 50; index++) {
+      el = hp.createElementFromHTML(`<div>scroll box${index}</div>`)
+      window.scroll_box.appendChild(el)
+    }
+    scroll_box = c = document.getElementById('scroll_box');
+    [...c.children].forEach(el => {
+      draggableHelper.default(el)
+    })
+    draggableHelper.fixScrollBox(scroll_box)
   </script>
+  <style>
+    .transition{
+      transition: all .1s;
+    }
+    #scroll_box{
+      height: 200px;
+      width: 200px;
+      padding: 10px;
+      overflow: auto;
+      border: 2px solid #000;
+    }
+    #scroll_box div{
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin-bottom: 5px;
+      box-sizing: border-box;
+      background: #ff8022;
+      color: #ffffff;
+    }
+  </style>
 </body>
 </html>
