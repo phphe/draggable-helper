@@ -64,9 +64,8 @@ Suspendisse potenti. Suspendisse in dolor sed sapien mollis interdum. Vivamus at
     }
     scroll_box = c = document.getElementById('scroll_box');
     [...c.children].forEach(el => {
-      draggableHelper.default(el)
+      draggableHelper.default(el, {edgeScroll: true})
     })
-    draggableHelper.fixScrollBox(scroll_box)
   </script>
   <style>
     .transition{
