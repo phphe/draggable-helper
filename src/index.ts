@@ -1,7 +1,5 @@
 import * as hp from 'helper-js'
-// TODO
-// import DragEventService, {EventPosition, MouseOrTouchEvent} from 'drag-event-service'
-import DragEventService, {EventPosition, MouseOrTouchEvent} from '../../DragEventService'
+import DragEventService, {EventPosition, MouseOrTouchEvent} from 'drag-event-service'
 
 /* Default export, a function.
 ```js
@@ -30,7 +28,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   let store: Store
   // set default value of options
   // 设置options的默认值
-  objectAssignIfKeyNull(opt, defaultOptions)
+  hp.objectAssignIfKeyNull(opt, defaultOptions)
   // define the event listener of mousedown and touchstart
   // 定义mousedown和touchstart事件监听器
   const onMousedownOrTouchStart = (e:MouseOrTouchEvent, mouse: EventPosition) => {
@@ -75,7 +73,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       let triggerElement
       for (const className of hp.toArrayIfNot(opt.triggerClassName)) {
         triggerElement = hp.findParent(store.directTriggerElement, (el) => {
-          if (hp.hasClass(el, className)) {
+          if (hp.hasClass(el, <string>className)) {
             return true
           }
           if (el === listenerElement) {
@@ -128,9 +126,6 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   // 定义mousemove和touchmove事件监听器
   const onMousemoveOrTouchMove = (e: MouseOrTouchEvent, mouse: EventPosition) => {
     const {movedOrClonedElement} = store
-    // prevent text be selected
-    // 阻止文字被选中
-    e.preventDefault()
     // calc move and attach related info to store
     // 计算move并附加相关信息到store
     const move = store.move = {
@@ -139,6 +134,9 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     }
     store.moveEvent = e
     store.mouse = mouse
+    // prevent text be selected. prevent page scroll when touch.
+    // 阻止文字被选中. 当触摸时阻止屏幕被拖动.
+    e.preventDefault()
     // first move
     // 第一次移动
     if (store.movedCount === 0) {
@@ -268,7 +266,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     DragEventService.on(window, 'end', onMouseupOrTouchEnd)
   }
   // 
-  return {destroy, options: opt} 
+  return {destroy, options: opt}
 }
 
 
@@ -317,7 +315,7 @@ export interface Store extends InitialStore {
   move: EventPosition2 // Moved displacement relative to viewport. 相对于视窗的位移
   movedOrClonedElement: HTMLElement // The element to be moved or cloned.
   movedElement: HTMLElement // The element to be moved.
-  initialPosition: EventPosition // fixed position. The position relative to viewport
+  initialPosition: EventPosition2 // fixed position. The position relative to viewport
   updateMovedElementStyle: () => void
 }
 // Other type
@@ -342,8 +340,8 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
   // find the scrollable parent elements
   // 寻找可滚动的父系元素
   let foundHorizontal: HTMLElement, foundVertical: HTMLElement, prevElement: HTMLElement, horizontalDir:'left'|'right',verticalDir:'up'|'down'
-  for (const itemEl of hp.elementsFromPoint(triggerPoint.x, triggerPoint.y)) {
-    
+  for (const itemEl0 of hp.elementsFromPoint(triggerPoint.x, triggerPoint.y)) {
+    const itemEl = <HTMLElement>itemEl0
     if (prevElement && !hp.isDescendantOf(prevElement, itemEl)) {
       // itemEl is being covered by other elements
       // itemEl被其他元素遮挡
@@ -390,16 +388,16 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
   // scroll
   if (foundHorizontal) {
     if (horizontalDir === 'left') {
-      stopHorizontalScroll = scrollTo({x: 0, element: foundHorizontal, duration: scrollableDisplacement(foundHorizontal, 'left') / opt.edgeScrollSpeed})
+      stopHorizontalScroll = hp.scrollTo({x: 0, element: foundHorizontal, duration: scrollableDisplacement(foundHorizontal, 'left') / opt.edgeScrollSpeed})
     } else {
-      stopHorizontalScroll = scrollTo({x: foundHorizontal.scrollWidth - foundHorizontal.clientWidth, element: foundHorizontal, duration: scrollableDisplacement(foundHorizontal, 'right') / opt.edgeScrollSpeed})
+      stopHorizontalScroll = hp.scrollTo({x: foundHorizontal.scrollWidth - foundHorizontal.clientWidth, element: foundHorizontal, duration: scrollableDisplacement(foundHorizontal, 'right') / opt.edgeScrollSpeed})
     }
   }
   if (foundVertical) {
     if (verticalDir === 'up') {
-      stopVerticalScroll = scrollTo({y: 0, element: foundVertical, duration: scrollableDisplacement(foundVertical, 'up') / opt.edgeScrollSpeed})
+      stopVerticalScroll = hp.scrollTo({y: 0, element: foundVertical, duration: scrollableDisplacement(foundVertical, 'up') / opt.edgeScrollSpeed})
     } else {
-      stopVerticalScroll = scrollTo({y: foundVertical.scrollHeight - foundVertical.clientHeight, element: foundVertical, duration: scrollableDisplacement(foundVertical, 'down') / opt.edgeScrollSpeed})
+      stopVerticalScroll = hp.scrollTo({y: foundVertical.scrollHeight - foundVertical.clientHeight, element: foundVertical, duration: scrollableDisplacement(foundVertical, 'down') / opt.edgeScrollSpeed})
     }
   }
   // is element scrollable in a direction
@@ -456,81 +454,5 @@ function stopOldScrollAnimation() {
     stopVerticalScroll()
     stopVerticalScroll = null
   }
-}
-
-// TODO move to helper-js
-function objectAssignIfKeyNull(obj1, obj2) {
-  Object.keys(obj2).forEach(key => {
-    if (obj1[key] == null) {
-      obj1[key] = obj2[key]
-    }
-  })
-}
-// from https://gist.github.com/andjosh/6764939
-/*
-interface options{
-  x: number // nullable. don't scroll horizontally when null
-  y: number // nullable. don't scroll vertically when null
-  duration: number // default 0
-  element: HTMLElement // default is the top scrollable element.
-  beforeEveryFrame: (count: number) => boolean|void // call before requestAnimationFrame execution. return false to stop
-}
-*/
-function scrollTo(options) {
-  if (!options.element) {
-    options.element = document.scrollingElement || document.documentElement
-  }
-  if (options.duration == null) {
-    options.duration = 0
-  }
-  const {x, y, duration, element} = options
-  let requestAnimationFrameId
-  let count = 0
-  const startY = element.scrollTop,
-  changeY = y - startY,
-  startX = element.scrollLeft,
-  changeX = x - startX,
-  startDate = + new Date(),
-  animateScroll = function() {
-    if (options.beforeEveryFrame && options.beforeEveryFrame(count) === false) {
-      return
-    }
-    const currentDate = new Date().getTime()
-    const changedTime = currentDate - startDate
-    if (y != null) {
-      element.scrollTop = parseInt(calc(startY, changeY, changedTime, duration))
-    }
-    if (x != null) {
-      element.scrollLeft = parseInt(calc(startX, changeX, changedTime, duration))
-    }
-    if(changedTime < duration) {
-      requestAnimationFrameId = requestAnimationFrame(animateScroll)
-    } else {
-      if (y != null) {
-        element.scrollTop = y
-      }
-      if (x != null) {
-        element.scrollLeft = x
-      }
-    }
-    count++
-  }
-  const stop = () => {
-    cancelAnimationFrame(requestAnimationFrameId)
-  }
-  animateScroll()
-  // return stop
-  return stop
-  function calc(startValue, changeInValue, changedTime, duration) {
-    return startValue + changeInValue * (changedTime / duration)
-  }
-}
-
-function easeInOutQuad(startValue, changeInValue, changedTime, duration) {
-  let t = changedTime, d= duration, b = startValue, c = changeInValue
-  t /= d/2;
-  if (t < 1) return c/2*t*t + b;
-  t--;
-  return -c/2 * (t*(t-2) - 1) + b;
 }
 

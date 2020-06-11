@@ -1,3 +1,5 @@
+# Follow documentation is for version 4. The documentation for newest version 5 is being written...
+
 # draggable-helper
 A js library to simplify your drag and drop functions. Start with a element, it will expose hooks(drag, moving, drop). You can stop drag, moving and drop by conditions. You can set minTranslate. Its code is easy, you can check source code.
 ## features

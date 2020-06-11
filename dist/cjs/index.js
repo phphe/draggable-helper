@@ -11,230 +11,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var hp = require('helper-js');
-var _toConsumableArray = _interopDefault(require('@babel/runtime/helpers/toConsumableArray'));
-
-/*!
- * drag-event-service v1.1.5
- * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
- * Homepage: undefined
- * Released under the MIT License.
- */
-var events = {
-  start: ['mousedown', 'touchstart'],
-  move: ['mousemove', 'touchmove'],
-  end: ['mouseup', 'touchend']
-};
-var DragEventService = {
-  isTouch: function isTouch(e) {
-    return e.type && e.type.startsWith('touch');
-  },
-  _getStore: function _getStore(el) {
-    if (!el._wrapperStore) {
-      el._wrapperStore = [];
-    }
-
-    return el._wrapperStore;
-  },
-  on: function on(el, name, handler, options) {
-    var _hp$onDOM, _hp$onDOM2;
-
-    var _resolveOptions = resolveOptions(options),
-        args = _resolveOptions.args,
-        mouseArgs = _resolveOptions.mouseArgs,
-        touchArgs = _resolveOptions.touchArgs;
-
-    var store = this._getStore(el);
-
-    var ts = this;
-
-    var wrapper = function wrapper(e) {
-      var mouse;
-      var isTouch = ts.isTouch(e);
-
-      if (isTouch) {
-        // touch
-        mouse = {
-          x: e.changedTouches[0].pageX,
-          y: e.changedTouches[0].pageY,
-          pageX: e.changedTouches[0].pageX,
-          pageY: e.changedTouches[0].pageY,
-          clientX: e.changedTouches[0].clientX,
-          clientY: e.changedTouches[0].clientY,
-          screenX: e.changedTouches[0].screenX,
-          screenY: e.changedTouches[0].screenY
-        };
-      } else {
-        // mouse
-        mouse = {
-          x: e.pageX,
-          y: e.pageY,
-          pageX: e.pageX,
-          pageY: e.pageY,
-          clientX: e.clientX,
-          clientY: e.clientY,
-          screenX: e.screenX,
-          screenY: e.screenY
-        };
-
-        if (name === 'start' && e.which !== 1) {
-          // not left button mousedown
-          return;
-        }
-      }
-
-      return handler.call(this, e, mouse);
-    };
-
-    store.push({
-      handler: handler,
-      wrapper: wrapper
-    }); // follow format will cause big bundle size
-    // 以下写法将会使打包工具认为hp是上下文, 导致打包整个hp
-    // hp.onDOM(el, events[name][0], wrapper, ...args)
-
-    (_hp$onDOM = hp.onDOM).call.apply(_hp$onDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-
-    (_hp$onDOM2 = hp.onDOM).call.apply(_hp$onDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(touchArgs))));
-  },
-  off: function off(el, name, handler, options) {
-    var _resolveOptions2 = resolveOptions(options),
-        args = _resolveOptions2.args,
-        mouseArgs = _resolveOptions2.mouseArgs;
-
-    var store = this._getStore(el);
-
-    for (var i = store.length - 1; i >= 0; i--) {
-      var _store$i = store[i],
-          handler2 = _store$i.handler,
-          wrapper = _store$i.wrapper;
-
-      if (handler === handler2) {
-        var _hp$offDOM, _hp$offDOM2;
-
-        (_hp$offDOM = hp.offDOM).call.apply(_hp$offDOM, [null, el, events[name][0], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-
-        (_hp$offDOM2 = hp.offDOM).call.apply(_hp$offDOM2, [null, el, events[name][1], wrapper].concat([].concat(_toConsumableArray(args), _toConsumableArray(mouseArgs))));
-
-        store.splice(i, 1);
-      }
-    }
-  }
-};
-
-function resolveOptions(options) {
-  if (!options) {
-    options = {};
-  }
-
-  var args = options.args || [];
-  var mouseArgs = options.mouseArgs || [];
-  var touchArgs = options.touchArgs || [];
-  return {
-    args: args,
-    mouseArgs: mouseArgs,
-    touchArgs: touchArgs
-  };
-}
-
-function trackMouseOrTouchPosition() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var trackedInfo = {
-    position: {}
-  };
-
-  var update = function update(name, e) {
-    var isTouch = DragEventService.isTouch(e);
-
-    if (isTouch) {
-      // touch
-      Object.assign(trackedInfo.position, {
-        x: e.changedTouches[0].pageX,
-        y: e.changedTouches[0].pageY,
-        pageX: e.changedTouches[0].pageX,
-        pageY: e.changedTouches[0].pageY,
-        clientX: e.changedTouches[0].clientX,
-        clientY: e.changedTouches[0].clientY,
-        screenX: e.changedTouches[0].screenX,
-        screenY: e.changedTouches[0].screenY
-      });
-    } else {
-      // mouse
-      Object.assign(trackedInfo.position, {
-        x: e.pageX,
-        y: e.pageY,
-        pageX: e.pageX,
-        pageY: e.pageY,
-        clientX: e.clientX,
-        clientY: e.clientY,
-        screenX: e.screenX,
-        screenY: e.screenY
-      });
-    }
-
-    if (name === 'start') {
-      trackedInfo.startEvent = e;
-    } else if (name === 'end') {
-      trackedInfo.endEvent = e;
-    }
-
-    Object.assign(trackedInfo, {
-      event: e,
-      isTouch: isTouch,
-      eventType: name
-    });
-  };
-
-  var onStart = function onStart(e) {
-    var isTouch = DragEventService.isTouch(e);
-
-    if (!isTouch && e.which !== 1) {
-      // not left button mousedown
-      return;
-    }
-
-    update('start', e);
-
-    if (options.onStart) {
-      options.onStart();
-    }
-  };
-
-  var onMove = function onMove(e) {
-    update('move', e);
-
-    if (options.onMove) {
-      options.onMove();
-    }
-  };
-
-  var onEnd = function onEnd(e) {
-    update('end', e);
-
-    if (options.onEnd) {
-      options.onEnd();
-    }
-  };
-
-  var start = function start() {
-    DragEventService.on(document, 'start', onStart);
-    DragEventService.on(document, 'move', onMove);
-    DragEventService.on(window, 'end', onEnd);
-    trackedInfo.started = true;
-  };
-
-  var stop = function stop() {
-    DragEventService.off(document, 'start', onStart);
-    DragEventService.off(document, 'move', onMove);
-    DragEventService.off(window, 'end', onEnd);
-    trackedInfo.started = false;
-  };
-
-  return {
-    info: trackedInfo,
-    start: start,
-    stop: stop
-  };
-}
+var DragEventService = _interopDefault(require('drag-event-service'));
 
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -261,14 +38,17 @@ draggableHelper(listenerElement, options)
   options: Options. 可选.
  */
 
-var dragging = false; // Whether dragging is in progress. 拖拽是否正在进行中.
-
+var _edgeScroll = {
+  afterFirstMove: function afterFirstMove(store, opt) {},
+  afterMove: function afterMove(store, opt) {},
+  afterDrop: function afterDrop(store, opt) {}
+};
 function index (listenerElement) {
   var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var store; // set default value of options
   // 设置options的默认值
 
-  objectAssignIfKeyNull(opt, defaultOptions); // define the event listener of mousedown and touchstart
+  hp.objectAssignIfKeyNull(opt, defaultOptions); // define the event listener of mousedown and touchstart
   // 定义mousedown和touchstart事件监听器
 
   var onMousedownOrTouchStart = function onMousedownOrTouchStart(e, mouse) {
@@ -407,18 +187,18 @@ function index (listenerElement) {
 
   var onMousemoveOrTouchMove = function onMousemoveOrTouchMove(e, mouse) {
     var _store = store,
-        movedOrClonedElement = _store.movedOrClonedElement; // prevent text be selected
-    // 阻止文字被选中
-
-    e.preventDefault(); // calc move and attach related info to store
+        movedOrClonedElement = _store.movedOrClonedElement; // calc move and attach related info to store
     // 计算move并附加相关信息到store
 
     var move = store.move = {
-      x: mouse.x - store.initialMouse.x,
-      y: mouse.y - store.initialMouse.y
+      x: mouse.clientX - store.initialMouse.clientX,
+      y: mouse.clientY - store.initialMouse.clientY
     };
     store.moveEvent = e;
-    store.mouse = mouse; // first move
+    store.mouse = mouse; // prevent text be selected. prevent page scroll when touch.
+    // 阻止文字被选中. 当触摸时阻止屏幕被拖动.
+
+    e.preventDefault(); // first move
     // 第一次移动
 
     if (store.movedCount === 0) {
@@ -436,7 +216,7 @@ function index (listenerElement) {
 
 
       var movedElement = opt.clone ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
-      var initialPosition = hp.getPosition(movedOrClonedElement); // attach elements and initialPosition to store
+      var initialPosition = hp.getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
       // 附加元素和初始位置到store
 
       store.movedOrClonedElement = movedOrClonedElement;
@@ -455,7 +235,7 @@ function index (listenerElement) {
           height: "".concat(Math.ceil(size.height), "px"),
           zIndex: 9999,
           opacity: 0.8,
-          position: 'absolute',
+          position: 'fixed',
           left: initialPosition.x + 'px',
           top: initialPosition.y + 'px',
           pointerEvents: 'none'
@@ -476,8 +256,6 @@ function index (listenerElement) {
         return;
       }
 
-      dragging = true;
-
       if (opt.beforeMove && opt.beforeMove(store, opt) === false) {
         return;
       } // try to update moved element style
@@ -487,6 +265,8 @@ function index (listenerElement) {
       if (!opt.updateMovedElementStyleManually) {
         store.updateMovedElementStyle();
       }
+
+      _edgeScroll.afterFirstMove(store, opt);
     } // Not the first move
     // 非第一次移动
     else {
@@ -512,15 +292,16 @@ function index (listenerElement) {
         }
       }
 
+    _edgeScroll.afterMove(store, opt);
+
     store.movedCount++;
   }; // define the event listener of mouseup and touchend
   // 定义mouseup和touchend事件监听器
 
 
   var onMouseupOrTouchEnd = function onMouseupOrTouchEnd(e) {
-    dragging = false; // cancel listening mousemove, touchmove, mouseup, touchend
+    // cancel listening mousemove, touchmove, mouseup, touchend
     // 取消监听事件mousemove, touchmove, mouseup, touchend
-
     DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
       touchArgs: [{
         passive: false
@@ -558,7 +339,7 @@ function index (listenerElement) {
       updateMovedElementStyle();
     }
 
-    dragging = false;
+    _edgeScroll.afterDrop(store, opt);
   }; // define the destroy function
   // 定义销毁/退出的方法
 
@@ -587,242 +368,207 @@ var defaultOptions = {
   minDisplacement: 10,
   draggingClassName: 'dragging',
   clone: false,
-  updateMovedElementStyleManually: false
+  updateMovedElementStyleManually: false,
+  edgeScrollTriggerMargin: 50,
+  edgeScrollSpeed: 0.35,
+  edgeScrollTriggerMode: 'top_left_corner'
 }; // Info after event triggered. Created when mousedown or touchstart, destroied after mouseup or touchend.
 // 事件触发后的相关信息. mousedown或touchstart时创建, mouseup或touchend后销毁.
 
 var initialStore = {
   movedCount: 0
-};
-/* A mousemove or touchmove event listener generator function. To make specified parent element scroll when drag.
-*/
+}; // edge scroll
+// 边缘滚动
 
-var defaultOptionsForFixScrollBox = {
-  triggerMargin: 50,
-  triggerOutterMargin: 30,
-  scrollSpeed: 0.3
-};
-var allListeningElementsOfFixScrollBox = new Set();
-var trackMouseOrTouchPositionInstance = trackMouseOrTouchPosition({
-  onEnd: function onEnd() {
-    trackMouseOrTouchPositionInstance.stop();
+var stopHorizontalScroll, stopVerticalScroll;
+
+_edgeScroll.afterMove = function (store, opt) {
+  if (!opt.edgeScroll) {
+    return;
   }
-});
-function fixScrollBox(boxElement) {
-  var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  objectAssignIfKeyNull(opt, defaultOptionsForFixScrollBox);
-  allListeningElementsOfFixScrollBox.add(boxElement);
-  var stopVerticalScroll, stopHorizontalScroll;
 
-  var onMove = function onMove(e, mouse) {
-    if (!dragging) {
-      return;
-    }
+  var margin = opt.edgeScrollTriggerMargin;
+  stopOldScrollAnimation(); // get triggerPoint. The point trigger edge scroll.
 
-    if (!trackMouseOrTouchPositionInstance.info.started) {
-      trackMouseOrTouchPositionInstance.start();
-    } // stop old scroll animation
-    // 结束之前的滚动动画
+  var triggerPoint = {
+    x: store.mouse.clientX,
+    y: store.mouse.clientY
+  };
 
-
-    if (stopVerticalScroll) {
-      stopVerticalScroll();
-      stopVerticalScroll = null;
-    }
-
-    if (stopHorizontalScroll) {
-      stopHorizontalScroll();
-      stopHorizontalScroll = null;
-    } // box element scroll width or height greater than offset width or height
-    // 元素滚动宽高大于offset宽高
+  if (opt.edgeScrollTriggerMode === 'top_left_corner') {
+    var vp = hp.getViewportPosition(store.movedElement);
+    triggerPoint = {
+      x: vp.x,
+      y: vp.y
+    };
+  } // find the scrollable parent elements
+  // 寻找可滚动的父系元素
 
 
-    if (boxElement.scrollHeight > boxElement.offsetHeight || boxElement.scrollWidth > boxElement.offsetWidth) {
-      var boxPosition = hp.getViewportPosition(boxElement);
-      var margin = opt.triggerMargin;
-      var outterMargin = opt.triggerOutterMargin; // check if leaved box before every frame of scrollTo
-      // 在scrollTo执行每一帧前检查是否已离开box元素
+  var foundHorizontal, foundVertical, prevElement, horizontalDir, verticalDir;
 
-      var beforeEveryFrame = function beforeEveryFrame(count) {
-        if (count === 0) {
-          return;
-        }
+  var _iterator2 = _createForOfIteratorHelper(hp.elementsFromPoint(triggerPoint.x, triggerPoint.y)),
+      _step2;
 
-        var currentMousePosition = trackMouseOrTouchPositionInstance.info.position; // find the box element which mouse hovering
+  try {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var itemEl0 = _step2.value;
+      var itemEl = itemEl0;
 
-        var foundBoxElement;
-        var firstElement;
+      if (prevElement && !hp.isDescendantOf(prevElement, itemEl)) {
+        // itemEl is being covered by other elements
+        // itemEl被其他元素遮挡
+        continue;
+      }
 
-        var _iterator2 = _createForOfIteratorHelper(hp.elementsFromPoint(currentMousePosition.clientX, currentMousePosition.clientY)),
-            _step2;
+      var t = 10; // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
 
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var itemEl = _step2.value;
+      if (!foundHorizontal) {
+        if (itemEl.scrollWidth > itemEl.clientWidth) {
+          var _vp = fixedGetViewportPosition(itemEl);
 
-            if (!firstElement) {
-              firstElement = itemEl;
+          if (triggerPoint.x <= _vp.left + margin) {
+            if (scrollableDisplacement(itemEl, 'left') > t && isScrollable(itemEl, 'x')) {
+              foundHorizontal = itemEl;
+              horizontalDir = 'left';
             }
-
-            if (allListeningElementsOfFixScrollBox.has(itemEl)) {
-              foundBoxElement = itemEl;
-              break;
+          } else if (triggerPoint.x >= _vp.left + itemEl.clientWidth - margin) {
+            if (scrollableDisplacement(itemEl, 'right') > t && isScrollable(itemEl, 'x')) {
+              foundHorizontal = itemEl;
+              horizontalDir = 'right';
             }
-          } // check if the found element is covered by other elements
-
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
-
-        if (firstElement !== foundBoxElement && !hp.isDescendantOf(firstElement, foundBoxElement)) {
-          foundBoxElement = null;
-        } // 
-
-
-        if (!foundBoxElement) {
-          return false;
-        }
-      }; // vertical
-
-
-      if (boxElement.scrollHeight > boxElement.offsetHeight) {
-        if (mouse.clientY <= boxPosition.top + margin) {
-          stopVerticalScroll = scrollTo({
-            y: 0,
-            element: boxElement,
-            beforeEveryFrame: beforeEveryFrame,
-            duration: boxElement.scrollTop / opt.scrollSpeed
-          });
-        } else if (mouse.clientY >= boxPosition.top + boxPosition.height - margin) {
-          stopVerticalScroll = scrollTo({
-            y: boxElement.scrollHeight,
-            element: boxElement,
-            beforeEveryFrame: beforeEveryFrame,
-            duration: (boxElement.scrollHeight - boxElement.offsetHeight - boxElement.scrollTop) / opt.scrollSpeed
-          });
-        }
-      } // horizontal
-
-
-      if (boxElement.scrollWidth > boxElement.offsetWidth) {
-        if (mouse.clientX <= boxPosition.left + margin) {
-          stopHorizontalScroll = scrollTo({
-            x: 0,
-            element: boxElement,
-            beforeEveryFrame: beforeEveryFrame,
-            duration: boxElement.scrollLeft / opt.scrollSpeed
-          });
-        } else if (mouse.clientX >= boxPosition.left + boxPosition.width - margin) {
-          stopHorizontalScroll = scrollTo({
-            x: boxElement.scrollWidth,
-            element: boxElement,
-            beforeEveryFrame: beforeEveryFrame,
-            duration: (boxElement.scrollWidth - boxElement.offsetWidth - boxElement.scrollLeft) / opt.scrollSpeed
-          });
+          }
         }
       }
-    }
-  };
 
-  DragEventService.on(boxElement, 'move', onMove);
-  return {
-    options: opt,
-    destroy: function destroy() {
-      DragEventService.off(boxElement, 'move', onMove);
-      allListeningElementsOfFixScrollBox.delete(boxElement);
-    }
-  };
-} // TODO move to helper-js
+      if (!foundVertical) {
+        if (itemEl.scrollHeight > itemEl.clientHeight) {
+          var _vp2 = fixedGetViewportPosition(itemEl);
 
-function objectAssignIfKeyNull(obj1, obj2) {
-  Object.keys(obj2).forEach(function (key) {
-    if (obj1[key] == null) {
-      obj1[key] = obj2[key];
-    }
-  });
-} // from https://gist.github.com/andjosh/6764939
+          if (triggerPoint.y <= _vp2.top + margin) {
+            if (scrollableDisplacement(itemEl, 'up') > t && isScrollable(itemEl, 'y')) {
+              foundVertical = itemEl;
+              verticalDir = 'up';
+            }
+          } else if (triggerPoint.y >= _vp2.top + itemEl.clientHeight - margin) {
+            if (scrollableDisplacement(itemEl, 'down') > t && isScrollable(itemEl, 'y')) {
+              foundVertical = itemEl;
+              verticalDir = 'down';
+            }
+          }
+        }
+      }
 
-/*
-interface options{
-  x: number // nullable. don't scroll horizontally when null
-  y: number // nullable. don't scroll vertically when null
-  duration: number // default 0
-  element: HTMLElement // default is the top scrollable element.
-  beforeEveryFrame: (count: number) => boolean|void // call before requestAnimationFrame execution. return false to stop
-}
-*/
+      if (foundHorizontal && foundVertical) {
+        break;
+      }
 
+      prevElement = itemEl;
+    } // scroll
 
-function scrollTo(options) {
-  if (!options.element) {
-    options.element = document.scrollingElement || document.documentElement;
+  } catch (err) {
+    _iterator2.e(err);
+  } finally {
+    _iterator2.f();
   }
 
-  if (options.duration == null) {
-    options.duration = 0;
-  }
-
-  var x = options.x,
-      y = options.y,
-      duration = options.duration,
-      element = options.element;
-  var requestAnimationFrameId;
-  var count = 0;
-
-  var startY = element.scrollTop,
-      changeY = y - startY,
-      startX = element.scrollLeft,
-      changeX = x - startX,
-      startDate = +new Date(),
-      animateScroll = function animateScroll() {
-    if (options.beforeEveryFrame && options.beforeEveryFrame(count) === false) {
-      return;
-    }
-
-    var currentDate = new Date().getTime();
-    var changedTime = currentDate - startDate;
-
-    if (y != null) {
-      element.scrollTop = parseInt(calc(startY, changeY, changedTime, duration));
-    }
-
-    if (x != null) {
-      element.scrollLeft = parseInt(calc(startX, changeX, changedTime, duration));
-    }
-
-    if (changedTime < duration) {
-      requestAnimationFrameId = requestAnimationFrame(animateScroll);
+  if (foundHorizontal) {
+    if (horizontalDir === 'left') {
+      stopHorizontalScroll = hp.scrollTo({
+        x: 0,
+        element: foundHorizontal,
+        duration: scrollableDisplacement(foundHorizontal, 'left') / opt.edgeScrollSpeed
+      });
     } else {
-      if (y != null) {
-        element.scrollTop = y;
-      }
+      stopHorizontalScroll = hp.scrollTo({
+        x: foundHorizontal.scrollWidth - foundHorizontal.clientWidth,
+        element: foundHorizontal,
+        duration: scrollableDisplacement(foundHorizontal, 'right') / opt.edgeScrollSpeed
+      });
+    }
+  }
 
-      if (x != null) {
-        element.scrollLeft = x;
-      }
+  if (foundVertical) {
+    if (verticalDir === 'up') {
+      stopVerticalScroll = hp.scrollTo({
+        y: 0,
+        element: foundVertical,
+        duration: scrollableDisplacement(foundVertical, 'up') / opt.edgeScrollSpeed
+      });
+    } else {
+      stopVerticalScroll = hp.scrollTo({
+        y: foundVertical.scrollHeight - foundVertical.clientHeight,
+        element: foundVertical,
+        duration: scrollableDisplacement(foundVertical, 'down') / opt.edgeScrollSpeed
+      });
+    }
+  } // is element scrollable in a direction
+  // 元素某方向是否可滚动
+
+
+  function isScrollable(el, dir) {
+    var style = getComputedStyle(el);
+    var key = "overflow-".concat(dir); // document.documentElement is special
+
+    var special = document.scrollingElement || document.documentElement;
+
+    if (el === special) {
+      return style[key] === 'visible' || style[key] === 'auto' || style[key] === 'scroll';
     }
 
-    count++;
-  };
+    return style[key] === 'auto' || style[key] === 'scroll';
+  } // scrollable displacement of element  in a direction
+  // 元素某方向可滚动距离
 
-  var stop = function stop() {
-    cancelAnimationFrame(requestAnimationFrameId);
-  };
 
-  animateScroll(); // return stop
+  function scrollableDisplacement(el, dir) {
+    if (dir === 'up') {
+      return el.scrollTop;
+    } else if (dir === 'down') {
+      return el.scrollHeight - el.scrollTop - el.clientHeight;
+    } else if (dir === 'left') {
+      return el.scrollLeft;
+    } else if (dir === 'right') {
+      return el.scrollWidth - el.scrollLeft - el.clientWidth;
+    }
+  }
 
-  return stop;
+  function fixedGetViewportPosition(el) {
+    var r = hp.getViewportPosition(el); // document.documentElement is special
 
-  function calc(startValue, changeInValue, changedTime, duration) {
-    return startValue + changeInValue * (changedTime / duration);
+    var special = document.scrollingElement || document.documentElement;
+
+    if (el === special) {
+      r.top = 0;
+      r.left = 0;
+    }
+
+    return r;
+  }
+};
+
+_edgeScroll.afterDrop = function (store, opt) {
+  if (!opt.edgeScroll) {
+    return;
+  }
+
+  stopOldScrollAnimation();
+}; // stop old scroll animation
+// 结束之前的滚动动画
+
+
+function stopOldScrollAnimation() {
+  if (stopHorizontalScroll) {
+    stopHorizontalScroll();
+    stopHorizontalScroll = null;
+  }
+
+  if (stopVerticalScroll) {
+    stopVerticalScroll();
+    stopVerticalScroll = null;
   }
 }
 
-exports.allListeningElementsOfFixScrollBox = allListeningElementsOfFixScrollBox;
 exports.default = index;
 exports.defaultOptions = defaultOptions;
-exports.defaultOptionsForFixScrollBox = defaultOptionsForFixScrollBox;
-exports.fixScrollBox = fixScrollBox;
 exports.initialStore = initialStore;

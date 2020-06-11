@@ -1,4 +1,4 @@
-import { EventPosition, MouseOrTouchEvent } from '../../DragEventService';
+import { EventPosition, MouseOrTouchEvent } from 'drag-event-service';
 export default function (listenerElement: HTMLElement, opt?: Options): {
     destroy: () => void;
     options: Options;
@@ -10,6 +10,9 @@ export declare const defaultOptions: {
     draggingClassName: string;
     clone: boolean;
     updateMovedElementStyleManually: boolean;
+    edgeScrollTriggerMargin: number;
+    edgeScrollSpeed: number;
+    edgeScrollTriggerMode: string;
 };
 export interface Options extends Partial<typeof defaultOptions> {
     triggerClassName?: string | string[];
@@ -19,6 +22,10 @@ export interface Options extends Partial<typeof defaultOptions> {
     beforeFirstMove?: (store: Store, opt: Options) => boolean | undefined;
     beforeMove?: (store: Store, opt: Options) => boolean | undefined;
     beforeDrop?: (store: Store, opt: Options) => boolean | undefined;
+    edgeScroll?: boolean;
+    edgeScrollTriggerMargin?: number;
+    edgeScrollSpeed?: number;
+    edgeScrollTriggerMode?: 'top_left_corner' | 'mouse';
 }
 export declare const initialStore: {
     movedCount: number;
@@ -36,26 +43,11 @@ export interface Store extends InitialStore {
     move: EventPosition2;
     movedOrClonedElement: HTMLElement;
     movedElement: HTMLElement;
-    initialPosition: EventPosition;
+    initialPosition: EventPosition2;
     updateMovedElementStyle: () => void;
 }
 declare type EventPosition2 = {
     x: number;
     y: number;
-};
-export declare const defaultOptionsForFixScrollBox: {
-    triggerMargin: number;
-    triggerOutterMargin: number;
-    scrollSpeed: number;
-};
-export declare type OptionsForFixScrollBox = Partial<typeof defaultOptionsForFixScrollBox>;
-export declare const allListeningElementsOfFixScrollBox: Set<unknown>;
-export declare function fixScrollBox(boxElement: HTMLElement, opt?: OptionsForFixScrollBox): {
-    options: Partial<{
-        triggerMargin: number;
-        triggerOutterMargin: number;
-        scrollSpeed: number;
-    }>;
-    destroy: () => void;
 };
 export {};

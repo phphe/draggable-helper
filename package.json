@@ -1,7 +1,7 @@
 {
   "name": "draggable-helper",
-  "version": "5.0.0-beta",
-  "description": "",
+  "version": "5.0.0",
+  "description": "To simplify drag and drop.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "files": [
@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",
-    "drag-event-service": "^1.1.5",
-    "helper-js": "^1.4.36"
+    "drag-event-service": "^1.1.6",
+    "helper-js": "^2.0.0"
   },
   "license": "MIT"
 }
