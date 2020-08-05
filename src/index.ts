@@ -157,6 +157,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       // 附加元素和初始位置到store
       store.movedOrClonedElement = movedOrClonedElement
       store.movedElement = movedElement
+      store.initialPositionRelativeToViewport = initialPosition
       store.initialPosition = initialPosition
       // define the function to update moved element style
       // 定义更新移动元素样式的方法
@@ -181,6 +182,17 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
         }
         hp.backupAttr(movedElement, 'class')
         hp.addClass(movedElement, opt.draggingClassName)
+        /*
+        check if the changed position is expected and correct it. about stacking context.
+        当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
+        */
+        const nowPosition = hp.getViewportPosition(movedElement)
+        if (nowPosition.x !== initialPosition.x) {
+          initialPosition.x = initialPosition.x - (nowPosition.x - initialPosition.x)
+          initialPosition.y = initialPosition.y - (nowPosition.y - initialPosition.y)
+          movedElement.style.left = initialPosition.x + 'px'
+          movedElement.style.top = initialPosition.y + 'px'
+        }
       }
       store.updateMovedElementStyle = updateMovedElementStyle
       // call hook beforeFirstMove, beforeMove
@@ -315,7 +327,8 @@ export interface Store extends InitialStore {
   move: EventPosition2 // Moved displacement relative to viewport. 相对于视窗的位移
   movedOrClonedElement: HTMLElement // The element to be moved or cloned.
   movedElement: HTMLElement // The element to be moved.
-  initialPosition: EventPosition2 // fixed position. The position relative to viewport
+  initialPosition: EventPosition2 // fixed position. The position relative to viewport by default. Relative to stacking context. Sometimes stacking context is not html, for example a parent with css 'transform' defined.
+  initialPositionRelativeToViewport: EventPosition2 // fixed position. The position relative to viewport
   updateMovedElementStyle: () => void
 }
 // Other type
