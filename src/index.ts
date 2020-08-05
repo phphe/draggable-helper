@@ -32,6 +32,12 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   // define the event listener of mousedown and touchstart
   // 定义mousedown和touchstart事件监听器
   const onMousedownOrTouchStart = (e:MouseOrTouchEvent, mouse: EventPosition) => {
+    // execute native event hooks
+    if (!DragEventService.isTouch(e)) {
+      opt.onmousedown && opt.onmousedown(<MouseEvent>e)
+    } else {
+      opt.ontouchstart && opt.ontouchstart(<TouchEvent>e)
+    }
     const target = e.target as HTMLElement
     // check if triggered by ignore tags
     // 检查是否由忽略的标签名触发
@@ -109,7 +115,9 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     if (!DragEventService.isTouch(e)) {
       // Do not prevent when touch. Or the elements within the node can not trigger click event.
       // 不要在触摸时阻止事件. 否则将导致节点内的元素不触发点击事件.
-      e.preventDefault()
+      if (opt.preventTextSelection) {
+        e.preventDefault()
+      }
     }
     // listen mousemove and touchmove
     // 监听mousemove和touchmove
@@ -125,6 +133,13 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   // define the event listener of mousemove and touchmove
   // 定义mousemove和touchmove事件监听器
   const onMousemoveOrTouchMove = (e: MouseOrTouchEvent, mouse: EventPosition) => {
+    // execute native event hooks
+    if (!DragEventService.isTouch(e)) {
+      opt.onmousemove && opt.onmousemove(<MouseEvent>e)
+    } else {
+      opt.ontouchmove && opt.ontouchmove(<TouchEvent>e)
+    }
+    // 
     const {movedOrClonedElement} = store
     // calc move and attach related info to store
     // 计算move并附加相关信息到store
@@ -134,9 +149,17 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     }
     store.moveEvent = e
     store.mouse = mouse
-    // prevent text be selected. prevent page scroll when touch.
-    // 阻止文字被选中. 当触摸时阻止屏幕被拖动.
-    e.preventDefault()
+    if (DragEventService.isTouch(e)) {
+      // prevent page scroll when touch.
+      // 当触摸时阻止屏幕被拖动.
+      e.preventDefault()
+    } else {
+      // prevent text be selected
+      // 阻止文字被选中
+      if (opt.preventTextSelection) {
+        e.preventDefault()
+      }
+    }
     // first move
     // 第一次移动
     if (store.movedCount === 0) {
@@ -238,6 +261,12 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   // define the event listener of mouseup and touchend
   // 定义mouseup和touchend事件监听器
   const onMouseupOrTouchEnd = (e: MouseOrTouchEvent) => {
+    // execute native event hooks
+    if (!DragEventService.isTouch(e)) {
+      opt.onmousedown && opt.onmousedown(<MouseEvent>e)
+    } else {
+      opt.ontouchend && opt.ontouchend(<TouchEvent>e)
+    }
     // cancel listening mousemove, touchmove, mouseup, touchend
     // 取消监听事件mousemove, touchmove, mouseup, touchend
     DragEventService.off(document, 'move', onMousemoveOrTouchMove, {touchArgs: [{passive: false}]})
@@ -291,6 +320,7 @@ export const defaultOptions = {
   draggingClassName: 'dragging', // Be added to the dragged element. 将被添加到被拖动的元素.
   clone: false, // Whether to clone element when drag.
   updateMovedElementStyleManually: false, // If true, you may need to call store.updateMovedElementStyle in beforeFirstMove, beforeMove, beforeDrop
+  preventTextSelection: true,
   edgeScrollTriggerMargin: 50,
   edgeScrollSpeed: 0.35,
   edgeScrollTriggerMode: 'top_left_corner',
@@ -303,11 +333,19 @@ export interface Options extends Partial<typeof defaultOptions>{
   beforeFirstMove?: (store:Store, opt:Options) => boolean|undefined
   beforeMove?: (store:Store, opt:Options) => boolean|undefined
   beforeDrop?: (store:Store, opt:Options) => boolean|undefined
+  preventTextSelection?: boolean
   // edge scroll
   edgeScroll?: boolean
   edgeScrollTriggerMargin?: number
   edgeScrollSpeed?: number
   edgeScrollTriggerMode?: 'top_left_corner'|'mouse'
+  // native event hooks
+  onmousedown?: (e: MouseEvent) => void
+  onmousemove?: (e: MouseEvent) => void
+  onmouseup?: (e: MouseEvent) => void
+  ontouchstart?: (e: TouchEvent) => void
+  ontouchmove?: (e: TouchEvent) => void
+  ontouchend?: (e: TouchEvent) => void
 }
 // Info after event triggered. Created when mousedown or touchstart, destroied after mouseup or touchend.
 // 事件触发后的相关信息. mousedown或touchstart时创建, mouseup或touchend后销毁.

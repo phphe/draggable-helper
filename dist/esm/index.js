@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.1
+ * draggable-helper v5.0.2
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -46,6 +46,13 @@ function index (listenerElement) {
   // 定义mousedown和touchstart事件监听器
 
   var onMousedownOrTouchStart = function onMousedownOrTouchStart(e, mouse) {
+    // execute native event hooks
+    if (!DragEventService.isTouch(e)) {
+      opt.onmousedown && opt.onmousedown(e);
+    } else {
+      opt.ontouchstart && opt.ontouchstart(e);
+    }
+
     var target = e.target; // check if triggered by ignore tags
     // 检查是否由忽略的标签名触发
 
@@ -159,7 +166,9 @@ function index (listenerElement) {
     if (!DragEventService.isTouch(e)) {
       // Do not prevent when touch. Or the elements within the node can not trigger click event.
       // 不要在触摸时阻止事件. 否则将导致节点内的元素不触发点击事件.
-      e.preventDefault();
+      if (opt.preventTextSelection) {
+        e.preventDefault();
+      }
     } // listen mousemove and touchmove
     // 监听mousemove和touchmove
 
@@ -180,6 +189,14 @@ function index (listenerElement) {
   // 定义mousemove和touchmove事件监听器
 
   var onMousemoveOrTouchMove = function onMousemoveOrTouchMove(e, mouse) {
+    // execute native event hooks
+    if (!DragEventService.isTouch(e)) {
+      opt.onmousemove && opt.onmousemove(e);
+    } else {
+      opt.ontouchmove && opt.ontouchmove(e);
+    } // 
+
+
     var _store = store,
         movedOrClonedElement = _store.movedOrClonedElement; // calc move and attach related info to store
     // 计算move并附加相关信息到store
@@ -189,11 +206,21 @@ function index (listenerElement) {
       y: mouse.clientY - store.initialMouse.clientY
     };
     store.moveEvent = e;
-    store.mouse = mouse; // prevent text be selected. prevent page scroll when touch.
-    // 阻止文字被选中. 当触摸时阻止屏幕被拖动.
+    store.mouse = mouse;
 
-    e.preventDefault(); // first move
+    if (DragEventService.isTouch(e)) {
+      // prevent page scroll when touch.
+      // 当触摸时阻止屏幕被拖动.
+      e.preventDefault();
+    } else {
+      // prevent text be selected
+      // 阻止文字被选中
+      if (opt.preventTextSelection) {
+        e.preventDefault();
+      }
+    } // first move
     // 第一次移动
+
 
     if (store.movedCount === 0) {
       // check if min displacement exceeded.
@@ -215,6 +242,7 @@ function index (listenerElement) {
 
       store.movedOrClonedElement = movedOrClonedElement;
       store.movedElement = movedElement;
+      store.initialPositionRelativeToViewport = initialPosition;
       store.initialPosition = initialPosition; // define the function to update moved element style
       // 定义更新移动元素样式的方法
 
@@ -242,6 +270,19 @@ function index (listenerElement) {
 
         backupAttr(movedElement, 'class');
         addClass(movedElement, opt.draggingClassName);
+        /*
+        check if the changed position is expected and correct it. about stacking context.
+        当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
+        */
+
+        var nowPosition = getViewportPosition(movedElement);
+
+        if (nowPosition.x !== initialPosition.x) {
+          initialPosition.x = initialPosition.x - (nowPosition.x - initialPosition.x);
+          initialPosition.y = initialPosition.y - (nowPosition.y - initialPosition.y);
+          movedElement.style.left = initialPosition.x + 'px';
+          movedElement.style.top = initialPosition.y + 'px';
+        }
       };
 
       store.updateMovedElementStyle = updateMovedElementStyle; // call hook beforeFirstMove, beforeMove
@@ -294,8 +335,15 @@ function index (listenerElement) {
 
 
   var onMouseupOrTouchEnd = function onMouseupOrTouchEnd(e) {
-    // cancel listening mousemove, touchmove, mouseup, touchend
+    // execute native event hooks
+    if (!DragEventService.isTouch(e)) {
+      opt.onmousedown && opt.onmousedown(e);
+    } else {
+      opt.ontouchend && opt.ontouchend(e);
+    } // cancel listening mousemove, touchmove, mouseup, touchend
     // 取消监听事件mousemove, touchmove, mouseup, touchend
+
+
     DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
       touchArgs: [{
         passive: false
@@ -363,6 +411,7 @@ var defaultOptions = {
   draggingClassName: 'dragging',
   clone: false,
   updateMovedElementStyleManually: false,
+  preventTextSelection: true,
   edgeScrollTriggerMargin: 50,
   edgeScrollSpeed: 0.35,
   edgeScrollTriggerMode: 'top_left_corner'

@@ -10,6 +10,7 @@ export declare const defaultOptions: {
     draggingClassName: string;
     clone: boolean;
     updateMovedElementStyleManually: boolean;
+    preventTextSelection: boolean;
     edgeScrollTriggerMargin: number;
     edgeScrollSpeed: number;
     edgeScrollTriggerMode: string;
@@ -22,10 +23,17 @@ export interface Options extends Partial<typeof defaultOptions> {
     beforeFirstMove?: (store: Store, opt: Options) => boolean | undefined;
     beforeMove?: (store: Store, opt: Options) => boolean | undefined;
     beforeDrop?: (store: Store, opt: Options) => boolean | undefined;
+    preventTextSelection?: boolean;
     edgeScroll?: boolean;
     edgeScrollTriggerMargin?: number;
     edgeScrollSpeed?: number;
     edgeScrollTriggerMode?: 'top_left_corner' | 'mouse';
+    onmousedown?: (e: MouseEvent) => void;
+    onmousemove?: (e: MouseEvent) => void;
+    onmouseup?: (e: MouseEvent) => void;
+    ontouchstart?: (e: TouchEvent) => void;
+    ontouchmove?: (e: TouchEvent) => void;
+    ontouchend?: (e: TouchEvent) => void;
 }
 export declare const initialStore: {
     movedCount: number;
@@ -44,6 +52,7 @@ export interface Store extends InitialStore {
     movedOrClonedElement: HTMLElement;
     movedElement: HTMLElement;
     initialPosition: EventPosition2;
+    initialPositionRelativeToViewport: EventPosition2;
     updateMovedElementStyle: () => void;
 }
 declare type EventPosition2 = {
