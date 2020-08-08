@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.2
+ * draggable-helper v5.0.3
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -12,7 +12,7 @@
    * Released under the MIT License.
    */function s(e){return t=e,"[object Array]"===Object.prototype.toString.call(t)?e:[e];var t}function f(e,t){Object.keys(t).forEach((function(n){null==e[n]&&(e[n]=t[n])}))}function p(e,t){for(;;){if(null==e.parentElement)return!1;if(e.parentElement===t)return!0;e=e.parentElement}}function d(e){var t=e.getBoundingClientRect(),n=t.top-document.documentElement.clientTop,r=t.bottom,o=t.left-document.documentElement.clientLeft,i=t.right;return{top:n,right:i,bottom:r,left:o,width:t.width||i-o,height:t.height||r-n,x:o,y:n}}var h=d;function m(e,t){for(var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{},r=n&&n.withSelf?e:e.parentElement;r;){var o=t(r);if("break"===o)return;if(o)return r;r=r.parentElement}}function v(e,t){e["original_".concat(t)]=e.getAttribute(t)}function g(e,t){var n=e["original_".concat(t)];null==n?e.removeAttribute(t):e.setAttribute(t,n)}function y(e,t){return e.classList?e.classList.contains(t):new RegExp("(^| )"+t+"( |$)","gi").test(e.className)}function E(e,t){y(e,t)||(e.classList?e.classList.add(t):e.className+=" "+t)}function w(e,t,n){for(var r=arguments.length,o=new Array(r>3?r-3:0),i=3;i<r;i++)o[i-3]=arguments[i];e.addEventListener?e.addEventListener.apply(e,[t,n].concat(o)):e.attachEvent&&e.attachEvent.apply(e,["on".concat(t),n].concat(o))}function b(e,t,n){for(var r=arguments.length,o=new Array(r>3?r-3:0),i=3;i<r;i++)o[i-3]=arguments[i];e.removeEventListener?e.removeEventListener.apply(e,[t,n].concat(o)):e.detachEvent&&e.detachEvent.apply(e,["on".concat(t),n].concat(o))}function x(e){e.element||(e.element=document.scrollingElement||document.documentElement),null==e.duration&&(e.duration=0);var t,n=e.x,r=e.y,o=e.duration,i=e.element,a=0,c=i.scrollTop,l=r-c,u=i.scrollLeft,s=n-u,f=+new Date;return function d(){if(!e.beforeEveryFrame||!1!==e.beforeEveryFrame(a)){var h=(new Date).getTime()-f;null!=r&&(i.scrollTop=parseInt(p(c,l,h,o))),null!=n&&(i.scrollLeft=parseInt(p(u,s,h,o))),h<o?t=requestAnimationFrame(d):(null!=r&&(i.scrollTop=r),null!=n&&(i.scrollLeft=n)),a++}}(),function(){cancelAnimationFrame(t)};function p(e,t,n,r){return e+t*(n/r)}}
 /*!
-   * drag-event-service v1.1.6
+   * drag-event-service v1.1.7
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Homepage: undefined
    * Released under the MIT License.
