@@ -231,6 +231,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
         store.updateMovedElementStyle()
       }
       _edgeScroll.afterFirstMove(store, opt)
+      opt.afterFirstMove && opt.afterFirstMove(store, opt)
     } 
     // Not the first move
     // 非第一次移动
@@ -256,6 +257,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     }
     _edgeScroll.afterMove(store, opt)
     store.movedCount++
+    opt.afterMove && opt.afterMove(store, opt)
   }
 
   // define the event listener of mouseup and touchend
@@ -297,6 +299,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       updateMovedElementStyle()
     }
     _edgeScroll.afterDrop(store, opt)
+    opt.afterDrop && opt.afterDrop(store, opt)
   }
 
   // define the destroy function
@@ -331,14 +334,19 @@ export interface Options extends Partial<typeof defaultOptions>{
   getTriggerElement?: (directTriggerElement: HTMLElement, store: Store) => HTMLElement|undefined // get triggerElement by directTriggerElement. override triggerClassName.
   getMovedOrClonedElement?: (directTriggerElement: HTMLElement, store: Store, opt: Options) => HTMLElement
   beforeFirstMove?: (store:Store, opt:Options) => boolean|undefined
+  afterFirstMove?: (store:Store, opt:Options) => void
   beforeMove?: (store:Store, opt:Options) => boolean|undefined
+  afterMove?: (store:Store, opt:Options) => void
   beforeDrop?: (store:Store, opt:Options) => boolean|undefined
+  afterDrop?: (store:Store, opt:Options) => void
   preventTextSelection?: boolean
   // edge scroll
   edgeScroll?: boolean
   edgeScrollTriggerMargin?: number
   edgeScrollSpeed?: number
   edgeScrollTriggerMode?: 'top_left_corner'|'mouse'
+  edgeScrollSpecifiedContainerX?: HTMLElement|((store:Store, opt:Options) => HTMLElement)
+  edgeScrollSpecifiedContainerY?: HTMLElement|((store:Store, opt:Options) => HTMLElement)
   // native event hooks
   onmousedown?: (e: MouseEvent) => void
   onmousemove?: (e: MouseEvent) => void
@@ -388,17 +396,31 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
     const vp = hp.getViewportPosition(store.movedElement)
     triggerPoint = {x: vp.x, y: vp.y}
   }
-  // find the scrollable parent elements
-  // 寻找可滚动的父系元素
+  // 
   let foundHorizontal: HTMLElement, foundVertical: HTMLElement, prevElement: HTMLElement, horizontalDir:'left'|'right',verticalDir:'up'|'down'
-  for (const itemEl0 of hp.elementsFromPoint(triggerPoint.x, triggerPoint.y)) {
-    const itemEl = <HTMLElement>itemEl0
+  let findInElements: HTMLElement[]
+  let cachedElementsFromPoint: HTMLElement[]
+  // find x container
+  const minScrollableDisplacement = 10
+  if (opt.edgeScrollSpecifiedContainerX) {
+    let containerX
+    if (typeof opt.edgeScrollSpecifiedContainerX === 'function') {
+      containerX = opt.edgeScrollSpecifiedContainerX(store, opt)
+    } else {
+      containerX = opt.edgeScrollSpecifiedContainerX
+    }
+    findInElements = [containerX]
+  } else {
+    findInElements = hp.elementsFromPoint(triggerPoint.x, triggerPoint.y) as HTMLElement[]
+    cachedElementsFromPoint = findInElements
+  }
+  for (const itemEl of findInElements) {
     if (prevElement && !hp.isDescendantOf(prevElement, itemEl)) {
       // itemEl is being covered by other elements
       // itemEl被其他元素遮挡
       continue
     }
-    const t = 10 // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
+    const t = minScrollableDisplacement // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
     if (!foundHorizontal) {
       if (itemEl.scrollWidth > itemEl.clientWidth) {
         const vp = fixedGetViewportPosition(itemEl)
@@ -415,6 +437,31 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
         }
       }
     }
+    if (foundHorizontal) {
+      break
+    }
+    prevElement = itemEl
+  }
+  prevElement = null
+  // find y container
+  if (opt.edgeScrollSpecifiedContainerY) {
+    let containerY
+    if (typeof opt.edgeScrollSpecifiedContainerY === 'function') {
+      containerY = opt.edgeScrollSpecifiedContainerY(store, opt)
+    } else {
+      containerY = opt.edgeScrollSpecifiedContainerY
+    }
+    findInElements = [containerY]
+  } else {
+    findInElements = cachedElementsFromPoint || hp.elementsFromPoint(triggerPoint.x, triggerPoint.y) as HTMLElement[]
+  }
+  for (const itemEl of findInElements) {
+    if (prevElement && !hp.isDescendantOf(prevElement, itemEl)) {
+      // itemEl is being covered by other elements
+      // itemEl被其他元素遮挡
+      continue
+    }
+    const t = minScrollableDisplacement // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
     if (!foundVertical) {
       if (itemEl.scrollHeight > itemEl.clientHeight) {
         const vp = fixedGetViewportPosition(itemEl)
@@ -431,7 +478,7 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
         }
       }
     }
-    if (foundHorizontal && foundVertical) {
+    if (foundVertical) {
       break
     }
     prevElement = itemEl

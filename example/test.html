@@ -37,7 +37,7 @@
       </div>
     </div>
     <div style="width: 300px; margin-right: 20px;">
-      <h1>scroll box</h1>
+      <h1>edge scroll box</h1>
       <div id="scroll_box">
         <hr style="width:600px;" />
       </div>
@@ -53,7 +53,15 @@
         <div>not clone</div>
       </div>
     </div>
-    <div style="width: 300px; margin-right: 20px;"></div>
+    <div style="width: 300px; margin-right: 20px;">
+      <h1>edge scroll box nested</h1>
+      <small>edge scroll enabled for follow outer box</small>
+      <div id="scroll_box2_wrapper">
+        <div id="scroll_box2">
+          <hr style="width:600px;" />
+        </div>
+      </div>
+    </div>
   </div>
   <p>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac imperdiet ipsum, in fermentum turpis. Suspendisse ullamcorper convallis tincidunt. Vivamus varius ante tristique mauris rhoncus vulputate condimentum non tellus. In suscipit placerat facilisis. Praesent consectetur turpis purus, cursus blandit libero vulputate eu. Cras auctor in magna eu bibendum. Nam ante arcu, laoreet eu tortor ac, fermentum pellentesque nulla. Nulla eget ante lorem. Integer enim sapien, fermentum et sapien sit amet, malesuada vulputate odio. Phasellus aliquam, est sit amet venenatis gravida, erat sapien vulputate mi, a porta lectus nunc ut turpis. Quisque at lectus sit amet nibh porttitor sodales sed ac eros. Sed placerat mattis nulla et vestibulum. Ut imperdiet, velit vitae sagittis aliquet, felis nisi aliquam tortor, sit amet ullamcorper mi metus non massa.
@@ -112,6 +120,18 @@ Suspendisse potenti. Suspendisse in dolor sed sapien mollis interdum. Vivamus at
     [...transform.children].forEach(el => {
       draggableHelper.default(el, {})
     })
+    // scroll box nested
+    for (let index = 0; index < 50; index++) {
+      el = hp.createElementFromHTML(`<div>scroll box nested ${index}</div>`)
+      window.scroll_box2.appendChild(el)
+    }
+    [...scroll_box2.children].forEach(el => {
+      draggableHelper.default(el, {
+        edgeScroll: true,
+        edgeScrollSpecifiedContainerX: scroll_box2_wrapper,
+        edgeScrollSpecifiedContainerY: scroll_box2_wrapper,
+      })
+    })
   </script>
   <style>
     .transition{
@@ -136,6 +156,29 @@ Suspendisse potenti. Suspendisse in dolor sed sapien mollis interdum. Vivamus at
       background:black;
       color: #fff;
       margin-bottom: 3px;
+    }
+    /* scroll_box nested */
+    #scroll_box2_wrapper{
+      height: 200px;
+      width: 200px;
+      padding: 10px;
+      overflow: auto;
+      border: 2px solid #000;
+    }
+    #scroll_box2{
+      height: 300px;
+      width: 300px;
+      padding: 10px;
+      overflow: auto;
+      border: 2px solid #000;
+    }
+    #scroll_box2 div{
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin-bottom: 5px;
+      box-sizing: border-box;
+      background: #ff8022;
+      color: #ffffff;
     }
   </style>
 </body>
