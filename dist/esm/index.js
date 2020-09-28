@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.3
+ * draggable-helper v5.0.4
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -302,6 +302,8 @@ function index (listenerElement) {
       }
 
       _edgeScroll.afterFirstMove(store, opt);
+
+      opt.afterFirstMove && opt.afterFirstMove(store, opt);
     } // Not the first move
     // 非第一次移动
     else {
@@ -330,6 +332,7 @@ function index (listenerElement) {
     _edgeScroll.afterMove(store, opt);
 
     store.movedCount++;
+    opt.afterMove && opt.afterMove(store, opt);
   }; // define the event listener of mouseup and touchend
   // 定义mouseup和touchend事件监听器
 
@@ -382,6 +385,8 @@ function index (listenerElement) {
     }
 
     _edgeScroll.afterDrop(store, opt);
+
+    opt.afterDrop && opt.afterDrop(store, opt);
   }; // define the destroy function
   // 定义销毁/退出的方法
 
@@ -444,19 +449,36 @@ _edgeScroll.afterMove = function (store, opt) {
       x: vp.x,
       y: vp.y
     };
-  } // find the scrollable parent elements
-  // 寻找可滚动的父系元素
+  } // 
 
 
   var foundHorizontal, foundVertical, prevElement, horizontalDir, verticalDir;
+  var findInElements;
+  var cachedElementsFromPoint; // find x container
 
-  var _iterator2 = _createForOfIteratorHelper(elementsFromPoint(triggerPoint.x, triggerPoint.y)),
+  var minScrollableDisplacement = 10;
+
+  if (opt.edgeScrollSpecifiedContainerX) {
+    var containerX;
+
+    if (typeof opt.edgeScrollSpecifiedContainerX === 'function') {
+      containerX = opt.edgeScrollSpecifiedContainerX(store, opt);
+    } else {
+      containerX = opt.edgeScrollSpecifiedContainerX;
+    }
+
+    findInElements = [containerX];
+  } else {
+    findInElements = elementsFromPoint(triggerPoint.x, triggerPoint.y);
+    cachedElementsFromPoint = findInElements;
+  }
+
+  var _iterator2 = _createForOfIteratorHelper(findInElements),
       _step2;
 
   try {
     for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-      var itemEl0 = _step2.value;
-      var itemEl = itemEl0;
+      var itemEl = _step2.value;
 
       if (prevElement && !isDescendantOf(prevElement, itemEl)) {
         // itemEl is being covered by other elements
@@ -464,7 +486,7 @@ _edgeScroll.afterMove = function (store, opt) {
         continue;
       }
 
-      var t = 10; // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
+      var t = minScrollableDisplacement; // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
 
       if (!foundHorizontal) {
         if (itemEl.scrollWidth > itemEl.clientWidth) {
@@ -484,35 +506,78 @@ _edgeScroll.afterMove = function (store, opt) {
         }
       }
 
+      if (foundHorizontal) {
+        break;
+      }
+
+      prevElement = itemEl;
+    }
+  } catch (err) {
+    _iterator2.e(err);
+  } finally {
+    _iterator2.f();
+  }
+
+  prevElement = null; // find y container
+
+  if (opt.edgeScrollSpecifiedContainerY) {
+    var containerY;
+
+    if (typeof opt.edgeScrollSpecifiedContainerY === 'function') {
+      containerY = opt.edgeScrollSpecifiedContainerY(store, opt);
+    } else {
+      containerY = opt.edgeScrollSpecifiedContainerY;
+    }
+
+    findInElements = [containerY];
+  } else {
+    findInElements = cachedElementsFromPoint || elementsFromPoint(triggerPoint.x, triggerPoint.y);
+  }
+
+  var _iterator3 = _createForOfIteratorHelper(findInElements),
+      _step3;
+
+  try {
+    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+      var _itemEl = _step3.value;
+
+      if (prevElement && !isDescendantOf(prevElement, _itemEl)) {
+        // itemEl is being covered by other elements
+        // itemEl被其他元素遮挡
+        continue;
+      }
+
+      var _t = minScrollableDisplacement; // min scrollable displacement. 最小可滚动距离, 小于此距离不触发滚动.
+
       if (!foundVertical) {
-        if (itemEl.scrollHeight > itemEl.clientHeight) {
-          var _vp2 = fixedGetViewportPosition(itemEl);
+        if (_itemEl.scrollHeight > _itemEl.clientHeight) {
+          var _vp2 = fixedGetViewportPosition(_itemEl);
 
           if (triggerPoint.y <= _vp2.top + margin) {
-            if (scrollableDisplacement(itemEl, 'up') > t && isScrollable(itemEl, 'y')) {
-              foundVertical = itemEl;
+            if (scrollableDisplacement(_itemEl, 'up') > _t && isScrollable(_itemEl, 'y')) {
+              foundVertical = _itemEl;
               verticalDir = 'up';
             }
-          } else if (triggerPoint.y >= _vp2.top + itemEl.clientHeight - margin) {
-            if (scrollableDisplacement(itemEl, 'down') > t && isScrollable(itemEl, 'y')) {
-              foundVertical = itemEl;
+          } else if (triggerPoint.y >= _vp2.top + _itemEl.clientHeight - margin) {
+            if (scrollableDisplacement(_itemEl, 'down') > _t && isScrollable(_itemEl, 'y')) {
+              foundVertical = _itemEl;
               verticalDir = 'down';
             }
           }
         }
       }
 
-      if (foundHorizontal && foundVertical) {
+      if (foundVertical) {
         break;
       }
 
-      prevElement = itemEl;
+      prevElement = _itemEl;
     } // scroll
 
   } catch (err) {
-    _iterator2.e(err);
+    _iterator3.e(err);
   } finally {
-    _iterator2.f();
+    _iterator3.f();
   }
 
   if (foundHorizontal) {
