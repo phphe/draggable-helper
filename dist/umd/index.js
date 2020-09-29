@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.4
+ * draggable-helper v5.0.5
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -1705,8 +1705,12 @@
         containerX = opt.edgeScrollSpecifiedContainerX;
       }
 
-      findInElements = [containerX];
-    } else {
+      if (containerX) {
+        findInElements = [containerX];
+      }
+    }
+
+    if (!findInElements) {
       findInElements = elementsFromPoint(triggerPoint.x, triggerPoint.y);
       cachedElementsFromPoint = findInElements;
     }
@@ -1758,6 +1762,8 @@
 
     prevElement = null; // find y container
 
+    findInElements = null;
+
     if (opt.edgeScrollSpecifiedContainerY) {
       var containerY;
 
@@ -1767,8 +1773,12 @@
         containerY = opt.edgeScrollSpecifiedContainerY;
       }
 
-      findInElements = [containerY];
-    } else {
+      if (containerY) {
+        findInElements = [containerY];
+      }
+    }
+
+    if (!findInElements) {
       findInElements = cachedElementsFromPoint || elementsFromPoint(triggerPoint.x, triggerPoint.y);
     }
 
