@@ -409,8 +409,11 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
     } else {
       containerX = opt.edgeScrollSpecifiedContainerX
     }
-    findInElements = [containerX]
-  } else {
+    if (containerX) {
+      findInElements = [containerX]
+    }
+  }
+  if (!findInElements) {
     findInElements = hp.elementsFromPoint(triggerPoint.x, triggerPoint.y) as HTMLElement[]
     cachedElementsFromPoint = findInElements
   }
@@ -444,6 +447,7 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
   }
   prevElement = null
   // find y container
+  findInElements = null
   if (opt.edgeScrollSpecifiedContainerY) {
     let containerY
     if (typeof opt.edgeScrollSpecifiedContainerY === 'function') {
@@ -451,8 +455,11 @@ _edgeScroll.afterMove = (store: Store, opt: Options) => {
     } else {
       containerY = opt.edgeScrollSpecifiedContainerY
     }
-    findInElements = [containerY]
-  } else {
+    if (containerY) {
+      findInElements = [containerY]
+    }
+  } 
+  if (!findInElements) {
     findInElements = cachedElementsFromPoint || hp.elementsFromPoint(triggerPoint.x, triggerPoint.y) as HTMLElement[]
   }
   for (const itemEl of findInElements) {
