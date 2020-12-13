@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.5
+ * draggable-helper v5.0.6
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -1423,7 +1423,11 @@
     // 绑定mousedown和touchstart事件监听器
 
 
-    DragEventService.on(listenerElement, 'start', onMousedownOrTouchStart); // define the event listener of mousemove and touchmove
+    DragEventService.on(listenerElement, 'start', onMousedownOrTouchStart, {
+      touchArgs: [{
+        passive: true
+      }]
+    }); // define the event listener of mousemove and touchmove
     // 定义mousemove和touchmove事件监听器
 
     var onMousemoveOrTouchMove = function onMousemoveOrTouchMove(e, mouse) {
@@ -1630,13 +1634,17 @@
 
 
     var destroy = function destroy() {
-      DragEventService.off(listenerElement, 'start', onMousedownOrTouchStart);
-      DragEventService.on(document, 'move', onMousemoveOrTouchMove, {
+      DragEventService.off(listenerElement, 'start', onMousedownOrTouchStart, {
+        touchArgs: [{
+          passive: true
+        }]
+      });
+      DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
         touchArgs: [{
           passive: false
         }]
       });
-      DragEventService.on(window, 'end', onMouseupOrTouchEnd);
+      DragEventService.off(window, 'end', onMouseupOrTouchEnd);
     }; // 
 
 
