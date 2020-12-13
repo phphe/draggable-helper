@@ -128,7 +128,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   }
   // bind mousedown or touchstart event listener
   // 绑定mousedown和touchstart事件监听器
-  DragEventService.on(listenerElement, 'start', onMousedownOrTouchStart)
+  DragEventService.on(listenerElement, 'start', onMousedownOrTouchStart, {touchArgs: [{passive: true}]})
 
   // define the event listener of mousemove and touchmove
   // 定义mousemove和touchmove事件监听器
@@ -305,9 +305,9 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
   // define the destroy function
   // 定义销毁/退出的方法
   const destroy = () => {
-    DragEventService.off(listenerElement, 'start', onMousedownOrTouchStart)
-    DragEventService.on(document, 'move', onMousemoveOrTouchMove, {touchArgs: [{passive: false}]})
-    DragEventService.on(window, 'end', onMouseupOrTouchEnd)
+    DragEventService.off(listenerElement, 'start', onMousedownOrTouchStart, {touchArgs: [{passive: true}]})
+    DragEventService.off(document, 'move', onMousemoveOrTouchMove, {touchArgs: [{passive: false}]})
+    DragEventService.off(window, 'end', onMouseupOrTouchEnd)
   }
   // 
   return {destroy, options: opt}
