@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.6
+ * draggable-helper v6.0.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -906,6 +906,12 @@
     }
   }
 
+  function removeEl(el) {
+    if (el.parentNode !== null) {
+      return el.parentNode.removeChild(el);
+    }
+  } // refer: https://stackoverflow.com/questions/871399/cross-browser-method-for-detecting-the-scrolltop-of-the-browser-window
+
   function getBoundingClientRect(el) {
     // refer: http://www.51xuediannao.com/javascript/getBoundingClientRect.html
     var xy = el.getBoundingClientRect();
@@ -1478,7 +1484,8 @@
         } // resolve elements
 
 
-        var movedElement = opt.clone ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
+        store.isCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)));
+        var movedElement = store.isCloned ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
         var initialPosition = getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
         // 附加元素和初始位置到store
 
@@ -1489,7 +1496,7 @@
         // 定义更新移动元素样式的方法
 
         var updateMovedElementStyle = function updateMovedElementStyle() {
-          if (opt.clone) {
+          if (store.isCloned) {
             store.movedOrClonedElement.parentElement.appendChild(movedElement);
           }
 
@@ -1505,13 +1512,15 @@
             pointerEvents: 'none'
           };
           backupAttr(movedElement, 'style');
+          backupAttr(movedElement, 'class');
+          backupAttr(document.body, 'style');
 
           for (var key in style) {
             movedElement.style[key] = style[key];
           }
 
-          backupAttr(movedElement, 'class');
           addClass(movedElement, opt.draggingClassName);
+          document.body.style.cursor = 'grabbing';
           /*
           check if the changed position is expected and correct it. about stacking context.
           当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
@@ -1608,9 +1617,10 @@
       var updateMovedElementStyle = function updateMovedElementStyle() {
         restoreAttr(movedElement, 'style');
         restoreAttr(movedElement, 'class');
+        restoreAttr(document.body, 'style');
 
-        if (opt.clone) {
-          movedElement.parentElement.removeChild(movedElement);
+        if (store.isCloned) {
+          removeEl(movedElement);
         }
       };
 

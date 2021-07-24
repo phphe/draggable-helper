@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v5.0.6
+ * draggable-helper v6.0.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -246,7 +246,8 @@ function index (listenerElement) {
       } // resolve elements
 
 
-      var movedElement = opt.clone ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
+      store.isCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)));
+      var movedElement = store.isCloned ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
       var initialPosition = hp.getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
       // 附加元素和初始位置到store
 
@@ -257,7 +258,7 @@ function index (listenerElement) {
       // 定义更新移动元素样式的方法
 
       var updateMovedElementStyle = function updateMovedElementStyle() {
-        if (opt.clone) {
+        if (store.isCloned) {
           store.movedOrClonedElement.parentElement.appendChild(movedElement);
         }
 
@@ -273,13 +274,15 @@ function index (listenerElement) {
           pointerEvents: 'none'
         };
         hp.backupAttr(movedElement, 'style');
+        hp.backupAttr(movedElement, 'class');
+        hp.backupAttr(document.body, 'style');
 
         for (var key in style) {
           movedElement.style[key] = style[key];
         }
 
-        hp.backupAttr(movedElement, 'class');
         hp.addClass(movedElement, opt.draggingClassName);
+        document.body.style.cursor = 'grabbing';
         /*
         check if the changed position is expected and correct it. about stacking context.
         当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
@@ -376,9 +379,10 @@ function index (listenerElement) {
     var updateMovedElementStyle = function updateMovedElementStyle() {
       hp.restoreAttr(movedElement, 'style');
       hp.restoreAttr(movedElement, 'class');
+      hp.restoreAttr(document.body, 'style');
 
-      if (opt.clone) {
-        movedElement.parentElement.removeChild(movedElement);
+      if (store.isCloned) {
+        hp.removeEl(movedElement);
       }
     };
 

@@ -39,6 +39,7 @@ export interface Options extends Partial<typeof defaultOptions> {
     ontouchstart?: (e: TouchEvent) => void;
     ontouchmove?: (e: TouchEvent) => void;
     ontouchend?: (e: TouchEvent) => void;
+    onClone?: (store: Store, opt: Options) => boolean;
 }
 export declare const initialStore: {
     movedCount: number;
@@ -59,6 +60,7 @@ export interface Store extends InitialStore {
     initialPosition: EventPosition2;
     initialPositionRelativeToViewport: EventPosition2;
     updateMovedElementStyle: () => void;
+    isCloned: boolean;
 }
 declare type EventPosition2 = {
     x: number;

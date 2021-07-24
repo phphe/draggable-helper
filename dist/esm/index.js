@@ -1,10 +1,10 @@
 /*!
- * draggable-helper v5.0.6
+ * draggable-helper v6.0.0
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
  */
-import { objectAssignIfKeyNull, hasClass, findParent, toArrayIfNot, getViewportPosition, elementsFromPoint, isDescendantOf, scrollTo, getBoundingClientRect, backupAttr, addClass, restoreAttr } from 'helper-js';
+import { objectAssignIfKeyNull, hasClass, findParent, toArrayIfNot, getViewportPosition, elementsFromPoint, isDescendantOf, scrollTo, getBoundingClientRect, backupAttr, addClass, restoreAttr, removeEl } from 'helper-js';
 import DragEventService from 'drag-event-service';
 
 function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
@@ -240,7 +240,8 @@ function index (listenerElement) {
       } // resolve elements
 
 
-      var movedElement = opt.clone ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
+      store.isCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)));
+      var movedElement = store.isCloned ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
       var initialPosition = getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
       // 附加元素和初始位置到store
 
@@ -251,7 +252,7 @@ function index (listenerElement) {
       // 定义更新移动元素样式的方法
 
       var updateMovedElementStyle = function updateMovedElementStyle() {
-        if (opt.clone) {
+        if (store.isCloned) {
           store.movedOrClonedElement.parentElement.appendChild(movedElement);
         }
 
@@ -267,13 +268,15 @@ function index (listenerElement) {
           pointerEvents: 'none'
         };
         backupAttr(movedElement, 'style');
+        backupAttr(movedElement, 'class');
+        backupAttr(document.body, 'style');
 
         for (var key in style) {
           movedElement.style[key] = style[key];
         }
 
-        backupAttr(movedElement, 'class');
         addClass(movedElement, opt.draggingClassName);
+        document.body.style.cursor = 'grabbing';
         /*
         check if the changed position is expected and correct it. about stacking context.
         当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
@@ -370,9 +373,10 @@ function index (listenerElement) {
     var updateMovedElementStyle = function updateMovedElementStyle() {
       restoreAttr(movedElement, 'style');
       restoreAttr(movedElement, 'class');
+      restoreAttr(document.body, 'style');
 
-      if (opt.clone) {
-        movedElement.parentElement.removeChild(movedElement);
+      if (store.isCloned) {
+        removeEl(movedElement);
       }
     };
 
