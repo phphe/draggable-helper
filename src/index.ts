@@ -174,7 +174,8 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
         }
       }
       // resolve elements
-      const movedElement = opt.clone ? movedOrClonedElement.cloneNode(true) as HTMLElement : movedOrClonedElement
+      store.isCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)))
+      const movedElement = store.isCloned ? movedOrClonedElement.cloneNode(true) as HTMLElement : movedOrClonedElement
       const initialPosition = hp.getViewportPosition(movedOrClonedElement)
       // attach elements and initialPosition to store
       // 附加元素和初始位置到store
@@ -185,7 +186,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       // define the function to update moved element style
       // 定义更新移动元素样式的方法
       const updateMovedElementStyle = () => {
-        if (opt.clone) {
+        if (store.isCloned) {
           store.movedOrClonedElement.parentElement.appendChild(movedElement)
         }
         const size = hp.getBoundingClientRect(movedElement)
@@ -200,11 +201,13 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
           pointerEvents: 'none',
         }
         hp.backupAttr(movedElement, 'style')
+        hp.backupAttr(movedElement, 'class')
+        hp.backupAttr(document.body, 'style')
         for (const key in style) {
           movedElement.style[key] = style[key]
         }
-        hp.backupAttr(movedElement, 'class')
         hp.addClass(movedElement, opt.draggingClassName)
+        document.body.style.cursor = 'grabbing'
         /*
         check if the changed position is expected and correct it. about stacking context.
         当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
@@ -284,8 +287,9 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     const updateMovedElementStyle = () => {
       hp.restoreAttr(movedElement, 'style')
       hp.restoreAttr(movedElement, 'class')
-      if (opt.clone) {
-        movedElement.parentElement.removeChild(movedElement)
+      hp.restoreAttr(document.body, 'style')
+      if (store.isCloned) {
+        hp.removeEl(movedElement)
       }
     }
     store.updateMovedElementStyle = updateMovedElementStyle
@@ -354,6 +358,8 @@ export interface Options extends Partial<typeof defaultOptions>{
   ontouchstart?: (e: TouchEvent) => void
   ontouchmove?: (e: TouchEvent) => void
   ontouchend?: (e: TouchEvent) => void
+  // clone
+  onClone?: (store: Store, opt: Options) => boolean; // control clone when drag start
 }
 // Info after event triggered. Created when mousedown or touchstart, destroied after mouseup or touchend.
 // 事件触发后的相关信息. mousedown或touchstart时创建, mouseup或touchend后销毁.
@@ -376,6 +382,7 @@ export interface Store extends InitialStore {
   initialPosition: EventPosition2 // fixed position. The position relative to viewport by default. Relative to stacking context. Sometimes stacking context is not html, for example a parent with css 'transform' defined.
   initialPositionRelativeToViewport: EventPosition2 // fixed position. The position relative to viewport
   updateMovedElementStyle: () => void
+  isCloned: boolean
 }
 // Other type
 // 其他类型
@@ -560,4 +567,3 @@ function stopOldScrollAnimation() {
     stopVerticalScroll = null
   }
 }
-
