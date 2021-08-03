@@ -174,8 +174,11 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
         }
       }
       // resolve elements
-      store.isCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)))
-      const movedElement = store.isCloned ? movedOrClonedElement.cloneNode(true) as HTMLElement : movedOrClonedElement
+      store._isMovingElementCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)))
+      const movedElement = store._isMovingElementCloned ? movedOrClonedElement.cloneNode(true) as HTMLElement : movedOrClonedElement
+      if (store._isMovingElementCloned) {
+        movedElement.setAttribute('id', undefined)
+      }
       const initialPosition = hp.getViewportPosition(movedOrClonedElement)
       // attach elements and initialPosition to store
       // 附加元素和初始位置到store
@@ -186,7 +189,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       // define the function to update moved element style
       // 定义更新移动元素样式的方法
       const updateMovedElementStyle = () => {
-        if (store.isCloned) {
+        if (store._isMovingElementCloned) {
           store.movedOrClonedElement.parentElement.appendChild(movedElement)
         }
         const size = hp.getBoundingClientRect(movedElement)
@@ -288,7 +291,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       hp.restoreAttr(movedElement, 'style')
       hp.restoreAttr(movedElement, 'class')
       hp.restoreAttr(document.body, 'style')
-      if (store.isCloned) {
+      if (store._isMovingElementCloned) {
         hp.removeEl(movedElement)
       }
     }
@@ -382,7 +385,7 @@ export interface Store extends InitialStore {
   initialPosition: EventPosition2 // fixed position. The position relative to viewport by default. Relative to stacking context. Sometimes stacking context is not html, for example a parent with css 'transform' defined.
   initialPositionRelativeToViewport: EventPosition2 // fixed position. The position relative to viewport
   updateMovedElementStyle: () => void
-  isCloned: boolean
+  _isMovingElementCloned: boolean // when drag, apply style to dragged element or its cloned
 }
 // Other type
 // 其他类型
