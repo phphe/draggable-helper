@@ -30,7 +30,8 @@
   "dependencies": {
     "@babel/runtime": "^7.7.7",
     "drag-event-service": "^1.1.7",
-    "helper-js": "^2.0.0"
+    "helper-js": "^2.0.4",
+    "tslib": "^1.11.2"
   },
   "license": "MIT"
 }

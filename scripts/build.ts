@@ -13,6 +13,7 @@ const pkg = require("../package.json")
 const input = 'src/index.ts'
 const outDir = 'dist'
 const moduleName = camelize(pkg.name) // for umd, amd
+const external = ["tslib"];
 
 const getBabelConfig = () => ({
   // .babelrc
@@ -53,7 +54,8 @@ export default <rollup.RollupOptions[]>[
   // esm
   {
     input,
-    external: (source) => belongsTo(source, Object.keys(pkg.dependencies||{})) || belongsTo(source, Object.keys(pkg.peerDependencies||{})),
+    external: (source) => belongsTo(source, Object.keys(pkg.dependencies||{})) || belongsTo(source, Object.keys(pkg.peerDependencies||{})) ||
+    belongsTo(source, external),
     plugins: [
       node(), cjs(), json(),
       typescript(), // node must be in front of typescript. babel must behind typescript.
@@ -69,7 +71,8 @@ export default <rollup.RollupOptions[]>[
   // cjs
   {
     input,
-    external: (source) => belongsTo(source, Object.keys(pkg.dependencies||{})) || belongsTo(source, Object.keys(pkg.peerDependencies||{})),
+    external: (source) => belongsTo(source, Object.keys(pkg.dependencies||{})) || belongsTo(source, Object.keys(pkg.peerDependencies||{})) ||
+    belongsTo(source, external),
     plugins: [
       node(), cjs(), json(),
       typescript(), // node must be in front of typescript. babel must behind typescript.

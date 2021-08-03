@@ -12,6 +12,7 @@ const pkg = require("../package.json");
 const input = 'src/index.ts';
 const outDir = 'dist';
 const moduleName = rogo_1.camelize(pkg.name); // for umd, amd
+const external = ["tslib"];
 const getBabelConfig = () => ({
     // .babelrc
     presets: [
@@ -47,7 +48,8 @@ exports.default = [
     // esm
     {
         input,
-        external: (source) => rogo_1.belongsTo(source, Object.keys(pkg.dependencies || {})) || rogo_1.belongsTo(source, Object.keys(pkg.peerDependencies || {})),
+        external: (source) => rogo_1.belongsTo(source, Object.keys(pkg.dependencies || {})) || rogo_1.belongsTo(source, Object.keys(pkg.peerDependencies || {})) ||
+            rogo_1.belongsTo(source, external),
         plugins: [
             node(), cjs(), json(),
             typescript(),
@@ -63,7 +65,8 @@ exports.default = [
     // cjs
     {
         input,
-        external: (source) => rogo_1.belongsTo(source, Object.keys(pkg.dependencies || {})) || rogo_1.belongsTo(source, Object.keys(pkg.peerDependencies || {})),
+        external: (source) => rogo_1.belongsTo(source, Object.keys(pkg.dependencies || {})) || rogo_1.belongsTo(source, Object.keys(pkg.peerDependencies || {})) ||
+            rogo_1.belongsTo(source, external),
         plugins: [
             node(), cjs(), json(),
             typescript(),
