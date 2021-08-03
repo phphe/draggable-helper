@@ -60,7 +60,7 @@ export interface Store extends InitialStore {
     initialPosition: EventPosition2;
     initialPositionRelativeToViewport: EventPosition2;
     updateMovedElementStyle: () => void;
-    isCloned: boolean;
+    _isMovingElementCloned: boolean;
 }
 declare type EventPosition2 = {
     x: number;

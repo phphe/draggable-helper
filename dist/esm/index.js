@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v6.0.0
+ * draggable-helper v6.0.1
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: undefined
  * Released under the MIT License.
@@ -7,9 +7,9 @@
 import { objectAssignIfKeyNull, hasClass, findParent, toArrayIfNot, getViewportPosition, elementsFromPoint, isDescendantOf, scrollTo, getBoundingClientRect, backupAttr, addClass, restoreAttr, removeEl } from 'helper-js';
 import DragEventService from 'drag-event-service';
 
-function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /* Default export, a function.
@@ -240,8 +240,13 @@ function index (listenerElement) {
       } // resolve elements
 
 
-      store.isCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)));
-      var movedElement = store.isCloned ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
+      store._isMovingElementCloned = Boolean(opt.clone && (!opt.onClone || opt.onClone(store, opt)));
+      var movedElement = store._isMovingElementCloned ? movedOrClonedElement.cloneNode(true) : movedOrClonedElement;
+
+      if (store._isMovingElementCloned) {
+        movedElement.setAttribute('id', undefined);
+      }
+
       var initialPosition = getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
       // 附加元素和初始位置到store
 
@@ -252,7 +257,7 @@ function index (listenerElement) {
       // 定义更新移动元素样式的方法
 
       var updateMovedElementStyle = function updateMovedElementStyle() {
-        if (store.isCloned) {
+        if (store._isMovingElementCloned) {
           store.movedOrClonedElement.parentElement.appendChild(movedElement);
         }
 
@@ -314,27 +319,27 @@ function index (listenerElement) {
     } // Not the first move
     // 非第一次移动
     else {
-        // define the function to update moved element style
-        // 定义更新移动元素样式的方法
-        var _updateMovedElementStyle = function _updateMovedElementStyle() {
-          Object.assign(store.movedElement.style, {
-            left: store.initialPosition.x + move.x + 'px',
-            top: store.initialPosition.y + move.y + 'px'
-          });
-        };
+      // define the function to update moved element style
+      // 定义更新移动元素样式的方法
+      var _updateMovedElementStyle = function _updateMovedElementStyle() {
+        Object.assign(store.movedElement.style, {
+          left: store.initialPosition.x + move.x + 'px',
+          top: store.initialPosition.y + move.y + 'px'
+        });
+      };
 
-        store.updateMovedElementStyle = _updateMovedElementStyle; // call hook beforeMove
+      store.updateMovedElementStyle = _updateMovedElementStyle; // call hook beforeMove
 
-        if (opt.beforeMove && opt.beforeMove(store, opt) === false) {
-          return;
-        } // try to update moved element style
-        // 尝试更新移动元素样式
+      if (opt.beforeMove && opt.beforeMove(store, opt) === false) {
+        return;
+      } // try to update moved element style
+      // 尝试更新移动元素样式
 
 
-        if (!opt.updateMovedElementStyleManually) {
-          store.updateMovedElementStyle();
-        }
+      if (!opt.updateMovedElementStyleManually) {
+        store.updateMovedElementStyle();
       }
+    }
 
     _edgeScroll.afterMove(store, opt);
 
@@ -375,7 +380,7 @@ function index (listenerElement) {
       restoreAttr(movedElement, 'class');
       restoreAttr(document.body, 'style');
 
-      if (store.isCloned) {
+      if (store._isMovingElementCloned) {
         removeEl(movedElement);
       }
     };
