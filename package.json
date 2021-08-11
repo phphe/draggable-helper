@@ -1,11 +1,13 @@
 {
   "name": "draggable-helper",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "To simplify drag and drop.",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "main": "dist/draggable-helper.cjs.js",
+  "module": "dist/draggable-helper.esm.js",
+  "types": "types/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "scripts": {
     "compile-scripts": "tsc --target ES6 --module CommonJS scripts/build.ts",
@@ -22,9 +24,8 @@
     "url": "https://github.com/phphe/draggable-helper.git"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.10.1",
-    "rogo": "^2.0.2",
-    "rollup-plugin-typescript2": "^0.27.1",
+    "@rollup-use/core": "^0",
+    "@rollup-use/ts": "^0",
     "typescript": "^3.9.5"
   },
   "dependencies": {

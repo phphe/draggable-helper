@@ -1,11 +1,40 @@
 /*!
- * draggable-helper v6.0.1
+ * draggable-helper v6.0.2
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
- * Homepage: undefined
+ * Homepage: null
  * Released under the MIT License.
  */
-import { objectAssignIfKeyNull, hasClass, findParent, toArrayIfNot, getViewportPosition, elementsFromPoint, isDescendantOf, scrollTo, getBoundingClientRect, backupAttr, addClass, restoreAttr, removeEl } from 'helper-js';
-import DragEventService from 'drag-event-service';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var hp = require('helper-js');
+var DragEventService = require('drag-event-service');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+function _interopNamespace(e) {
+  if (e && e.__esModule) return e;
+  var n = Object.create(null);
+  if (e) {
+    Object.keys(e).forEach(function (k) {
+      if (k !== 'default') {
+        var d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: function () {
+            return e[k];
+          }
+        });
+      }
+    });
+  }
+  n['default'] = e;
+  return Object.freeze(n);
+}
+
+var hp__namespace = /*#__PURE__*/_interopNamespace(hp);
+var DragEventService__default = /*#__PURE__*/_interopDefaultLegacy(DragEventService);
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -42,12 +71,12 @@ function index (listenerElement) {
   var store; // set default value of options
   // 设置options的默认值
 
-  objectAssignIfKeyNull(opt, defaultOptions); // define the event listener of mousedown and touchstart
+  hp__namespace.objectAssignIfKeyNull(opt, defaultOptions); // define the event listener of mousedown and touchstart
   // 定义mousedown和touchstart事件监听器
 
   var onMousedownOrTouchStart = function onMousedownOrTouchStart(e, mouse) {
     // execute native event hooks
-    if (!DragEventService.isTouch(e)) {
+    if (!DragEventService__default['default'].isTouch(e)) {
       opt.onmousedown && opt.onmousedown(e);
     } else {
       opt.ontouchstart && opt.ontouchstart(e);
@@ -62,12 +91,12 @@ function index (listenerElement) {
     // 检查触发事件的元素和其与element之间的父级是否有不允许拖动的类名
 
 
-    if (hasClass(target, opt.undraggableClassName)) {
+    if (hp__namespace.hasClass(target, opt.undraggableClassName)) {
       return;
     }
 
-    var isParentUndraggable = findParent(target, function (el) {
-      if (hasClass(el, opt.undraggableClassName)) {
+    var isParentUndraggable = hp__namespace.findParent(target, function (el) {
+      if (hp__namespace.hasClass(el, opt.undraggableClassName)) {
         return true;
       }
 
@@ -101,14 +130,14 @@ function index (listenerElement) {
     } else if (opt.triggerClassName) {
       var triggerElement;
 
-      var _iterator = _createForOfIteratorHelper(toArrayIfNot(opt.triggerClassName)),
+      var _iterator = _createForOfIteratorHelper(hp__namespace.toArrayIfNot(opt.triggerClassName)),
           _step;
 
       try {
         var _loop = function _loop() {
           var className = _step.value;
-          triggerElement = findParent(store.directTriggerElement, function (el) {
-            if (hasClass(el, className)) {
+          triggerElement = hp__namespace.findParent(store.directTriggerElement, function (el) {
+            if (hp__namespace.hasClass(el, className)) {
               return true;
             }
 
@@ -163,7 +192,7 @@ function index (listenerElement) {
     // 阻止文字被选中
 
 
-    if (!DragEventService.isTouch(e)) {
+    if (!DragEventService__default['default'].isTouch(e)) {
       // Do not prevent when touch. Or the elements within the node can not trigger click event.
       // 不要在触摸时阻止事件. 否则将导致节点内的元素不触发点击事件.
       if (opt.preventTextSelection) {
@@ -173,19 +202,19 @@ function index (listenerElement) {
     // 监听mousemove和touchmove
 
 
-    DragEventService.on(document, 'move', onMousemoveOrTouchMove, {
+    DragEventService__default['default'].on(document, 'move', onMousemoveOrTouchMove, {
       touchArgs: [{
         passive: false
       }]
     }); // listen mouseup and touchend
     // 监听mouseup和touchend
 
-    DragEventService.on(window, 'end', onMouseupOrTouchEnd);
+    DragEventService__default['default'].on(window, 'end', onMouseupOrTouchEnd);
   }; // bind mousedown or touchstart event listener
   // 绑定mousedown和touchstart事件监听器
 
 
-  DragEventService.on(listenerElement, 'start', onMousedownOrTouchStart, {
+  DragEventService__default['default'].on(listenerElement, 'start', onMousedownOrTouchStart, {
     touchArgs: [{
       passive: true
     }]
@@ -194,7 +223,7 @@ function index (listenerElement) {
 
   var onMousemoveOrTouchMove = function onMousemoveOrTouchMove(e, mouse) {
     // execute native event hooks
-    if (!DragEventService.isTouch(e)) {
+    if (!DragEventService__default['default'].isTouch(e)) {
       opt.onmousemove && opt.onmousemove(e);
     } else {
       opt.ontouchmove && opt.ontouchmove(e);
@@ -212,7 +241,7 @@ function index (listenerElement) {
     store.moveEvent = e;
     store.mouse = mouse;
 
-    if (DragEventService.isTouch(e)) {
+    if (DragEventService__default['default'].isTouch(e)) {
       // prevent page scroll when touch.
       // 当触摸时阻止屏幕被拖动.
       e.preventDefault();
@@ -247,7 +276,7 @@ function index (listenerElement) {
         movedElement.setAttribute('id', undefined);
       }
 
-      var initialPosition = getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
+      var initialPosition = hp__namespace.getViewportPosition(movedOrClonedElement); // attach elements and initialPosition to store
       // 附加元素和初始位置到store
 
       store.movedOrClonedElement = movedOrClonedElement;
@@ -261,7 +290,7 @@ function index (listenerElement) {
           store.movedOrClonedElement.parentElement.appendChild(movedElement);
         }
 
-        var size = getBoundingClientRect(movedElement);
+        var size = hp__namespace.getBoundingClientRect(movedElement);
         var style = {
           width: "".concat(Math.ceil(size.width), "px"),
           height: "".concat(Math.ceil(size.height), "px"),
@@ -272,22 +301,22 @@ function index (listenerElement) {
           top: initialPosition.y + 'px',
           pointerEvents: 'none'
         };
-        backupAttr(movedElement, 'style');
-        backupAttr(movedElement, 'class');
-        backupAttr(document.body, 'style');
+        hp__namespace.backupAttr(movedElement, 'style');
+        hp__namespace.backupAttr(movedElement, 'class');
+        hp__namespace.backupAttr(document.body, 'style');
 
         for (var key in style) {
           movedElement.style[key] = style[key];
         }
 
-        addClass(movedElement, opt.draggingClassName);
+        hp__namespace.addClass(movedElement, opt.draggingClassName);
         document.body.style.cursor = 'grabbing';
         /*
         check if the changed position is expected and correct it. about stacking context.
         当某父元素使用了transform属性时, fixed不再以窗口左上角为坐标. 以下功能是在第一次移动后, 检查元素实际位置和期望位置是否相同, 不同则说明坐标系不是期望的. 则把初始位置减去偏移, 无论任何父元素导致了层叠上下文问题, 都能正确显示.
         */
 
-        var nowPosition = getViewportPosition(movedElement);
+        var nowPosition = hp__namespace.getViewportPosition(movedElement);
 
         if (nowPosition.x !== initialPosition.x) {
           initialPosition.x = initialPosition.x - (nowPosition.x - initialPosition.x);
@@ -351,7 +380,7 @@ function index (listenerElement) {
 
   var onMouseupOrTouchEnd = function onMouseupOrTouchEnd(e) {
     // execute native event hooks
-    if (!DragEventService.isTouch(e)) {
+    if (!DragEventService__default['default'].isTouch(e)) {
       opt.onmousedown && opt.onmousedown(e);
     } else {
       opt.ontouchend && opt.ontouchend(e);
@@ -359,12 +388,12 @@ function index (listenerElement) {
     // 取消监听事件mousemove, touchmove, mouseup, touchend
 
 
-    DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
+    DragEventService__default['default'].off(document, 'move', onMousemoveOrTouchMove, {
       touchArgs: [{
         passive: false
       }]
     });
-    DragEventService.off(window, 'end', onMouseupOrTouchEnd); // 
+    DragEventService__default['default'].off(window, 'end', onMouseupOrTouchEnd); // 
 
     if (store.movedCount === 0) {
       return;
@@ -376,12 +405,12 @@ function index (listenerElement) {
     // 定义更新移动元素样式的方法
 
     var updateMovedElementStyle = function updateMovedElementStyle() {
-      restoreAttr(movedElement, 'style');
-      restoreAttr(movedElement, 'class');
-      restoreAttr(document.body, 'style');
+      hp__namespace.restoreAttr(movedElement, 'style');
+      hp__namespace.restoreAttr(movedElement, 'class');
+      hp__namespace.restoreAttr(document.body, 'style');
 
       if (store._isMovingElementCloned) {
-        removeEl(movedElement);
+        hp__namespace.removeEl(movedElement);
       }
     };
 
@@ -405,17 +434,17 @@ function index (listenerElement) {
 
 
   var destroy = function destroy() {
-    DragEventService.off(listenerElement, 'start', onMousedownOrTouchStart, {
+    DragEventService__default['default'].off(listenerElement, 'start', onMousedownOrTouchStart, {
       touchArgs: [{
         passive: true
       }]
     });
-    DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
+    DragEventService__default['default'].off(document, 'move', onMousemoveOrTouchMove, {
       touchArgs: [{
         passive: false
       }]
     });
-    DragEventService.off(window, 'end', onMouseupOrTouchEnd);
+    DragEventService__default['default'].off(window, 'end', onMouseupOrTouchEnd);
   }; // 
 
 
@@ -461,7 +490,7 @@ _edgeScroll.afterMove = function (store, opt) {
   };
 
   if (opt.edgeScrollTriggerMode === 'top_left_corner') {
-    var vp = getViewportPosition(store.movedElement);
+    var vp = hp__namespace.getViewportPosition(store.movedElement);
     triggerPoint = {
       x: vp.x,
       y: vp.y
@@ -490,7 +519,7 @@ _edgeScroll.afterMove = function (store, opt) {
   }
 
   if (!findInElements) {
-    findInElements = elementsFromPoint(triggerPoint.x, triggerPoint.y);
+    findInElements = hp__namespace.elementsFromPoint(triggerPoint.x, triggerPoint.y);
     cachedElementsFromPoint = findInElements;
   }
 
@@ -501,7 +530,7 @@ _edgeScroll.afterMove = function (store, opt) {
     for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
       var itemEl = _step2.value;
 
-      if (prevElement && !isDescendantOf(prevElement, itemEl)) {
+      if (prevElement && !hp__namespace.isDescendantOf(prevElement, itemEl)) {
         // itemEl is being covered by other elements
         // itemEl被其他元素遮挡
         continue;
@@ -558,7 +587,7 @@ _edgeScroll.afterMove = function (store, opt) {
   }
 
   if (!findInElements) {
-    findInElements = cachedElementsFromPoint || elementsFromPoint(triggerPoint.x, triggerPoint.y);
+    findInElements = cachedElementsFromPoint || hp__namespace.elementsFromPoint(triggerPoint.x, triggerPoint.y);
   }
 
   var _iterator3 = _createForOfIteratorHelper(findInElements),
@@ -568,7 +597,7 @@ _edgeScroll.afterMove = function (store, opt) {
     for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
       var _itemEl = _step3.value;
 
-      if (prevElement && !isDescendantOf(prevElement, _itemEl)) {
+      if (prevElement && !hp__namespace.isDescendantOf(prevElement, _itemEl)) {
         // itemEl is being covered by other elements
         // itemEl被其他元素遮挡
         continue;
@@ -609,13 +638,13 @@ _edgeScroll.afterMove = function (store, opt) {
 
   if (foundHorizontal) {
     if (horizontalDir === 'left') {
-      stopHorizontalScroll = scrollTo({
+      stopHorizontalScroll = hp__namespace.scrollTo({
         x: 0,
         element: foundHorizontal,
         duration: scrollableDisplacement(foundHorizontal, 'left') / opt.edgeScrollSpeed
       });
     } else {
-      stopHorizontalScroll = scrollTo({
+      stopHorizontalScroll = hp__namespace.scrollTo({
         x: foundHorizontal.scrollWidth - foundHorizontal.clientWidth,
         element: foundHorizontal,
         duration: scrollableDisplacement(foundHorizontal, 'right') / opt.edgeScrollSpeed
@@ -625,13 +654,13 @@ _edgeScroll.afterMove = function (store, opt) {
 
   if (foundVertical) {
     if (verticalDir === 'up') {
-      stopVerticalScroll = scrollTo({
+      stopVerticalScroll = hp__namespace.scrollTo({
         y: 0,
         element: foundVertical,
         duration: scrollableDisplacement(foundVertical, 'up') / opt.edgeScrollSpeed
       });
     } else {
-      stopVerticalScroll = scrollTo({
+      stopVerticalScroll = hp__namespace.scrollTo({
         y: foundVertical.scrollHeight - foundVertical.clientHeight,
         element: foundVertical,
         duration: scrollableDisplacement(foundVertical, 'down') / opt.edgeScrollSpeed
@@ -669,7 +698,7 @@ _edgeScroll.afterMove = function (store, opt) {
   }
 
   function fixedGetViewportPosition(el) {
-    var r = getViewportPosition(el); // document.documentElement is special
+    var r = hp__namespace.getViewportPosition(el); // document.documentElement is special
 
     var special = document.scrollingElement || document.documentElement;
 
@@ -704,5 +733,6 @@ function stopOldScrollAnimation() {
   }
 }
 
-export default index;
-export { defaultOptions, initialStore };
+exports['default'] = index;
+exports.defaultOptions = defaultOptions;
+exports.initialStore = initialStore;
