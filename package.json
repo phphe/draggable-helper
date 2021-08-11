@@ -1,6 +1,6 @@
 {
   "name": "draggable-helper",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "description": "To simplify drag and drop.",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.esm.js",
@@ -10,7 +10,6 @@
     "types"
   ],
   "scripts": {
-    "compile-scripts": "tsc --target ES6 --module CommonJS scripts/build.ts",
     "build": "rollup -c scripts/build.js & node scripts/build.js --report",
     "watch": "rollup -c scripts/build.js --watch"
   },
@@ -26,7 +25,7 @@
   "devDependencies": {
     "@rollup-use/core": "^0",
     "@rollup-use/ts": "^0",
-    "typescript": "^3.9.5"
+    "typescript": "^4"
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",

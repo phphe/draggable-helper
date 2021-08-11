@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v6.0.2
+ * draggable-helper v6.0.3
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: null
  * Released under the MIT License.
@@ -804,14 +804,14 @@
   }(runtime));
 
   /*!
-   * helper-js v2.0.5
+   * helper-js v2.0.6
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Homepage: null
    * Released under the MIT License.
    */
 
   function isArray(v) {
-    return Object.prototype.toString.call(v) === '[object Array]';
+    return Object.prototype.toString.call(v) === "[object Array]";
   }
 
   function toArrayIfNot(arrOrNot) {
@@ -880,7 +880,7 @@
     while (cur) {
       var r = callback(cur);
 
-      if (r === 'break') {
+      if (r === "break") {
         return;
       } else if (r) {
         return cur;
@@ -911,7 +911,7 @@
     if (el.classList) {
       return el.classList.contains(className);
     } else {
-      return new RegExp('(^| )' + className + '( |$)', 'gi').test(el.className);
+      return new RegExp("(^| )" + className + "( |$)", "gi").test(el.className);
     }
   } // source: http://youmightnotneedjquery.com/
 
@@ -921,7 +921,7 @@
       if (el.classList) {
         el.classList.add(className);
       } else {
-        el.className += ' ' + className;
+        el.className += " " + className;
       }
     }
   } // source: http://youmightnotneedjquery.com/
@@ -957,9 +957,9 @@
   }
 
   function elementsFromPoint(x, y) {
-    var args = [x, y]; // @ts-ignore
-
-    var func = document.elementsFromPoint || document.msElementsFromPoint || elementsFromPoint;
+    var args = [x, y];
+    var func = document.elementsFromPoint || // @ts-ignore
+    document.msElementsFromPoint || elementsFromPoint;
     return func.apply(document, args);
 
     function elementsFromPoint(x, y) {
@@ -970,14 +970,14 @@
         if (parent !== document.elementFromPoint(x, y)) {
           parent = document.elementFromPoint(x, y);
           parents.push(parent);
-          parent.style.pointerEvents = 'none';
+          parent.style.pointerEvents = "none";
         } else {
           parent = false;
         }
       } while (parent);
 
       parents.forEach(function (parent) {
-        return parent.style.pointerEvents = 'all';
+        return parent.style.pointerEvents = "all";
       });
       return parents;
     }
@@ -1061,7 +1061,7 @@
   } // ### DOM structure
 
   /*!
-   * drag-event-service v1.1.8
+   * drag-event-service v1.1.10
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Homepage: null
    * Released under the MIT License.
