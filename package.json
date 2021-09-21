@@ -1,6 +1,6 @@
 {
   "name": "draggable-helper",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "description": "To simplify drag and drop.",
   "main": "dist/draggable-helper.cjs.js",
   "module": "dist/draggable-helper.esm.js",
