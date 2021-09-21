@@ -24,8 +24,8 @@ export interface Options extends Partial<typeof defaultOptions> {
     afterFirstMove?: (store: Store, opt: Options) => void;
     beforeMove?: (store: Store, opt: Options) => boolean | undefined;
     afterMove?: (store: Store, opt: Options) => void;
-    beforeDrop?: (store: Store, opt: Options) => boolean | undefined;
-    afterDrop?: (store: Store, opt: Options) => void;
+    beforeDrop?: (store: Store, opt: Options) => boolean | undefined | Promise<boolean>;
+    afterDrop?: (store: Store, opt: Options) => void | Promise<void>;
     preventTextSelection?: boolean;
     edgeScroll?: boolean;
     edgeScrollTriggerMargin?: number;

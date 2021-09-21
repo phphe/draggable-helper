@@ -1,9 +1,11 @@
 /*!
- * draggable-helper v6.0.3
+ * draggable-helper v6.0.4
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: null
  * Released under the MIT License.
  */
+import _regeneratorRuntime from '@babel/runtime/regenerator';
+import { __awaiter } from 'tslib';
 import * as hp from 'helper-js';
 import DragEventService from 'drag-event-service';
 
@@ -38,6 +40,8 @@ var _edgeScroll = {
   afterDrop: function afterDrop(store, opt) {}
 };
 function index (listenerElement) {
+  var _this = this;
+
   var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var store; // set default value of options
   // 设置options的默认值
@@ -350,56 +354,101 @@ function index (listenerElement) {
 
 
   var onMouseupOrTouchEnd = function onMouseupOrTouchEnd(e) {
-    // execute native event hooks
-    if (!DragEventService.isTouch(e)) {
-      opt.onmousedown && opt.onmousedown(e);
-    } else {
-      opt.ontouchend && opt.ontouchend(e);
-    } // cancel listening mousemove, touchmove, mouseup, touchend
-    // 取消监听事件mousemove, touchmove, mouseup, touchend
+    return __awaiter(_this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+      var _store2, movedElement, updateMovedElementStyle;
+
+      return _regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              // execute native event hooks
+              if (!DragEventService.isTouch(e)) {
+                opt.onmousedown && opt.onmousedown(e);
+              } else {
+                opt.ontouchend && opt.ontouchend(e);
+              } // cancel listening mousemove, touchmove, mouseup, touchend
+              // 取消监听事件mousemove, touchmove, mouseup, touchend
 
 
-    DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
-      touchArgs: [{
-        passive: false
-      }]
-    });
-    DragEventService.off(window, 'end', onMouseupOrTouchEnd); // 
+              DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
+                touchArgs: [{
+                  passive: false
+                }]
+              });
+              DragEventService.off(window, 'end', onMouseupOrTouchEnd); // 
 
-    if (store.movedCount === 0) {
-      return;
-    }
+              if (!(store.movedCount === 0)) {
+                _context.next = 5;
+                break;
+              }
 
-    store.endEvent = e;
-    var _store2 = store,
-        movedElement = _store2.movedElement; // define the function to update moved element style
-    // 定义更新移动元素样式的方法
+              return _context.abrupt("return");
 
-    var updateMovedElementStyle = function updateMovedElementStyle() {
-      hp.restoreAttr(movedElement, 'style');
-      hp.restoreAttr(movedElement, 'class');
-      hp.restoreAttr(document.body, 'style');
+            case 5:
+              store.endEvent = e;
+              _store2 = store, movedElement = _store2.movedElement; // define the function to update moved element style
+              // 定义更新移动元素样式的方法
 
-      if (store._isMovingElementCloned) {
-        hp.removeEl(movedElement);
-      }
-    };
+              updateMovedElementStyle = function updateMovedElementStyle() {
+                hp.restoreAttr(movedElement, 'style');
+                hp.restoreAttr(movedElement, 'class');
+                hp.restoreAttr(document.body, 'style');
 
-    store.updateMovedElementStyle = updateMovedElementStyle; // call hook beforeDrop
+                if (store._isMovingElementCloned) {
+                  hp.removeEl(movedElement);
+                }
+              };
 
-    if (opt.beforeDrop && opt.beforeDrop(store, opt) === false) {
-      return;
-    } // try to update moved element style
-    // 尝试更新移动元素样式
+              store.updateMovedElementStyle = updateMovedElementStyle; // call hook beforeDrop
 
+              _context.t0 = opt.beforeDrop;
 
-    if (!opt.updateMovedElementStyleManually) {
-      updateMovedElementStyle();
-    }
+              if (!_context.t0) {
+                _context.next = 15;
+                break;
+              }
 
-    _edgeScroll.afterDrop(store, opt);
+              _context.next = 13;
+              return opt.beforeDrop(store, opt);
 
-    opt.afterDrop && opt.afterDrop(store, opt);
+            case 13:
+              _context.t1 = _context.sent;
+              _context.t0 = _context.t1 === false;
+
+            case 15:
+              if (!_context.t0) {
+                _context.next = 17;
+                break;
+              }
+
+              return _context.abrupt("return");
+
+            case 17:
+              // try to update moved element style
+              // 尝试更新移动元素样式
+              if (!opt.updateMovedElementStyleManually) {
+                updateMovedElementStyle();
+              }
+
+              _edgeScroll.afterDrop(store, opt);
+
+              _context.t2 = opt.afterDrop;
+
+              if (!_context.t2) {
+                _context.next = 23;
+                break;
+              }
+
+              _context.next = 23;
+              return opt.afterDrop(store, opt);
+
+            case 23:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
   }; // define the destroy function
   // 定义销毁/退出的方法
 

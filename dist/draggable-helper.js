@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v6.0.3
+ * draggable-helper v6.0.4
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: null
  * Released under the MIT License.
@@ -9,41 +9,6 @@
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.draggableHelper = {}));
 }(this, (function (exports) { 'use strict';
-
-  function _arrayLikeToArray$1(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-
-    for (var i = 0, arr2 = new Array(len); i < len; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
-  }
-
-  function _unsupportedIterableToArray$1(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray$1(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen);
-  }
-
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr)) return _arrayLikeToArray$1(arr);
-  }
-
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-  }
-
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread();
-  }
 
   var runtime = {exports: {}};
 
@@ -803,6 +768,68 @@
   }
   }(runtime));
 
+  var regenerator = runtime.exports;
+
+  /*! *****************************************************************************
+  Copyright (c) Microsoft Corporation.
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+  PERFORMANCE OF THIS SOFTWARE.
+  ***************************************************************************** */
+
+  function __awaiter(thisArg, _arguments, P, generator) {
+      function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+      return new (P || (P = Promise))(function (resolve, reject) {
+          function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+          function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+          function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+          step((generator = generator.apply(thisArg, _arguments || [])).next());
+      });
+  }
+
+  function _arrayLikeToArray$1(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+
+    for (var i = 0, arr2 = new Array(len); i < len; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+
+  function _unsupportedIterableToArray$1(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray$1(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen);
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) return _arrayLikeToArray$1(arr);
+  }
+
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread();
+  }
+
   /*!
    * helper-js v2.0.6
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
@@ -1214,6 +1241,8 @@
     afterDrop: function afterDrop(store, opt) {}
   };
   function index (listenerElement) {
+    var _this = this;
+
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var store; // set default value of options
     // 设置options的默认值
@@ -1526,56 +1555,101 @@
 
 
     var onMouseupOrTouchEnd = function onMouseupOrTouchEnd(e) {
-      // execute native event hooks
-      if (!DragEventService.isTouch(e)) {
-        opt.onmousedown && opt.onmousedown(e);
-      } else {
-        opt.ontouchend && opt.ontouchend(e);
-      } // cancel listening mousemove, touchmove, mouseup, touchend
-      // 取消监听事件mousemove, touchmove, mouseup, touchend
+      return __awaiter(_this, void 0, void 0, /*#__PURE__*/regenerator.mark(function _callee() {
+        var _store2, movedElement, updateMovedElementStyle;
+
+        return regenerator.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // execute native event hooks
+                if (!DragEventService.isTouch(e)) {
+                  opt.onmousedown && opt.onmousedown(e);
+                } else {
+                  opt.ontouchend && opt.ontouchend(e);
+                } // cancel listening mousemove, touchmove, mouseup, touchend
+                // 取消监听事件mousemove, touchmove, mouseup, touchend
 
 
-      DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
-        touchArgs: [{
-          passive: false
-        }]
-      });
-      DragEventService.off(window, 'end', onMouseupOrTouchEnd); // 
+                DragEventService.off(document, 'move', onMousemoveOrTouchMove, {
+                  touchArgs: [{
+                    passive: false
+                  }]
+                });
+                DragEventService.off(window, 'end', onMouseupOrTouchEnd); // 
 
-      if (store.movedCount === 0) {
-        return;
-      }
+                if (!(store.movedCount === 0)) {
+                  _context.next = 5;
+                  break;
+                }
 
-      store.endEvent = e;
-      var _store2 = store,
-          movedElement = _store2.movedElement; // define the function to update moved element style
-      // 定义更新移动元素样式的方法
+                return _context.abrupt("return");
 
-      var updateMovedElementStyle = function updateMovedElementStyle() {
-        restoreAttr(movedElement, 'style');
-        restoreAttr(movedElement, 'class');
-        restoreAttr(document.body, 'style');
+              case 5:
+                store.endEvent = e;
+                _store2 = store, movedElement = _store2.movedElement; // define the function to update moved element style
+                // 定义更新移动元素样式的方法
 
-        if (store._isMovingElementCloned) {
-          removeEl(movedElement);
-        }
-      };
+                updateMovedElementStyle = function updateMovedElementStyle() {
+                  restoreAttr(movedElement, 'style');
+                  restoreAttr(movedElement, 'class');
+                  restoreAttr(document.body, 'style');
 
-      store.updateMovedElementStyle = updateMovedElementStyle; // call hook beforeDrop
+                  if (store._isMovingElementCloned) {
+                    removeEl(movedElement);
+                  }
+                };
 
-      if (opt.beforeDrop && opt.beforeDrop(store, opt) === false) {
-        return;
-      } // try to update moved element style
-      // 尝试更新移动元素样式
+                store.updateMovedElementStyle = updateMovedElementStyle; // call hook beforeDrop
 
+                _context.t0 = opt.beforeDrop;
 
-      if (!opt.updateMovedElementStyleManually) {
-        updateMovedElementStyle();
-      }
+                if (!_context.t0) {
+                  _context.next = 15;
+                  break;
+                }
 
-      _edgeScroll.afterDrop(store, opt);
+                _context.next = 13;
+                return opt.beforeDrop(store, opt);
 
-      opt.afterDrop && opt.afterDrop(store, opt);
+              case 13:
+                _context.t1 = _context.sent;
+                _context.t0 = _context.t1 === false;
+
+              case 15:
+                if (!_context.t0) {
+                  _context.next = 17;
+                  break;
+                }
+
+                return _context.abrupt("return");
+
+              case 17:
+                // try to update moved element style
+                // 尝试更新移动元素样式
+                if (!opt.updateMovedElementStyleManually) {
+                  updateMovedElementStyle();
+                }
+
+                _edgeScroll.afterDrop(store, opt);
+
+                _context.t2 = opt.afterDrop;
+
+                if (!_context.t2) {
+                  _context.next = 23;
+                  break;
+                }
+
+                _context.next = 23;
+                return opt.afterDrop(store, opt);
+
+              case 23:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }));
     }; // define the destroy function
     // 定义销毁/退出的方法
 
