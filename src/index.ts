@@ -268,7 +268,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
 
   // define the event listener of mouseup and touchend
   // 定义mouseup和touchend事件监听器
-  const onMouseupOrTouchEnd = (e: MouseOrTouchEvent) => {
+  const onMouseupOrTouchEnd = async (e: MouseOrTouchEvent) => {
     // execute native event hooks
     if (!DragEventService.isTouch(e)) {
       opt.onmousedown && opt.onmousedown(<MouseEvent>e)
@@ -297,8 +297,8 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
     }
     store.updateMovedElementStyle = updateMovedElementStyle
     // call hook beforeDrop
-    if (opt.beforeDrop && opt.beforeDrop(store, opt) === false) {
-      return
+    if (opt.beforeDrop && (await opt.beforeDrop(store, opt)) === false) {
+      return;
     }
     // try to update moved element style
     // 尝试更新移动元素样式
@@ -306,7 +306,7 @@ export default function (listenerElement: HTMLElement, opt:Options={}) {
       updateMovedElementStyle()
     }
     _edgeScroll.afterDrop(store, opt)
-    opt.afterDrop && opt.afterDrop(store, opt)
+    opt.afterDrop && (await opt.afterDrop(store, opt))
   }
 
   // define the destroy function
@@ -344,8 +344,8 @@ export interface Options extends Partial<typeof defaultOptions>{
   afterFirstMove?: (store:Store, opt:Options) => void
   beforeMove?: (store:Store, opt:Options) => boolean|undefined
   afterMove?: (store:Store, opt:Options) => void
-  beforeDrop?: (store:Store, opt:Options) => boolean|undefined
-  afterDrop?: (store:Store, opt:Options) => void
+  beforeDrop?: (store:Store, opt:Options) => boolean|undefined|Promise<boolean>
+  afterDrop?: (store:Store, opt:Options) => void|Promise<void>
   preventTextSelection?: boolean
   // edge scroll
   edgeScroll?: boolean
