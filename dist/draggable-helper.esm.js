@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v6.0.4
+ * draggable-helper v6.0.5
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: null
  * Released under the MIT License.

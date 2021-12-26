@@ -1,5 +1,5 @@
 /*!
- * draggable-helper v6.0.4
+ * draggable-helper v6.0.5
  * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
  * Homepage: null
  * Released under the MIT License.
@@ -831,7 +831,7 @@
   }
 
   /*!
-   * helper-js v2.0.6
+   * helper-js v2.0.7
    * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
    * Homepage: null
    * Released under the MIT License.
@@ -953,36 +953,6 @@
     }
   } // source: http://youmightnotneedjquery.com/
 
-  function onDOM(el, name, handler) {
-    for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
-      args[_key6 - 3] = arguments[_key6];
-    }
-
-    if (el.addEventListener) {
-      // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.addEventListener.apply(el, [name, handler].concat(args)); // @ts-ignore
-    } else if (el.attachEvent) {
-      // IE 8 及更早 IE 版本
-      // @ts-ignore
-      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
-    }
-  }
-
-  function offDOM(el, name, handler) {
-    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
-      args[_key7 - 3] = arguments[_key7];
-    }
-
-    if (el.removeEventListener) {
-      // 所有主流浏览器，除了 IE 8 及更早 IE版本
-      el.removeEventListener.apply(el, [name, handler].concat(args)); // @ts-ignore
-    } else if (el.detachEvent) {
-      // IE 8 及更早 IE 版本
-      // @ts-ignore
-      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
-    }
-  }
-
   function elementsFromPoint(x, y) {
     var args = [x, y];
     var func = document.elementsFromPoint || // @ts-ignore
@@ -1086,6 +1056,43 @@
       return startValue + changeInValue * (changedTime / duration);
     }
   } // ### DOM structure
+
+  /*!
+   * helper-js v2.0.6
+   * (c) phphe <phphe@outlook.com> (https://github.com/phphe)
+   * Homepage: null
+   * Released under the MIT License.
+   */
+
+  function onDOM(el, name, handler) {
+    for (var _len5 = arguments.length, args = new Array(_len5 > 3 ? _len5 - 3 : 0), _key6 = 3; _key6 < _len5; _key6++) {
+      args[_key6 - 3] = arguments[_key6];
+    }
+
+    if (el.addEventListener) {
+      // 所有主流浏览器，除了 IE 8 及更早 IE版本
+      el.addEventListener.apply(el, [name, handler].concat(args)); // @ts-ignore
+    } else if (el.attachEvent) {
+      // IE 8 及更早 IE 版本
+      // @ts-ignore
+      el.attachEvent.apply(el, ["on".concat(name), handler].concat(args));
+    }
+  }
+
+  function offDOM(el, name, handler) {
+    for (var _len6 = arguments.length, args = new Array(_len6 > 3 ? _len6 - 3 : 0), _key7 = 3; _key7 < _len6; _key7++) {
+      args[_key7 - 3] = arguments[_key7];
+    }
+
+    if (el.removeEventListener) {
+      // 所有主流浏览器，除了 IE 8 及更早 IE版本
+      el.removeEventListener.apply(el, [name, handler].concat(args)); // @ts-ignore
+    } else if (el.detachEvent) {
+      // IE 8 及更早 IE 版本
+      // @ts-ignore
+      el.detachEvent.apply(el, ["on".concat(name), handler].concat(args));
+    }
+  }
 
   /*!
    * drag-event-service v1.1.10
